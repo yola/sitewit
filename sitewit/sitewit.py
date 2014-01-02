@@ -63,7 +63,7 @@ class AccountInfo(WSDLService):
         super(AccountInfo, self).__init__(self.WSDL_PATH, sandbox=sandbox)
 
     def create_account(self, affiliate_id, affiliate_token, account_url, country, timezone,
-                       name, business_type='SMB', email=None):
+                       name, business_type='SMB', email=None, client_id=None):
         return self.client.service.CreateAccount(
             AffiliateId=affiliate_id,
             AffiliateToken=affiliate_token,
@@ -72,4 +72,5 @@ class AccountInfo(WSDLService):
             TimeZone=timezone,
             Name=name,
             BusinessType=business_type,
-            Email=email)
+            Email=email,
+            ClientId=client_id)
