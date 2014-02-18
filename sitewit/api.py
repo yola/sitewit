@@ -1,6 +1,7 @@
 import datetime
 
 from suds.client import Client
+from .utils import recursive_asdict
 
 
 class WSDLService(object):
@@ -18,6 +19,21 @@ class WSDLService(object):
         self.client = Client(wsdl_url)
 
 
+class VisitorData(WSDLService):
+    WSDL_PATH = '/reporting/visitordata.asmx?WSDL'
+
+    def __init__(self, account_token, user_token, sandbox=False):
+        self.account_token = account_token
+        self.user_token = user_token
+        super(VisitorData, self).__init__(self.WSDL_PATH, sandbox=sandbox)
+
+    def get_overview(self, start_date, end_date):
+        self.client.service.GetVisitorDetail(
+            UserToken=self.user_token,
+            AccountToken=self.account_token,
+            StartDate=start_date, EndDate=end_date)
+
+
 class TrafficData(WSDLService):
     WSDL_PATH = '/reporting/trafficdata.asmx?WSDL'
 
@@ -27,10 +43,15 @@ class TrafficData(WSDLService):
         super(TrafficData, self).__init__(self.WSDL_PATH, sandbox=sandbox)
 
     def get_overview(self, start_date, end_date):
-        self.client.service.GetTrafficDetail(
+        data = self.client.service.GetOverview(
             UserToken=self.user_token,
             AccountToken=self.account_token,
-            StartDate=start_date, EndDate=end_date)
+            StartDate=start_date, EndDate=end_date).Data
+        if not data:
+            return
+        return recursive_asdict(data).get('TrafficType', [])
+
+
 
     def get_perfromance_overview(self):
         raise NotImplemented()
