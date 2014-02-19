@@ -10,10 +10,7 @@ def recursive_asdict(d):
         elif isinstance(v, list):
             out[k] = []
             for item in v:
-                if hasattr(item, '__keylist__'):
-                    out[k].append(recursive_asdict(item))
-                else:
-                    out[k].append(item)
+                out[k].append(recursive_asdict(item))
         else:
             out[k] = v
     return out
