@@ -1,5 +1,3 @@
-import datetime
-
 from suds.client import Client
 from .utils import recursive_asdict
 
@@ -48,10 +46,8 @@ class TrafficData(WSDLService):
             AccountToken=self.account_token,
             StartDate=start_date, EndDate=end_date).Data
         if not data:
-            return
+            return []
         return recursive_asdict(data).get('TrafficType', [])
-
-
 
     def get_perfromance_overview(self):
         raise NotImplemented()
@@ -83,8 +79,9 @@ class AccountInfo(WSDLService):
         self.user_token = user_token
         super(AccountInfo, self).__init__(self.WSDL_PATH, sandbox=sandbox)
 
-    def create_account(self, affiliate_id, affiliate_token, account_url, country, timezone,
-                       name, business_type='SMB', email=None, client_id=None):
+    def create_account(self, affiliate_id, affiliate_token, account_url,
+                       country, timezone, name, business_type='SMB',
+                       email=None, client_id=None):
         return self.client.service.CreateAccount(
             AffiliateId=affiliate_id,
             AffiliateToken=affiliate_token,
