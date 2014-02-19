@@ -13,7 +13,7 @@ class UtilsTestCase(TestCase):
     """utils package"""
     @classmethod
     def setUpClass(cls):
-        cls.service_data = get_traffic_detail_overview('20140505', '20140506')
+        cls.service_data = get_traffic_detail_overview()
         data = {
             'TrafficOverview': {
                 'Data': cls.service_data,

@@ -1,4 +1,4 @@
-def get_traffic_detail_overview(start_date, end_date):
+def get_traffic_detail_overview():
 
     traffic_data = [
         {
