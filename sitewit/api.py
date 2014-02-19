@@ -49,7 +49,7 @@ class TrafficData(WSDLService):
             return []
         return recursive_asdict(data).get('TrafficType', [])
 
-    def get_perfromance_overview(self):
+    def get_performance_overview(self):
         raise NotImplemented()
 
     def get_medium_overview(self):
@@ -61,7 +61,7 @@ class TrafficData(WSDLService):
     def get_overview_comparison(self):
         raise NotImplemented()
 
-    def get_perfromance_overviewcomparison(self):
+    def get_performance_overviewcomparison(self):
         raise NotImplemented()
 
     def get_medium_overview_comparison(self):
