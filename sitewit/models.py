@@ -4,19 +4,22 @@ from sitewit.services import SitewitService
 
 
 class Account(object):
+    _sitewitservice = None
+    DEFAULT_TIME_ZONE = 'Pacific Standard Time'
+
     def __init__(self, account_json):
         self.id = account_json.get('accountNumber')
         self.token = account_json.get('token')
-        self.status = account_json['status']
-        self.url = account_json['url']
+        self.status = account_json.get('status')
+        self.url = account_json.get('url')
         self.business_type = 'SMB'
-        self.time_zone = account_json['timeZone'],
-        self.client_id = account_json,get('clientId'),
-        self.email = account_json.get('email'),
-        self.password = account_json.get('password'),
-        self.name = account_info.get('name')
-        self.currency = account_info.get('currency')
-        self.country_code = account_info.get('countryCode')
+        self.time_zone = account_json.get('timeZone', self.DEFAULT_TIME_ZONE)
+        self.site_id = account_json.get('clientId')
+        self.user_email = account_json.get('email')
+        self.user_name = account_json.get('name')
+        self.password = account_json.get('password')
+        self.currency = account_json.get('currency')
+        self.country_code = account_json.get('country')
 
     @classmethod
     def get_service(cls):
@@ -35,18 +38,23 @@ class Account(object):
         """
         data = {
             'url': url,
-            'businessType': 'SMB',
-            'timeZone': user.location,
-            'clientId': site.id,
-            'email': user.email,
+            'time_zone': cls.DEFAULT_TIME_ZONE,
+            'site_id': site.id,
+            'user_name': user.name,
+            'user_email': user.email,
             'password': password,
-            'name': user.name,
             'currency': user.currency,
-            'countryCode': user.locale
+            'country_code': user.country_code
         }
+        result = cls.get_service().create_account(
+            site.id, url, user.name, user.email, password,
+            cls.DEFAULT_TIME_ZONE, user.currency, user.location)
 
-        account_json = self.get_service().create_account(data)
-        return Account(account_json)
+        account_data = result['accountInfo']
+        user_data = result['userInfo']
+        account_data.update(user_data)
+
+        return Account(account_data)
 
     @classmethod
     def get(cls, account_token):
