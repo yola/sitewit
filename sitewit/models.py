@@ -12,16 +12,13 @@ class User(object):
 
 class Account(object):
     _sitewitservice = None
-    DEFAULT_TIME_ZONE = 'Pacific Standard Time'
 
     def __init__(self, account_data, user_data=None):
         self.id = account_data.get('accountNumber')
         self.token = account_data.get('token')
         self.status = account_data.get('status')
         self.url = account_data.get('url')
-        self.time_zone = account_data.get('timeZone', self.DEFAULT_TIME_ZONE)
         self.site_id = account_data.get('clientId')
-        self.password = account_data.get('password')
         self.currency = account_data.get('currency')
         self.country_code = account_data.get('country')
 
@@ -36,7 +33,7 @@ class Account(object):
         return cls._sitewitservice
 
     @classmethod
-    def create(cls, user, site, url, password, user_token=None):
+    def create(cls, user, site, url, user_token=None):
         """ Create SiteWit account for site.
         user: yousers.models.User instance;
         site: yosites.models.Site instance;
@@ -45,9 +42,8 @@ class Account(object):
             Instance of Account class.
         """
         result = cls.get_service().create_account(
-            site.id, url, user.name, user.email, password,
-            cls.DEFAULT_TIME_ZONE, user.currency, user.location,
-            user_token=user_token)
+            site.id, url, user.name, user.email, user.currency,
+            user.location, user_token=user_token)
 
         account_data = result['accountInfo']
         user_data = result.get('userInfo')

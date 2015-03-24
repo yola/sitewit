@@ -28,7 +28,7 @@ class TestCreateSitewitAccount(BaseTestCase):
     time_zone = 'time_zone'
     token = 'token'
     url = 'url'
-    time_zone = 'Pacific Standard Time'
+    time_zone = 'GMT Standard Time'
     user_name = 'username'
     user_email = 'ekoval@lohika.com'
     password = 'password'
@@ -71,8 +71,7 @@ class TestCreateSitewitAccount(BaseTestCase):
         self.user.configure_mock(name=self.user_name, email=self.user_email)
 
         self.result = Account.create(
-            self.user, self.site, self.url, self.password,
-            user_token=self.user_token)
+            self.user, self.site, self.url, user_token=self.user_token)
 
     def test_demands_post_is_called(self):
         post_data = {
@@ -83,7 +82,6 @@ class TestCreateSitewitAccount(BaseTestCase):
             'timeZone': self.time_zone,
             'name': self.user_name,
             'email': self.user_email,
-            'password': self.password,
             'businessType': 'SMB',
             'userToken': self.user_token
             }
@@ -102,7 +100,6 @@ class TestCreateSitewitAccount(BaseTestCase):
         self.assertEqual(account.site_id, self.site_id)
         self.assertEqual(account.currency, self.currency)
         self.assertEqual(account.country_code, self.country_code)
-        self.assertEqual(account.time_zone, self.time_zone)
         self.assertEqual(account.user.name, self.user_name)
         self.assertEqual(account.user.email, self.user_email)
         self.assertEqual(account.user.token, self.user_token)

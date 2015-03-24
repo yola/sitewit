@@ -15,7 +15,7 @@ class SitewitService(HTTPServiceClient):
         response = sitewitservice.get_account(account_token).
 
     """
-
+    DEFAULT_TIME_ZONE = 'GMT Standard Time'
     DEFAULT_URL = 'https://sandboxpapi.sitewit.com'
 
     def __init__(self, **kwargs):
@@ -37,17 +37,16 @@ class SitewitService(HTTPServiceClient):
             auth_raw += ':%s' % account
         return {'PartnerAuth': base64.b64encode(auth_raw)}
 
-    def create_account(self, site_id, url, user_name, user_email, password,
-                       time_zone, currency, country_code, user_token=None):
+    def create_account(self, site_id, url, user_name, user_email,
+                       currency, country_code, user_token=None):
         """ Create new SiteWit account. """
         data = {
             'url': url,
             'businessType': 'SMB',
-            'timeZone': time_zone,
+            'timeZone': self.DEFAULT_TIME_ZONE,
             'clientId': site_id,
             'name': user_name,
             'email': user_email,
-            'password': password,
             'currency': currency,
             'countryCode': country_code
         }
