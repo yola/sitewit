@@ -1,64 +1,39 @@
 import base64
-import os
 
 from mock import Mock, patch
 from unittest2 import TestCase
-from yoconfig import configure
-from yoconfigurator.base import read_config
 
 import sitewit.models
 from sitewit.models import Account
-
-
-config = read_config(
-    os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-)
-
-
-class BaseTestCase(TestCase):
-    @classmethod
-    def setUpClass(cls):
-        configure(sitewit=config.common.sitewit)
+from base import BaseTestCase
 
 
 class TestCreateSitewitAccount(BaseTestCase):
-    site_id = 'site_id'
-    country_code = 'country'
-    currency = 'currency'
-    time_zone = 'time_zone'
-    token = 'token'
-    url = 'url'
-    time_zone = 'GMT Standard Time'
-    user_name = 'username'
-    user_email = 'ekoval@lohika.com'
-    password = 'password'
-    user_token = 'user_token'
-
-    response = {
-      "accountInfo": {
-        "accountNumber": 99999,
-        "url": url,
-        "country": country_code,
-        "timeZone": time_zone,
-        "currency": currency,
-        "clientId": site_id,
-        "jsCode": "<script type=\"text/javascript\">\r\nvar loc = ((\"https:\" == document.location.protocol) ? \"https://analytics.\" : \"http://analytics.\");\r\ndocument.write(unescape(\"%3Cscript src='\" + loc + \"sitewit.com/v3/99999/sw.js' type='text/javascript'%3E%3C/script%3E\"));\r\n</script>\r\n",
-        "token": token,
-        "status": "Active"
-      },
-      "userInfo": {
-        "name": user_name,
-        "email": user_email,
-        "token": user_token,
-        "roles": [
-          "Owner",
-          "Admin"
-        ]
-      }
-    }
-
     @patch.object(sitewit.models.SitewitService, 'post')
     def setUp(self, create_account_mock):
+        self.response = {
+          "accountInfo": {
+            "accountNumber": 99999,
+            "url": self.url,
+            "country": self.country_code,
+            "timeZone": self.time_zone,
+            "currency": self.currency,
+            "clientId": self.site_id,
+            "jsCode": "<script type=\"text/javascript\">\r\nvar loc = ((\"https:\" == document.location.protocol) ? \"https://analytics.\" : \"http://analytics.\");\r\ndocument.write(unescape(\"%3Cscript src='\" + loc + \"sitewit.com/v3/99999/sw.js' type='text/javascript'%3E%3C/script%3E\"));\r\n</script>\r\n",
+            "token": self.token,
+            "status": "Active"
+          },
+          "userInfo": {
+            "name": self.user_name,
+            "email": self.user_email,
+            "token": self.user_token,
+            "roles": [
+              "Owner",
+              "Admin"
+            ]
+          }
+        }
+
         self.create_account_mock = create_account_mock
         post_return_mock = Mock()
         post_return_mock.json = Mock(return_value=self.response)
@@ -86,8 +61,8 @@ class TestCreateSitewitAccount(BaseTestCase):
             'userToken': self.user_token
             }
 
-        partner_id = config.common.sitewit['affiliate_id']
-        partner_token = config.common.sitewit['affiliate_token']
+        partner_id = self.config.common.sitewit['affiliate_id']
+        partner_token = self.config.common.sitewit['affiliate_token']
         auth_header = base64.b64encode('%s:%s' % (partner_id, partner_token))
         post_headers={'PartnerAuth': auth_header}
 
