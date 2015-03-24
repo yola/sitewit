@@ -38,7 +38,7 @@ class SitewitService(HTTPServiceClient):
         return {'PartnerAuth': base64.b64encode(auth_raw)}
 
     def create_account(self, site_id, url, user_name, user_email, password,
-                       time_zone, currency, country_code):
+                       time_zone, currency, country_code, user_token=None):
         """ Create new SiteWit account. """
         data = {
             'url': url,
@@ -51,6 +51,9 @@ class SitewitService(HTTPServiceClient):
             'currency': currency,
             'countryCode': country_code
         }
+        if user_token is not None:
+            data['userToken'] = user_token
+
         return self.post(
             '/api/account/', data, headers=self._headers()).json()
 

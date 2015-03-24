@@ -32,7 +32,7 @@ class TestCreateSitewitAccount(BaseTestCase):
     user_name = 'username'
     user_email = 'ekoval@lohika.com'
     password = 'password'
-    usertoken = 'usertoken'
+    user_token = 'user_token'
 
     response = {
       "accountInfo": {
@@ -47,9 +47,9 @@ class TestCreateSitewitAccount(BaseTestCase):
         "status": "Active"
       },
       "userInfo": {
-        "email": user_email,
         "name": user_name,
-        "token": "uuuuuuuuuuUuuuuuuuuu",
+        "email": user_email,
+        "token": user_token,
         "roles": [
           "Owner",
           "Admin"
@@ -71,7 +71,8 @@ class TestCreateSitewitAccount(BaseTestCase):
         self.user.configure_mock(name=self.user_name, email=self.user_email)
 
         self.result = Account.create(
-            self.user, self.site, self.url, self.password)
+            self.user, self.site, self.url, self.password,
+            user_token=self.user_token)
 
     def test_demands_post_is_called(self):
         post_data = {
@@ -84,6 +85,7 @@ class TestCreateSitewitAccount(BaseTestCase):
             'email': self.user_email,
             'password': self.password,
             'businessType': 'SMB',
+            'userToken': self.user_token
             }
 
         partner_id = config.common.sitewit['affiliate_id']
@@ -101,8 +103,9 @@ class TestCreateSitewitAccount(BaseTestCase):
         self.assertEqual(account.currency, self.currency)
         self.assertEqual(account.country_code, self.country_code)
         self.assertEqual(account.time_zone, self.time_zone)
-        self.assertEqual(account.user_name, self.user_name)
-        self.assertEqual(account.user_email, self.user_email)
+        self.assertEqual(account.user.name, self.user_name)
+        self.assertEqual(account.user.email, self.user_email)
+        self.assertEqual(account.user.token, self.user_token)
         self.assertEqual(account.status, 'Active')
 
         self.assertIsNotNone(account.id)
