@@ -1,7 +1,6 @@
 import base64
 
 from mock import Mock, patch
-from unittest2 import TestCase
 
 import sitewit.models
 from sitewit.models import Account
@@ -11,27 +10,29 @@ from base import BaseTestCase
 class TestCreateSitewitAccount(BaseTestCase):
     @patch.object(sitewit.models.SitewitService, 'post')
     def setUp(self, create_account_mock):
+        self.url = self.generate_url()
+
         self.response = {
-          "accountInfo": {
-            "accountNumber": 99999,
-            "url": self.url,
-            "country": self.country_code,
-            "timeZone": self.time_zone,
-            "currency": self.currency,
-            "clientId": self.site_id,
-            "jsCode": "<script type=\"text/javascript\">\r\nvar loc = ((\"https:\" == document.location.protocol) ? \"https://analytics.\" : \"http://analytics.\");\r\ndocument.write(unescape(\"%3Cscript src='\" + loc + \"sitewit.com/v3/99999/sw.js' type='text/javascript'%3E%3C/script%3E\"));\r\n</script>\r\n",
-            "token": self.token,
-            "status": "Active"
-          },
-          "userInfo": {
-            "name": self.user_name,
-            "email": self.user_email,
-            "token": self.user_token,
-            "roles": [
-              "Owner",
-              "Admin"
-            ]
-          }
+            'accountInfo': {
+                'accountNumber': 99999,
+                'url': self.url,
+                'country': self.country_code,
+                'timeZone': self.time_zone,
+                'currency': self.currency,
+                'clientId': self.site_id,
+                'jsCode': 'jscode',
+                'token': self.token,
+                'status': 'Active'
+            },
+            'userInfo': {
+                'name': self.user_name,
+                'email': self.user_email,
+                'token': self.user_token,
+                'roles': [
+                    'Owner',
+                    'Admin'
+                ]
+            }
         }
 
         self.create_account_mock = create_account_mock
@@ -64,10 +65,10 @@ class TestCreateSitewitAccount(BaseTestCase):
         partner_id = self.config.common.sitewit['affiliate_id']
         partner_token = self.config.common.sitewit['affiliate_token']
         auth_header = base64.b64encode('%s:%s' % (partner_id, partner_token))
-        post_headers={'PartnerAuth': auth_header}
+        post_headers = {'PartnerAuth': auth_header}
 
-        self.create_account_mock.assert_called_once_with('/api/account/',
-            post_data, headers=post_headers)
+        self.create_account_mock.assert_called_once_with(
+            '/api/account/', post_data, headers=post_headers)
 
     def test_account_object_is_returned(self):
         account = self.result

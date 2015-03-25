@@ -1,5 +1,3 @@
-import json
-
 from sitewit.services import SitewitService
 
 
@@ -14,13 +12,13 @@ class Account(object):
     _sitewitservice = None
 
     def __init__(self, account_data, user_data=None):
-        self.id = account_data.get('accountNumber')
-        self.token = account_data.get('token')
-        self.status = account_data.get('status')
-        self.url = account_data.get('url')
-        self.site_id = account_data.get('clientId')
-        self.currency = account_data.get('currency')
-        self.country_code = account_data.get('country')
+        self.id = account_data['accountNumber']
+        self.token = account_data['token']
+        self.status = account_data['status']
+        self.url = account_data['url']
+        self.site_id = account_data['clientId']
+        self.currency = account_data['currency']
+        self.country_code = account_data['country']
 
         if user_data is not None:
             self.user = User(user_data['name'], user_data['email'],
@@ -45,17 +43,13 @@ class Account(object):
             site.id, url, user.name, user.email, user.currency,
             user.location, user_token=user_token)
 
-        account_data = result['accountInfo']
-        user_data = result.get('userInfo')
-
         return Account(result['accountInfo'], user_data=result['userInfo'])
 
     @classmethod
     def get(cls, account_token):
-        account_data = self.get_service().get_account(account_token)
+        account_data = cls.get_service().get_account(account_token)
         return Account(account_data)
 
     def save(self):
-        service = self.get_service().update_account(
-            self.token, self.url, self.time_zone, self.currency,
-            self.country_code)
+        return self.get_service().update_account(
+            self.token, self.url, self.currency, self.country_code)

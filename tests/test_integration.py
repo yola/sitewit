@@ -7,6 +7,7 @@ from sitewit.services import SitewitService
 class TestCreateSitewitAccount(BaseTestCase):
 
     def setUp(self):
+        self.url = self.generate_url()
         service = SitewitService()
         self.result = service.create_account(
             self.site_id, self.url, self.user_name, self.user_email,
@@ -17,7 +18,7 @@ class TestCreateSitewitAccount(BaseTestCase):
 
         # TODO: Ask SiteWit why URL is returned without prefix. Until this
         # is fixed, this check will fail.
-        #self.assertEqual(account['url'], self.url)
+        # self.assertEqual(account['url'], self.url)
         self.assertEqual(account['countryCode'], self.country_code)
         self.assertEqual(account['timeZone'], self.time_zone)
         self.assertEqual(account['currency'], self.currency)
