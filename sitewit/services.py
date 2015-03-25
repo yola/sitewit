@@ -40,9 +40,9 @@ class SitewitService(HTTPServiceClient):
             site_id (str): site ID (uuid4).
             url: (str): site URL.
             user_name (str): name of account owner.
-            user_email (str): email of Account owner.
-            currency (str): currency setting.
-            country_code (str): location setting.
+            user_email (str): email of account owner.
+            currency (str): user's currency.
+            country_code (str): user's location.
             user_token (str, optional): user token in case this account is
                 owned by existing user.
 

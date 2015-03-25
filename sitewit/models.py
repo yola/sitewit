@@ -38,7 +38,7 @@ class Account(object):
             user (yousers.models.User instance): user.
             site (yosites.models.Site instance): site.
             url (str): url of given account.
-            user_token (str, optiona): user token. Is specified if the user
+            user_token (str, optional): user token. Is specified if the user
                 has another accounts.
 
         Returns:
