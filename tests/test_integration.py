@@ -40,6 +40,8 @@ class TestCreateExistingAccount(BaseTestCase):
             site_id, self.url, self.user_name, self.user_email,
             self.currency, self.country_code)
 
+        # Please not that we create account with same site_id, but different
+        # fields. This should return existing account with given site_id.
         self.account2 = service.create_account(
             site_id, 'http://another.url', 'another_user',
             'another@email.com', self.currency, self.country_code)
