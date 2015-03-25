@@ -6,12 +6,16 @@ from yoconfig import get_config
 
 class SitewitService(HTTPServiceClient):
     """
-    Client for SiteWit's API::
+    Client for SiteWit's API.
+
+    Example::
 
         sitewitservice = SitewitService()
         response = sitewitservice.get_account(account_token).
 
     """
+    # We support only GMT for now, so don't want to expose this param at
+    # Models level. Just use it everywhere.
     DEFAULT_TIME_ZONE = 'GMT Standard Time'
 
     def __init__(self, **kwargs):
@@ -30,7 +34,22 @@ class SitewitService(HTTPServiceClient):
 
     def create_account(self, site_id, url, user_name, user_email,
                        currency, country_code, user_token=None):
-        """ Create new SiteWit account. """
+        """ Create new SiteWit account.
+
+        Args:
+            site_id (str): site ID (uuid4).
+            url: (str): site URL.
+            user_name (str): name of account owner.
+            user_email (str): email of Account owner.
+            currency (str): currency setting.
+            country_code (str): location setting.
+            user_token (str, optional): user token in case this account is
+                owned by existing user.
+
+        Returns:
+            JSON of format:
+            `https://sandboxpapi.sitewit.com/Help/Api/POST-api-Account`
+        """
         data = {
             'url': url,
             'businessType': 'SMB',
@@ -46,23 +65,3 @@ class SitewitService(HTTPServiceClient):
 
         return self.post(
             '/api/account/', data, headers=self._get_auth_header()).json()
-
-    def get_account(self, account_token):
-        """ Get SiteWit account by Account Token. """
-        return self.get(
-            '/api/account/', headers=self._get_auth_header(account_token))
-
-    def delete_account(self, account_token):
-        """ Delete SiteWit account by Account Token. """
-        return self.delete(
-            '/api/account/', headers=self._get_auth_header(account_token))
-
-    def update_account(self, account_token, url, location,
-                       currency):
-        data = {
-            'url': url,
-            'timeZone': self.DEFAULT_TIME_ZONE,
-            'currency': currency,
-            'countryCode': location
-        }
-        return self.put('/api/account/', data, headers=self._get_auth_header())

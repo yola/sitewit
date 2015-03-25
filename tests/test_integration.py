@@ -1,13 +1,14 @@
+import uuid
+
 from demands import HTTPServiceError
 
 from base import BaseTestCase
 from sitewit.services import SitewitService
 
 
-class TestCreateSitewitAccount(BaseTestCase):
+class TestCreateAccount(BaseTestCase):
 
     def setUp(self):
-        self.url = self.generate_url()
         service = SitewitService()
         self.result = service.create_account(
             self.site_id, self.url, self.user_name, self.user_email,
@@ -16,9 +17,7 @@ class TestCreateSitewitAccount(BaseTestCase):
     def test_account_info_is_returned(self):
         account = self.result['accountInfo']
 
-        # TODO: Ask SiteWit why URL is returned without prefix. Until this
-        # is fixed, this check will fail.
-        # self.assertEqual(account['url'], self.url)
+        self.assertEqual(account['url'], self.url.replace('http://', ''))
         self.assertEqual(account['countryCode'], self.country_code)
         self.assertEqual(account['timeZone'], self.time_zone)
         self.assertEqual(account['currency'], self.currency)
@@ -31,7 +30,26 @@ class TestCreateSitewitAccount(BaseTestCase):
         self.assertIsNotNone(user['token'])
 
 
-class TestCreateSitewitAccountBadRequest(BaseTestCase):
+class TestCreateExistingAccount(BaseTestCase):
+
+    def setUp(self):
+        service = SitewitService()
+        site_id = uuid.uuid4()
+
+        self.account1 = service.create_account(
+            site_id, self.url, self.user_name, self.user_email,
+            self.currency, self.country_code)
+
+        self.account2 = service.create_account(
+            site_id, 'http://another.url', 'another_user',
+            'another@email.com', self.currency, self.country_code)
+
+    def test_existing_account_is_returned(self):
+        self.assertEqual(self.account1['accountInfo']['accountNumber'],
+                         self.account2['accountInfo']['accountNumber'])
+
+
+class TestCreateAccountBadRequest(BaseTestCase):
     def setUp(self):
         self.service = SitewitService()
 

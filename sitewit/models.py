@@ -2,7 +2,7 @@ from sitewit.services import SitewitService
 
 
 class User(object):
-    def __init__(self, name, email, token=None):
+    def __init__(self, name, email, token):
         self.name = name
         self.email = email
         self.token = token
@@ -33,23 +33,22 @@ class Account(object):
     @classmethod
     def create(cls, user, site, url, user_token=None):
         """ Create SiteWit account for site.
-        user: yousers.models.User instance;
-        site: yosites.models.Site instance;
+
+        Args:
+            user (yousers.models.User instance): user.
+            site (yosites.models.Site instance): site.
+            url (str): url of given account.
+            user_token (str, optiona): user token. Is specified if the user
+                has another accounts.
 
         Returns:
             Instance of Account class.
+
+        Raises:
+            demands.HTTPServiceError: if any error happened on HTTP level.
         """
         result = cls.get_service().create_account(
             site.id, url, user.name, user.email, user.currency,
             user.location, user_token=user_token)
 
         return Account(result['accountInfo'], user_data=result['userInfo'])
-
-    @classmethod
-    def get(cls, account_token):
-        account_data = cls.get_service().get_account(account_token)
-        return Account(account_data)
-
-    def save(self):
-        return self.get_service().update_account(
-            self.token, self.url, self.currency, self.country_code)

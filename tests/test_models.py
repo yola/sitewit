@@ -10,8 +10,6 @@ from base import BaseTestCase
 class TestCreateSitewitAccount(BaseTestCase):
     @patch.object(sitewit.models.SitewitService, 'post')
     def setUp(self, create_account_mock):
-        self.url = self.generate_url()
-
         self.response = {
             'accountInfo': {
                 'accountNumber': 99999,
@@ -60,7 +58,7 @@ class TestCreateSitewitAccount(BaseTestCase):
             'email': self.user_email,
             'businessType': 'SMB',
             'userToken': self.user_token
-            }
+        }
 
         partner_id = self.config.common.sitewit['affiliate_id']
         partner_token = self.config.common.sitewit['affiliate_token']
