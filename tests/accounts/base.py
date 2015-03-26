@@ -38,7 +38,7 @@ class BaseTestCase(TestCase):
     @classmethod
     def setUpClass(cls):
         cls.config = read_config(
-            os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+            os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
         configure(sitewit=cls.config.common.sitewit)
 
     def assertAccountIsValid(self, account, check_user_info=False):
