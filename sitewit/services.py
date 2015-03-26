@@ -65,3 +65,52 @@ class SitewitService(HTTPServiceClient):
 
         return self.post(
             '/api/account/', data, headers=self._get_auth_header()).json()
+
+    def get_account(self, account_token):
+        """ Get SiteWit account.
+
+        Args:
+            account_token (str): account token.
+
+        Returns:
+            account json:
+            https://sandboxpapi.sitewit.com/Help/Api/GET-api-Account
+        """
+        return self.get(
+            '/api/account/',
+            headers=self._get_auth_header(account_token)).json()
+
+    def update_account(self, account_token, url, country_code, currency):
+        """ Update SiteWit account.
+
+        Args:
+            account_token (str): account token.
+
+        Returns:
+            account json:
+            https://sandboxpapi.sitewit.com/Help/Api/GET-api-Account
+        """
+        data = {
+            'url': url,
+            'countryCode': country_code,
+            'currency': currency,
+            'timeZone': self.DEFAULT_TIME_ZONE
+        }
+
+        return self.put(
+            '/api/account/', data,
+            headers=self._get_auth_header(account_token)).json()
+
+    def delete_account(self, account_token):
+        """ Delete SiteWit account.
+
+        Args:
+            account_token (str): account token.
+
+        Returns:
+            account json:
+            https://sandboxpapi.sitewit.com/Help/Api/DELETE-api-Account
+        """
+        return self.delete(
+            '/api/account/',
+            headers=self._get_auth_header(account_token)).json()

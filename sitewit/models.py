@@ -23,6 +23,8 @@ class Account(object):
         if user_data is not None:
             self.user = User(user_data['name'], user_data['email'],
                              user_data['token'])
+        else:
+            self.user = None
 
     @classmethod
     def get_service(cls):
@@ -52,3 +54,62 @@ class Account(object):
             user.location, user_token=user_token)
 
         return Account(result['accountInfo'], user_data=result['userInfo'])
+
+    @classmethod
+    def get(cls, account_token):
+        """ Get SiteWit account by account token.
+
+        Args:
+            account_token (str): account token.
+
+        Returns:
+            Instance of Account class.
+
+        Raises:
+            demands.HTTPServiceError: if any error happened on HTTP level.
+        """
+        result = cls.get_service().get_account(account_token)
+
+        return Account(result)
+
+    @classmethod
+    def update(cls, account_token, url, country_code, currency):
+        """ Update SiteWit account with given data.
+
+        Args:
+            account_token (str): account token.
+            url (str): new URL.
+            country_code (str): new country code
+                (https://sandboxpapi.sitewit.com/Help/ResourceModel?
+                 modelName=CountryCode)
+            currency (str): new currency
+                (https://sandboxpapi.sitewit.com/Help/ResourceModel?
+                 modelName=BudgetCurrency
+
+        Returns:
+            Instance of account class.
+
+        Raises:
+            demands.HTTPServiceError: if any error happened on HTTP level.
+        """
+        result = cls.get_service().update_account(
+            account_token, url, country_code, currency)
+
+        return Account(result)
+
+    @classmethod
+    def delete(cls, account_token):
+        """ Get SiteWit account by account token.
+
+        Args:
+            account_token (str): account token.
+
+        Returns:
+            Instance of Account class.
+
+        Raises:
+            demands.HTTPServiceError: if any error happened on HTTP level.
+        """
+        result = cls.get_service().delete_account(account_token)
+
+        return Account(result)
