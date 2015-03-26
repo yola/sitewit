@@ -91,7 +91,7 @@ class TestGetAccount(BaseTestCase):
         retrieved_account = self.retrieved_account
 
         for field in ('accountNumber', 'token', 'url', 'countryCode',
-                       'timeZone', 'currency', 'status'):
+                      'timeZone', 'currency', 'status'):
             self.assertEqual(retrieved_account[field], created_account[field])
 
 
@@ -180,7 +180,7 @@ class TestDeleteAccount(BaseTestCase):
 
     def test_account_is_marked_as_canceled(self):
         for field in ('accountNumber', 'token', 'url', 'countryCode',
-                       'timeZone', 'currency'):
+                      'timeZone', 'currency'):
             self.assertEqual(self.retrieved_account[field],
                              self.created_account[field],
                              self.deleted_account[field])
