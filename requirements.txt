@@ -1,6 +1,11 @@
 coverage < 4.0.0
+demands >= 1.0.5, < 2.0.0
 flake8 < 3.0.0
+mock==1.0.1
 nose < 2.0.0
 pinocchio < 1.0.0
 suds==0.4
 unittest2 < 1.0.0
+yoconfig < 0.2.0
+yoconfigurator < 1.0.0
+
