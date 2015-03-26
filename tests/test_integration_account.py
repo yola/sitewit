@@ -3,7 +3,7 @@ import uuid
 
 from demands import HTTPServiceError
 
-from base import BaseTestCase, BaseObjectDoesntExistTestCase
+from base import BaseObjectDoesntExistTestCase, BaseTestCase
 from sitewit.services import SitewitService
 
 
