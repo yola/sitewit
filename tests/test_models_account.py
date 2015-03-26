@@ -7,12 +7,14 @@ from sitewit.models import Account
 from base import BaseTestCase
 
 
-class TestCreateSitewitAccount(BaseTestCase):
+class TestModelsCreateAccount(BaseTestCase):
     @patch.object(sitewit.models.SitewitService, 'post')
-    def setUp(self, create_account_mock):
+    def setUp(self, post_mock):
+        self.post_mock = post_mock
+
         self.response = {
             'accountInfo': {
-                'accountNumber': 99999,
+                'accountNumber': self.account_id,
                 'url': self.url,
                 'country': self.country_code,
                 'timeZone': self.time_zone,
@@ -33,10 +35,7 @@ class TestCreateSitewitAccount(BaseTestCase):
             }
         }
 
-        self.create_account_mock = create_account_mock
-        post_return_mock = Mock()
-        post_return_mock.json = Mock(return_value=self.response)
-        create_account_mock.return_value = post_return_mock
+        self._mock_response(post_mock, self.response)
 
         self.site = Mock(id=self.site_id)
         self.user = Mock(
@@ -63,22 +62,93 @@ class TestCreateSitewitAccount(BaseTestCase):
         partner_id = self.config.common.sitewit['affiliate_id']
         partner_token = self.config.common.sitewit['affiliate_token']
         auth_header = base64.b64encode('%s:%s' % (partner_id, partner_token))
-        post_headers = {'PartnerAuth': auth_header}
+        headers = {'PartnerAuth': auth_header}
 
-        self.create_account_mock.assert_called_once_with(
-            '/api/account/', post_data, headers=post_headers)
+        self.post_mock.assert_called_once_with(
+            '/api/account/', post_data, headers=headers)
 
     def test_account_object_is_returned(self):
         account = self.result
-        self.assertEqual(account.url, self.url)
-        self.assertEqual(account.site_id, self.site_id)
-        self.assertEqual(account.currency, self.currency)
-        self.assertEqual(account.country_code, self.country_code)
-        self.assertEqual(account.user.name, self.user_name)
-        self.assertEqual(account.user.email, self.user_email)
-        self.assertEqual(account.user.token, self.user_token)
-        self.assertEqual(account.status, 'Active')
+        self.assertAccountIsValid(account, check_user_info=True)
 
-        self.assertIsNotNone(account.id)
-        self.assertIsNotNone(account.token)
-        self.assertIsNotNone(account, 'password')
+
+class TestModelsGetAccount(BaseTestCase):
+    @patch.object(sitewit.models.SitewitService, 'get')
+    def setUp(self, get_mock):
+        self.get_mock = get_mock
+        self._mock_response(get_mock, self.response_brief)
+
+        self.result = Account.get(self.token)
+
+    def test_demands_get_is_called(self):
+        partner_id = self.config.common.sitewit['affiliate_id']
+        partner_token = self.config.common.sitewit['affiliate_token']
+        auth_header = base64.b64encode('%s:%s:%s' % (
+            partner_id, partner_token, self.token))
+        headers = {'PartnerAuth': auth_header}
+
+        self.get_mock.assert_called_once_with(
+            '/api/account/', headers=headers)
+
+    def test_account_object_is_returned(self):
+        account = self.result
+        self.assertAccountIsValid(account)
+
+
+class TestModelsUpdateAccount(BaseTestCase):
+    @patch.object(sitewit.models.SitewitService, 'put')
+    def setUp(self, put_mock):
+        self.put_mock = put_mock
+        self._mock_response(put_mock, self.response_brief)
+
+        self.site = Mock(id=self.site_id)
+        self.user = Mock(
+            location=self.country_code, currency=self.currency,
+            time_zone=self.time_zone)
+        self.user.configure_mock(name=self.user_name, email=self.user_email)
+
+        self.account = Account.update(
+            self.token, self.url, self.country_code, self.currency)
+
+    def test_demands_put_is_called(self):
+        put_data = {
+            'url': self.url,
+            'currency': self.currency,
+            'countryCode': self.country_code,
+            'timeZone': 'GMT Standard Time',
+        }
+
+        partner_id = self.config.common.sitewit['affiliate_id']
+        partner_token = self.config.common.sitewit['affiliate_token']
+
+        auth_header = base64.b64encode('%s:%s:%s' % (
+            partner_id, partner_token, self.token))
+        headers = {'PartnerAuth': auth_header}
+
+        self.put_mock.assert_called_once_with(
+            '/api/account/', put_data, headers=headers)
+
+    def test_account_object_is_returned(self):
+        self.assertAccountIsValid(self.account)
+
+
+class TestModelsDeleteAccount(BaseTestCase):
+    @patch.object(sitewit.models.SitewitService, 'delete')
+    def setUp(self, delete_mock):
+        self.delete_mock = delete_mock
+        self._mock_response(delete_mock, self.response_brief)
+
+        self.account = Account.delete(self.token)
+
+    def test_demands_delete_is_called(self):
+        partner_id = self.config.common.sitewit['affiliate_id']
+        partner_token = self.config.common.sitewit['affiliate_token']
+        auth_header = base64.b64encode('%s:%s:%s' % (
+            partner_id, partner_token, self.token))
+        headers = {'PartnerAuth': auth_header}
+
+        self.delete_mock.assert_called_once_with(
+            '/api/account/', headers=headers)
+
+    def test_account_object_is_returned(self):
+        self.assertAccountIsValid(self.account)
