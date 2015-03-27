@@ -75,7 +75,6 @@ class BaseTestCase(TestCase):
             demands_mock.assert_called_once_with(
                 '/api/account/', headers=headers)
 
-
     def _mock_response(self, requests_mock, response):
         response_mock = Mock()
         response_mock.json = Mock(return_value=response)

@@ -73,8 +73,6 @@ class TestModelsGetAccount(BaseTestCase):
         self.result = Account.get(self.token)
 
     def test_demands_get_is_called(self):
-        partner_id = self.config.common.sitewit['affiliate_id']
-        partner_token = self.config.common.sitewit['affiliate_token']
         self.assertDemandsIsCalled(self.get_mock, account_token=self.token)
 
     def test_account_object_is_returned(self):
@@ -105,9 +103,6 @@ class TestModelsUpdateAccount(BaseTestCase):
             'timeZone': 'GMT Standard Time',
         }
 
-        partner_id = self.config.common.sitewit['affiliate_id']
-        partner_token = self.config.common.sitewit['affiliate_token']
-
         self.assertDemandsIsCalled(self.put_mock, put_data, self.token)
 
     def test_account_object_is_returned(self):
@@ -123,9 +118,6 @@ class TestModelsDeleteAccount(BaseTestCase):
         self.account = Account.delete(self.token)
 
     def test_demands_delete_is_called(self):
-        partner_id = self.config.common.sitewit['affiliate_id']
-        partner_token = self.config.common.sitewit['affiliate_token']
-
         self.assertDemandsIsCalled(self.delete_mock, account_token=self.token)
 
     def test_account_object_is_returned(self):
