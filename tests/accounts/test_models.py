@@ -152,3 +152,28 @@ class TestModelsDeleteAccount(BaseTestCase):
 
     def test_account_object_is_returned(self):
         self.assertAccountIsValid(self.account)
+
+
+class TestModelsGenerateAccountSSOToken(BaseTestCase):
+    @patch.object(sitewit.models.SitewitService, 'get')
+    def setUp(self, get_mock):
+        self.get_mock = get_mock
+        self._mock_response(get_mock, {'token': 'generated_token'})
+
+        self.generated_token = Account.generate_sso_token(
+            self.user_token, self.token)
+
+    def test_demands_get_is_called(self):
+        partner_id = self.config.common.sitewit['affiliate_id']
+        partner_token = self.config.common.sitewit['affiliate_token']
+        auth_header = base64.b64encode('%s:%s:%s' % (
+            partner_id, partner_token, self.token))
+        headers = {'PartnerAuth': auth_header}
+
+        self.get_mock.assert_called_once_with(
+            '/api/sso/token', params={'userToken': self.user_token},
+            headers=headers)
+
+    def test_valid_token_is_returned(self):
+        self.assertTrue(isinstance(self.generated_token, str))
+        self.assertTrue(len(self.generated_token) > 5)

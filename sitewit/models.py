@@ -113,3 +113,16 @@ class Account(object):
         result = cls.get_service().delete_account(account_token)
 
         return Account(result)
+
+    @classmethod
+    def generate_sso_token(cls, user_token, account_token):
+        """ Generate temporary SSO token for given account.
+
+        Args:
+            user_token (str): user's token.
+            account_token (str): account's token.
+
+        Returns:
+            SSO token (str)
+        """
+        return cls.get_service().generate_sso_token(user_token, account_token)

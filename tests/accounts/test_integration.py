@@ -192,3 +192,39 @@ class TestDeleteAccountDoesNotExist(BaseObjectDoesntExistTestCase):
     def operation(self):
         return self.service.delete_account(
             base64.b64encode(str(uuid.uuid4())))
+
+
+class TestGenerateSSOToken(BaseTestCase):
+
+    def setUp(self):
+        service = SitewitService()
+        created_account = service.create_account(
+            self.site_id, self.url, self.user_name, self.user_email,
+            self.currency, self.country_code)
+
+        user_token = created_account['userInfo']['token']
+        account_token = created_account['accountInfo']['token']
+        self.generated_token = service.get_sso_token_for_user(
+            user_token, account_token)
+
+    def test_token_is_returned(self):
+        self.assertTrue(isinstance(self.token, str))
+        self.assertTrue(len(self.generated_token) > 5)
+
+
+class TestGenerateSSOToken(BaseTestCase):
+
+    def setUp(self):
+        service = SitewitService()
+        created_account = service.create_account(
+            self.site_id, self.url, self.user_name, self.user_email,
+            self.currency, self.country_code)
+
+        user_token = created_account['userInfo']['token']
+        account_token = created_account['accountInfo']['token']
+        self.generated_token = service.get_sso_token_for_user(
+            user_token, account_token)
+
+    def test_token_is_returned(self):
+        self.assertTrue(isinstance(self.token, str))
+        self.assertTrue(len(self.generated_token) > 5)

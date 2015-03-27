@@ -114,3 +114,19 @@ class SitewitService(HTTPServiceClient):
         return self.delete(
             '/api/account/',
             headers=self._get_auth_header(account_token)).json()
+
+    def generate_sso_token(self, user_token, account_token):
+        """ Generate temporary SSO token for given user.
+
+        Args:
+            user_token (str): user's token to generate SSO token.
+            account_token (str): account token.
+
+        Returns:
+            SSO token
+        """
+        result = self.get(
+            '/api/sso/token', params={'userToken': user_token},
+            headers=self._get_auth_header(account_token)).json()
+
+        return result['token']
