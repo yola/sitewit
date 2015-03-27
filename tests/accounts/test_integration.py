@@ -222,7 +222,7 @@ class TestGenerateSSOToken(BaseTestCase):
 
         user_token = created_account['userInfo']['token']
         account_token = created_account['accountInfo']['token']
-        self.generated_token = service.get_sso_token_for_user(
+        self.generated_token = service.generate_sso_token(
             user_token, account_token)
 
     def test_token_is_returned(self):
