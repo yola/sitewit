@@ -1,3 +1,4 @@
+import base64
 import os
 import uuid
 
@@ -54,6 +55,26 @@ class BaseTestCase(TestCase):
             self.assertEqual(account.user.name, self.user_name)
             self.assertEqual(account.user.email, self.user_email)
             self.assertEqual(account.user.token, self.user_token)
+
+    def assertDemandsIsCalled(self, demands_mock, data=None,
+                              account_token=None):
+        partner_id = self.config.common.sitewit['affiliate_id']
+        partner_token = self.config.common.sitewit['affiliate_token']
+
+        auth_info = '%s:%s' % (partner_id, partner_token)
+        if account_token is not None:
+            auth_info = '%s:%s' % (auth_info, account_token)
+
+        auth_header = base64.b64encode(auth_info)
+        headers = {'PartnerAuth': auth_header}
+
+        if data is not None:
+            demands_mock.assert_called_once_with(
+                '/api/account/', data, headers=headers)
+        else:
+            demands_mock.assert_called_once_with(
+                '/api/account/', headers=headers)
+
 
     def _mock_response(self, requests_mock, response):
         response_mock = Mock()

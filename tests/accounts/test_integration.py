@@ -21,7 +21,7 @@ class TestCreateAccount(BaseTestCase):
         self.assertIsNotNone(account['accountNumber'])
         self.assertIsNotNone(account['token'])
 
-        self.assertEqual(account['url'], self.url.replace('http://', ''))
+        self.assertEqual(account['url'], self.url)
         self.assertEqual(account['countryCode'], self.country_code)
         self.assertEqual(account['timeZone'], self.time_zone)
         self.assertEqual(account['currency'], self.currency)
@@ -44,7 +44,7 @@ class TestCreateExistingAccount(BaseTestCase):
             site_id, self.url, self.user_name, self.user_email,
             self.currency, self.country_code)
 
-        # Please not that we create account with same site_id, but different
+        # Please note that we create account with same site_id, but different
         # fields. This should return existing account with given site_id.
         self.account2 = service.create_account(
             site_id, 'http://another.url', 'another_user',
@@ -118,7 +118,7 @@ class TestUpdateAccount(BaseTestCase):
     def test_updated_account_is_returned(self):
         account = self.updated_account
 
-        self.assertEqual(account['url'], 'url.new')
+        self.assertEqual(account['url'], 'http://url.new')
         self.assertEqual(account['countryCode'], 'GB')
         self.assertEqual(account['currency'], 'GBP')
 
@@ -147,12 +147,12 @@ class TestUpdateAccountBadRequest(BaseTestCase):
 
         expected_error_details = {
             u'ModelState': {
-                u'acc.url': [u'Invalid Account URL']
+                u'account.url': [u'Invalid Url']
             },
             u'Message': u'The request is invalid.'
         }
+
         self.assertEqual(exc.exception.response.status_code, 400)
-        # TODO: uncomment this once errors details issue is fixed.
         self.assertEqual(exc.exception.details, expected_error_details)
 
 
