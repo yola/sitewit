@@ -3,7 +3,7 @@ import uuid
 
 from demands import HTTPServiceError
 
-from base import BaseObjectDoesntExistTestCase, BaseTestCase
+from base import BaseTestCase
 from sitewit.services import SitewitService
 
 
@@ -59,20 +59,18 @@ class TestCreateAccountBadRequest(BaseTestCase):
     def setUp(self):
         self.service = SitewitService()
 
-    def test_exception_is_raised(self):
-        with self.assertRaises(HTTPServiceError) as exc:
-            self.service.create_account(
-                '', '', self.user_name, self.user_email, self.currency,
-                self.country_code)
-
+    def test_bad_request_error_is_raised(self):
         expected_error_details = {
             u'ModelState': {
                 u'account.url': [u'Missing url parameter']
             },
             u'Message': u'The request is invalid.'
         }
-        self.assertEqual(exc.exception.response.status_code, 400)
-        self.assertEqual(exc.exception.details, expected_error_details)
+
+        self.assertHTTPErrorIsRaised(
+            SitewitService().create_account, (
+                '', '', self.user_name,self.user_email, self.currency,
+                self.country_code), 400, expected_error_details)
 
 
 class TestGetAccount(BaseTestCase):
@@ -95,9 +93,11 @@ class TestGetAccount(BaseTestCase):
             self.assertEqual(retrieved_account[field], created_account[field])
 
 
-class TestGetAccountDoesNotExist(BaseObjectDoesntExistTestCase):
-    def operation(self):
-        return self.service.get_account(base64.b64encode(str(uuid.uuid4())))
+class TestGetAccountDoesNotExist(BaseTestCase):
+    def test_error_401_is_raised(self):
+        self.assertHTTPErrorIsRaised(
+            SitewitService().get_account, (self.random_token,),
+            401, {u'Message': u'Malformed SubPartner Identifier'})
 
 
 class TestUpdateAccount(BaseTestCase):
@@ -140,11 +140,7 @@ class TestUpdateAccountBadRequest(BaseTestCase):
             self.currency, self.country_code)
         self.token = created_account['accountInfo']['token']
 
-    def test_exception_is_raised(self):
-        with self.assertRaises(HTTPServiceError) as exc:
-            self.service.update_account(
-                self.token, 'aa', 'GB', 'GBP')
-
+    def test_bad_request_error_is_raised(self):
         expected_error_details = {
             u'ModelState': {
                 u'account.url': [u'Invalid Url']
@@ -152,14 +148,16 @@ class TestUpdateAccountBadRequest(BaseTestCase):
             u'Message': u'The request is invalid.'
         }
 
-        self.assertEqual(exc.exception.response.status_code, 400)
-        self.assertEqual(exc.exception.details, expected_error_details)
+        self.assertHTTPErrorIsRaised(
+            self.service.update_account, (self.token, 'aa', 'GB', 'GBP'),
+            400, expected_error_details)
 
-
-class TestUpdateAccountDoesNotExist(BaseObjectDoesntExistTestCase):
-    def operation(self):
-        return self.service.update_account(
-            base64.b64encode(str(uuid.uuid4())), 'aa', 'bb', 'cc')
+class TestUpdateAccountDoesNotExist(BaseTestCase):
+    def test_error_401_is_raised(self):
+        self.assertHTTPErrorIsRaised(
+            SitewitService().update_account, (
+                self.random_token, 'aa', 'bb', 'cc'),
+            401, {u'Message': u'Malformed SubPartner Identifier'})
 
 
 class TestDeleteAccount(BaseTestCase):
@@ -188,7 +186,8 @@ class TestDeleteAccount(BaseTestCase):
         self.assertEqual(self.retrieved_account['status'], 'Canceled')
 
 
-class TestDeleteAccountDoesNotExist(BaseObjectDoesntExistTestCase):
-    def operation(self):
-        return self.service.delete_account(
-            base64.b64encode(str(uuid.uuid4())))
+class TestDeleteAccountDoesNotExist(BaseTestCase):
+    def test_error_401_is_raised(self):
+        self.assertHTTPErrorIsRaised(
+            SitewitService().delete_account, (self.random_token,),
+            401, {u'Message': u'Malformed SubPartner Identifier'})

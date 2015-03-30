@@ -52,9 +52,12 @@ class BaseTestCase(TestCase):
         self.assertEqual(account.token, self.token)
 
         if check_user_info:
-            self.assertEqual(account.user.name, self.user_name)
-            self.assertEqual(account.user.email, self.user_email)
-            self.assertEqual(account.user.token, self.user_token)
+            self.assertUserInfoIsValid(account)
+
+    def assertUserInfoIsValid(self, account):
+        self.assertEqual(account.user.name, self.user_name)
+        self.assertEqual(account.user.email, self.user_email)
+        self.assertEqual(account.user.token, self.user_token)
 
     def assertDemandsIsCalled(self, demands_mock, data=None,
                               account_token=None):
@@ -80,22 +83,15 @@ class BaseTestCase(TestCase):
         response_mock.json = Mock(return_value=response)
         requests_mock.return_value = response_mock
 
-
-class BaseObjectDoesntExistTestCase(BaseTestCase):
-    operation = None
-
-    def setUp(self):
-        self.service = SitewitService()
-
-    def test_exception_is_raised(self):
-        if self.operation is None:
-            return skip("BaseTest tests skipped")
+    def assertHTTPErrorIsRaised(
+        self, method, params, expected_code, expected_details):
 
         with self.assertRaises(HTTPServiceError) as exc:
-            self.operation()
+            method(*params)
 
-        expected_error_details = {
-            u'Message': u'Malformed SubPartner Identifier'}
+        self.assertEqual(exc.exception.response.status_code, expected_code)
+        self.assertEqual(exc.exception.details, expected_details)
 
-        self.assertEqual(exc.exception.response.status_code, 401)
-        self.assertEqual(exc.exception.details, expected_error_details)
+    @property
+    def random_token(self):
+        return base64.b64encode(str(uuid.uuid4()))
