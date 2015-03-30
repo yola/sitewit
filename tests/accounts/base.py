@@ -4,11 +4,9 @@ import uuid
 
 from demands import HTTPServiceError
 from mock import Mock
-from unittest2 import TestCase, skip
+from unittest2 import TestCase
 from yoconfig import configure
 from yoconfigurator.base import read_config
-
-from sitewit.services import SitewitService
 
 
 class BaseTestCase(TestCase):
@@ -83,8 +81,8 @@ class BaseTestCase(TestCase):
         response_mock.json = Mock(return_value=response)
         requests_mock.return_value = response_mock
 
-    def assertHTTPErrorIsRaised(
-        self, method, params, expected_code, expected_details):
+    def assertHTTPErrorIsRaised(self, method, params, expected_code,
+                                expected_details):
 
         with self.assertRaises(HTTPServiceError) as exc:
             method(*params)

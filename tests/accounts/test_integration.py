@@ -1,7 +1,4 @@
-import base64
 import uuid
-
-from demands import HTTPServiceError
 
 from base import BaseTestCase
 from sitewit.services import SitewitService
@@ -69,7 +66,7 @@ class TestCreateAccountBadRequest(BaseTestCase):
 
         self.assertHTTPErrorIsRaised(
             SitewitService().create_account, (
-                '', '', self.user_name,self.user_email, self.currency,
+                '', '', self.user_name, self.user_email, self.currency,
                 self.country_code), 400, expected_error_details)
 
 
@@ -151,6 +148,7 @@ class TestUpdateAccountBadRequest(BaseTestCase):
         self.assertHTTPErrorIsRaised(
             self.service.update_account, (self.token, 'aa', 'GB', 'GBP'),
             400, expected_error_details)
+
 
 class TestUpdateAccountDoesNotExist(BaseTestCase):
     def test_error_401_is_raised(self):
