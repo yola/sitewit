@@ -1,13 +1,12 @@
+import base64
 import os
 import uuid
 
 from demands import HTTPServiceError
 from mock import Mock
-from unittest2 import TestCase, skip
+from unittest2 import TestCase
 from yoconfig import configure
 from yoconfigurator.base import read_config
-
-from sitewit.services import SitewitService
 
 
 class BaseTestCase(TestCase):
@@ -51,31 +50,46 @@ class BaseTestCase(TestCase):
         self.assertEqual(account.token, self.token)
 
         if check_user_info:
-            self.assertEqual(account.user.name, self.user_name)
-            self.assertEqual(account.user.email, self.user_email)
-            self.assertEqual(account.user.token, self.user_token)
+            self.assertUserInfoIsValid(account)
+
+    def assertUserInfoIsValid(self, account):
+        self.assertEqual(account.user.name, self.user_name)
+        self.assertEqual(account.user.email, self.user_email)
+        self.assertEqual(account.user.token, self.user_token)
+
+    def assertDemandsIsCalled(self, demands_mock, data=None,
+                              account_token=None):
+        partner_id = self.config.common.sitewit['affiliate_id']
+        partner_token = self.config.common.sitewit['affiliate_token']
+
+        auth_info = '%s:%s' % (partner_id, partner_token)
+        if account_token is not None:
+            auth_info = '%s:%s' % (auth_info, account_token)
+
+        auth_header = base64.b64encode(auth_info)
+        headers = {'PartnerAuth': auth_header}
+
+        if data is not None:
+            demands_mock.assert_called_once_with(
+                '/api/account/', data, headers=headers)
+        else:
+            demands_mock.assert_called_once_with(
+                '/api/account/', headers=headers)
 
     def _mock_response(self, requests_mock, response):
         response_mock = Mock()
         response_mock.json = Mock(return_value=response)
         requests_mock.return_value = response_mock
 
-
-class BaseObjectDoesntExistTestCase(BaseTestCase):
-    operation = None
-
-    def setUp(self):
-        self.service = SitewitService()
-
-    def test_exception_is_raised(self):
-        if self.operation is None:
-            return skip("BaseTest tests skipped")
+    def assertHTTPErrorIsRaised(self, method, params, expected_code,
+                                expected_details):
 
         with self.assertRaises(HTTPServiceError) as exc:
-            self.operation()
+            method(*params)
 
-        expected_error_details = {
-            u'Message': u'Malformed SubPartner Identifier'}
+        self.assertEqual(exc.exception.response.status_code, expected_code)
+        self.assertEqual(exc.exception.details, expected_details)
 
-        self.assertEqual(exc.exception.response.status_code, 401)
-        self.assertEqual(exc.exception.details, expected_error_details)
+    @property
+    def random_token(self):
+        return base64.b64encode(str(uuid.uuid4()))

@@ -1,5 +1,3 @@
-import base64
-
 from mock import Mock, patch
 
 import sitewit.models
@@ -59,13 +57,7 @@ class TestModelsCreateAccount(BaseTestCase):
             'userToken': self.user_token
         }
 
-        partner_id = self.config.common.sitewit['affiliate_id']
-        partner_token = self.config.common.sitewit['affiliate_token']
-        auth_header = base64.b64encode('%s:%s' % (partner_id, partner_token))
-        headers = {'PartnerAuth': auth_header}
-
-        self.post_mock.assert_called_once_with(
-            '/api/account/', post_data, headers=headers)
+        self.assertDemandsIsCalled(self.post_mock, post_data)
 
     def test_account_object_is_returned(self):
         account = self.result
@@ -81,14 +73,7 @@ class TestModelsGetAccount(BaseTestCase):
         self.result = Account.get(self.token)
 
     def test_demands_get_is_called(self):
-        partner_id = self.config.common.sitewit['affiliate_id']
-        partner_token = self.config.common.sitewit['affiliate_token']
-        auth_header = base64.b64encode('%s:%s:%s' % (
-            partner_id, partner_token, self.token))
-        headers = {'PartnerAuth': auth_header}
-
-        self.get_mock.assert_called_once_with(
-            '/api/account/', headers=headers)
+        self.assertDemandsIsCalled(self.get_mock, account_token=self.token)
 
     def test_account_object_is_returned(self):
         account = self.result
@@ -118,15 +103,7 @@ class TestModelsUpdateAccount(BaseTestCase):
             'timeZone': 'GMT Standard Time',
         }
 
-        partner_id = self.config.common.sitewit['affiliate_id']
-        partner_token = self.config.common.sitewit['affiliate_token']
-
-        auth_header = base64.b64encode('%s:%s:%s' % (
-            partner_id, partner_token, self.token))
-        headers = {'PartnerAuth': auth_header}
-
-        self.put_mock.assert_called_once_with(
-            '/api/account/', put_data, headers=headers)
+        self.assertDemandsIsCalled(self.put_mock, put_data, self.token)
 
     def test_account_object_is_returned(self):
         self.assertAccountIsValid(self.account)
@@ -141,14 +118,7 @@ class TestModelsDeleteAccount(BaseTestCase):
         self.account = Account.delete(self.token)
 
     def test_demands_delete_is_called(self):
-        partner_id = self.config.common.sitewit['affiliate_id']
-        partner_token = self.config.common.sitewit['affiliate_token']
-        auth_header = base64.b64encode('%s:%s:%s' % (
-            partner_id, partner_token, self.token))
-        headers = {'PartnerAuth': auth_header}
-
-        self.delete_mock.assert_called_once_with(
-            '/api/account/', headers=headers)
+        self.assertDemandsIsCalled(self.delete_mock, account_token=self.token)
 
     def test_account_object_is_returned(self):
         self.assertAccountIsValid(self.account)
