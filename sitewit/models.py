@@ -34,7 +34,7 @@ class Account(object):
 
     @classmethod
     def create(cls, user, site, url, user_token=None):
-        """ Create SiteWit account for site.
+        """Create SiteWit account for site.
 
         Args:
             user (yousers.models.User instance): user.
@@ -57,7 +57,7 @@ class Account(object):
 
     @classmethod
     def get(cls, account_token):
-        """ Get SiteWit account by account token.
+        """Get SiteWit account by account token.
 
         Args:
             account_token (str): account token.
@@ -74,7 +74,7 @@ class Account(object):
 
     @classmethod
     def update(cls, account_token, url, country_code, currency):
-        """ Update SiteWit account with given data.
+        """Update SiteWit account with given data.
 
         Args:
             account_token (str): account token.
@@ -99,7 +99,7 @@ class Account(object):
 
     @classmethod
     def delete(cls, account_token):
-        """ Get SiteWit account by account token.
+        """Get SiteWit account by account token.
 
         Args:
             account_token (str): account token.

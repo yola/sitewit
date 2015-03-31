@@ -5,8 +5,7 @@ from yoconfig import get_config
 
 
 class SitewitService(HTTPServiceClient):
-    """
-    Client for SiteWit's API.
+    """Client for SiteWit's API.
 
     Example::
 
@@ -34,7 +33,7 @@ class SitewitService(HTTPServiceClient):
 
     def create_account(self, site_id, url, user_name, user_email,
                        currency, country_code, user_token=None):
-        """ Create new SiteWit account.
+        """Create new SiteWit account.
 
         Args:
             site_id (str): site ID (uuid4).
@@ -67,7 +66,7 @@ class SitewitService(HTTPServiceClient):
             '/api/account/', data, headers=self._get_auth_header()).json()
 
     def get_account(self, account_token):
-        """ Get SiteWit account.
+        """Get SiteWit account.
 
         Args:
             account_token (str): account token.
@@ -81,7 +80,7 @@ class SitewitService(HTTPServiceClient):
             headers=self._get_auth_header(account_token)).json()
 
     def update_account(self, account_token, url, country_code, currency):
-        """ Update SiteWit account.
+        """Update SiteWit account.
 
         Args:
             account_token (str): account token.
@@ -102,7 +101,7 @@ class SitewitService(HTTPServiceClient):
             headers=self._get_auth_header(account_token)).json()
 
     def delete_account(self, account_token):
-        """ Delete SiteWit account.
+        """Delete SiteWit account.
 
         Args:
             account_token (str): account token.
@@ -114,3 +113,19 @@ class SitewitService(HTTPServiceClient):
         return self.delete(
             '/api/account/',
             headers=self._get_auth_header(account_token)).json()
+
+    def generate_sso_token(self, user_token, account_token):
+        """Generate temporary SSO token for given user.
+
+        Args:
+            user_token (str): user's token to generate SSO token.
+            account_token (str): account token.
+
+        Returns:
+            SSO token
+        """
+        result = self.get(
+            '/api/sso/token', params={'userToken': user_token},
+            headers=self._get_auth_header(account_token)).json()
+
+        return result['token']

@@ -189,3 +189,30 @@ class TestDeleteAccountDoesNotExist(BaseTestCase):
         self.assertHTTPErrorIsRaised(
             SitewitService().delete_account, (self.random_token,),
             401, {u'Message': u'Malformed SubPartner Identifier'})
+
+
+class TestGenerateSSOToken(BaseTestCase):
+
+    def setUp(self):
+        service = SitewitService()
+        created_account = service.create_account(
+            self.site_id, self.url, self.user_name, self.user_email,
+            self.currency, self.country_code)
+
+        user_token = created_account['userInfo']['token']
+        account_token = created_account['accountInfo']['token']
+        self.generated_token = service.generate_sso_token(
+            user_token, account_token)
+
+    def test_token_is_returned(self):
+        self.assertTrue(isinstance(self.token, str))
+        self.assertTrue(len(self.generated_token) > 5)
+
+
+class TestGenerateSSOTokenBadRequest(BaseTestCase):
+
+    def test_error_401_is_raised(self):
+        self.assertHTTPErrorIsRaised(
+            SitewitService().generate_sso_token,
+            (self.random_token, self.random_token),
+            401, {u'Message': u'Malformed SubPartner Identifier'})
