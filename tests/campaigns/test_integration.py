@@ -1,5 +1,3 @@
-from mock import Mock, patch
-
 from base import CampaignTestCase
 import sitewit.services
 from sitewit.services import SitewitService
@@ -44,9 +42,6 @@ class TestListCampaigns(CampaignTestCase):
 
 
 class TestListCampaignsBadAccountToken(CampaignTestCase):
-
-    def setUp(self):
-        service = SitewitService()
 
     def test_error_401_is_raised(self):
         self.assertHTTPErrorIsRaised(
