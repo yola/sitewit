@@ -129,3 +129,43 @@ class SitewitService(HTTPServiceClient):
             headers=self._get_auth_header(account_token)).json()
 
         return result['token']
+
+    def get_campaign(self, account_token, campaign_id):
+        """Get Campaign info by campaign ID
+
+        Args:
+            campaign_id (str): id of campaign.
+
+        Returns:
+            dict of format:   {'id': 1, 'name': 'test', 'status': 'Active'}
+        """
+        return self.get(
+            '/api/campaign/%s' % (campaign_id,),
+            headers=self._get_auth_header(account_token)).json()
+
+    def list_campaigns(self, account_token):
+        """List campaigns available for given account.
+
+        Args:
+            account_token (str): account token.
+
+        Returns:
+            List of dicts:
+            [{'id': 1, 'name': 'test', 'status': 'Active'},...]
+        """
+        return self.get(
+            '/api/campaign/',
+            headers=self._get_auth_header(account_token)).json()
+
+    def delete_campaign(self, account_token, campaign_id):
+        """Delete Campaign by campaign ID
+
+        Args:
+            campaign_id (str): id of campaign.
+
+        Returns:
+            dict of format:   {'id': 1, 'name': 'test', 'status': 'Active'}
+        """
+        return self.delete(
+            'api/Campaign/%s' % (campaign_id,),
+            headers=self._get_auth_header(account_token)).json()
