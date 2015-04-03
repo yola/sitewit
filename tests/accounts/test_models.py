@@ -2,10 +2,10 @@ from mock import Mock, patch
 
 import sitewit.models
 from sitewit.models import Account
-from base import BaseTestCase
+from base import AccountTestCase
 
 
-class TestModelsCreateAccount(BaseTestCase):
+class TestModelsCreateAccount(AccountTestCase):
     @patch.object(sitewit.models.SitewitService, 'post')
     def setUp(self, post_mock):
         self.post_mock = post_mock
@@ -64,7 +64,7 @@ class TestModelsCreateAccount(BaseTestCase):
         self.assertAccountIsValid(account, check_user_info=True)
 
 
-class TestModelsGetAccount(BaseTestCase):
+class TestModelsGetAccount(AccountTestCase):
     @patch.object(sitewit.models.SitewitService, 'get')
     def setUp(self, get_mock):
         self.get_mock = get_mock
@@ -80,7 +80,7 @@ class TestModelsGetAccount(BaseTestCase):
         self.assertAccountIsValid(account)
 
 
-class TestModelsUpdateAccount(BaseTestCase):
+class TestModelsUpdateAccount(AccountTestCase):
     @patch.object(sitewit.models.SitewitService, 'put')
     def setUp(self, put_mock):
         self.put_mock = put_mock
@@ -109,7 +109,7 @@ class TestModelsUpdateAccount(BaseTestCase):
         self.assertAccountIsValid(self.account)
 
 
-class TestModelsDeleteAccount(BaseTestCase):
+class TestModelsDeleteAccount(AccountTestCase):
     @patch.object(sitewit.models.SitewitService, 'delete')
     def setUp(self, delete_mock):
         self.delete_mock = delete_mock

@@ -1,10 +1,10 @@
 import uuid
 
-from base import BaseTestCase
+from base import AccountTestCase
 from sitewit.services import SitewitService
 
 
-class TestCreateAccount(BaseTestCase):
+class TestCreateAccount(AccountTestCase):
 
     def setUp(self):
         service = SitewitService()
@@ -31,7 +31,7 @@ class TestCreateAccount(BaseTestCase):
         self.assertIsNotNone(user['token'])
 
 
-class TestCreateExistingAccount(BaseTestCase):
+class TestCreateExistingAccount(AccountTestCase):
 
     def setUp(self):
         service = SitewitService()
@@ -52,7 +52,7 @@ class TestCreateExistingAccount(BaseTestCase):
                          self.account2['accountInfo']['accountNumber'])
 
 
-class TestCreateAccountBadRequest(BaseTestCase):
+class TestCreateAccountBadRequest(AccountTestCase):
     def setUp(self):
         self.service = SitewitService()
 
@@ -70,7 +70,7 @@ class TestCreateAccountBadRequest(BaseTestCase):
                 self.country_code), 400, expected_error_details)
 
 
-class TestGetAccount(BaseTestCase):
+class TestGetAccount(AccountTestCase):
 
     def setUp(self):
         service = SitewitService()
@@ -90,14 +90,14 @@ class TestGetAccount(BaseTestCase):
             self.assertEqual(retrieved_account[field], created_account[field])
 
 
-class TestGetAccountDoesNotExist(BaseTestCase):
+class TestGetAccountDoesNotExist(AccountTestCase):
     def test_error_401_is_raised(self):
         self.assertHTTPErrorIsRaised(
             SitewitService().get_account, (self.random_token,),
-            401, {u'Message': u'Malformed SubPartner Identifier'})
+            401, {u'Message': u'Invalid SubPartner Identifier'})
 
 
-class TestUpdateAccount(BaseTestCase):
+class TestUpdateAccount(AccountTestCase):
 
     def setUp(self):
         service = SitewitService()
@@ -129,7 +129,7 @@ class TestUpdateAccount(BaseTestCase):
                              self.updated_account[field])
 
 
-class TestUpdateAccountBadRequest(BaseTestCase):
+class TestUpdateAccountBadRequest(AccountTestCase):
     def setUp(self):
         self.service = SitewitService()
         created_account = self.service.create_account(
@@ -150,15 +150,15 @@ class TestUpdateAccountBadRequest(BaseTestCase):
             400, expected_error_details)
 
 
-class TestUpdateAccountDoesNotExist(BaseTestCase):
+class TestUpdateAccountDoesNotExist(AccountTestCase):
     def test_error_401_is_raised(self):
         self.assertHTTPErrorIsRaised(
             SitewitService().update_account, (
                 self.random_token, 'aa', 'bb', 'cc'),
-            401, {u'Message': u'Malformed SubPartner Identifier'})
+            401, {u'Message': u'Invalid SubPartner Identifier'})
 
 
-class TestDeleteAccount(BaseTestCase):
+class TestDeleteAccount(AccountTestCase):
 
     def setUp(self):
         service = SitewitService()
@@ -184,14 +184,14 @@ class TestDeleteAccount(BaseTestCase):
         self.assertEqual(self.retrieved_account['status'], 'Canceled')
 
 
-class TestDeleteAccountDoesNotExist(BaseTestCase):
+class TestDeleteAccountDoesNotExist(AccountTestCase):
     def test_error_401_is_raised(self):
         self.assertHTTPErrorIsRaised(
             SitewitService().delete_account, (self.random_token,),
-            401, {u'Message': u'Malformed SubPartner Identifier'})
+            401, {u'Message': u'Invalid SubPartner Identifier'})
 
 
-class TestGenerateSSOToken(BaseTestCase):
+class TestGenerateSSOToken(AccountTestCase):
 
     def setUp(self):
         service = SitewitService()
@@ -209,10 +209,10 @@ class TestGenerateSSOToken(BaseTestCase):
         self.assertTrue(len(self.generated_token) > 5)
 
 
-class TestGenerateSSOTokenBadRequest(BaseTestCase):
+class TestGenerateSSOTokenBadRequest(AccountTestCase):
 
     def test_error_401_is_raised(self):
         self.assertHTTPErrorIsRaised(
             SitewitService().generate_sso_token,
             (self.random_token, self.random_token),
-            401, {u'Message': u'Malformed SubPartner Identifier'})
+            401, {u'Message': u'Invalid SubPartner Identifier'})
