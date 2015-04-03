@@ -1,3 +1,5 @@
+from mock import patch
+
 from base import CampaignTestCase
 import sitewit.services
 from sitewit.services import SitewitService
