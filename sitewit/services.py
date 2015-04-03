@@ -167,5 +167,5 @@ class SitewitService(HTTPServiceClient):
             dict of format:   {'id': 1, 'name': 'test', 'status': 'Active'}
         """
         return self.delete(
-            'api/Campaign/%s' % (campaign_id,),
+            'api/campaign/%s' % (campaign_id,),
             headers=self._get_auth_header(account_token)).json()

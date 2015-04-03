@@ -30,7 +30,7 @@ class TestGetCampaignBadAccountToken(CampaignTestCase):
         self.assertHTTPErrorIsRaised(
             SitewitService().get_campaign, (
                 self.random_token, self.campaign_id),
-            401, {u'Message': u'Malformed SubPartner Identifier'})
+            401, {u'Message': u'Invalid SubPartner Identifier'})
 
 
 class TestListCampaigns(CampaignTestCase):
@@ -48,7 +48,7 @@ class TestListCampaignsBadAccountToken(CampaignTestCase):
     def test_error_401_is_raised(self):
         self.assertHTTPErrorIsRaised(
             SitewitService().list_campaigns, (self.random_token,),
-            401, {u'Message': u'Malformed SubPartner Identifier'})
+            401, {u'Message': u'Invalid SubPartner Identifier'})
 
 
 class TestDeleteCampaign(CampaignTestCase):

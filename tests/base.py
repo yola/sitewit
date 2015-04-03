@@ -51,4 +51,4 @@ class SitewitTestCase(TestCase):
 
     @property
     def random_token(self):
-        return base64.b64encode(str(uuid.uuid4()))
+        return uuid.uuid4().hex

@@ -3,7 +3,7 @@ from tests.base import SitewitTestCase
 
 class CampaignTestCase(SitewitTestCase):
     # We have to hardcode these values for integration testing, because SiteWit
-    # doesn't have Create Campaign API endpoint. Campaigns are created
+    # doesn't have Create Campaign API endpoint. Campaigns are created via UI.
     account_token = '0sj0to2h1so78a6w'
     campaign_id = '23895'
 

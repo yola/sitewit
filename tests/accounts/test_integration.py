@@ -94,7 +94,7 @@ class TestGetAccountDoesNotExist(AccountTestCase):
     def test_error_401_is_raised(self):
         self.assertHTTPErrorIsRaised(
             SitewitService().get_account, (self.random_token,),
-            401, {u'Message': u'Malformed SubPartner Identifier'})
+            401, {u'Message': u'Invalid SubPartner Identifier'})
 
 
 class TestUpdateAccount(AccountTestCase):
@@ -155,7 +155,7 @@ class TestUpdateAccountDoesNotExist(AccountTestCase):
         self.assertHTTPErrorIsRaised(
             SitewitService().update_account, (
                 self.random_token, 'aa', 'bb', 'cc'),
-            401, {u'Message': u'Malformed SubPartner Identifier'})
+            401, {u'Message': u'Invalid SubPartner Identifier'})
 
 
 class TestDeleteAccount(AccountTestCase):
@@ -188,7 +188,7 @@ class TestDeleteAccountDoesNotExist(AccountTestCase):
     def test_error_401_is_raised(self):
         self.assertHTTPErrorIsRaised(
             SitewitService().delete_account, (self.random_token,),
-            401, {u'Message': u'Malformed SubPartner Identifier'})
+            401, {u'Message': u'Invalid SubPartner Identifier'})
 
 
 class TestGenerateSSOToken(AccountTestCase):
@@ -215,4 +215,4 @@ class TestGenerateSSOTokenBadRequest(AccountTestCase):
         self.assertHTTPErrorIsRaised(
             SitewitService().generate_sso_token,
             (self.random_token, self.random_token),
-            401, {u'Message': u'Malformed SubPartner Identifier'})
+            401, {u'Message': u'Invalid SubPartner Identifier'})

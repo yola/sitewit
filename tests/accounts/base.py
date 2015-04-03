@@ -5,7 +5,7 @@ from tests.base import SitewitTestCase
 
 class AccountTestCase(SitewitTestCase):
     account_id = 9999
-    site_id = str(uuid.uuid4())
+    site_id = uuid.uuid4().hex
     country_code = 'US'
     currency = 'USD'
     token = 'token'
