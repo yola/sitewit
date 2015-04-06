@@ -292,12 +292,12 @@ class TestUpgradeCampaignSubscription(CampaignTestCase):
                 self.account_token, self.campaign_id, self.budget, currency)
 
         self.result = service.upgrade_campaign_subscription(
-            self.account_token, self.campaign_id, self.budget+10, currency)
+            self.account_token, self.campaign_id, self.budget + 10, currency)
 
     def test_upgraded_campaign_is_returned(self):
         self.assertEqual(self.result['id'], self.campaign_id)
         self.assertEqual(
-            self.result['subscription']['budget'], self.budget+10)
+            self.result['subscription']['budget'], self.budget + 10)
 
 
 class TestUpgradeSubscriptionValidationFailed(CampaignTestCase):
@@ -335,12 +335,12 @@ class TestDowngradeCampaignSubscription(CampaignTestCase):
                 self.account_token, self.campaign_id, self.budget, currency)
 
         self.result = service.downgrade_campaign_subscription(
-            self.account_token, self.campaign_id, self.budget-10, currency)
+            self.account_token, self.campaign_id, self.budget - 10, currency)
 
     def test_downgraded_campaign_is_returned(self):
         self.assertEqual(self.result['id'], self.campaign_id)
         self.assertEqual(
-            self.result['subscription']['budget'], self.budget-10)
+            self.result['subscription']['budget'], self.budget - 10)
 
 
 class TestDowngradeSubscriptionValidationFailed(CampaignTestCase):
