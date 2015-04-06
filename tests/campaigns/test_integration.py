@@ -76,7 +76,8 @@ class TestDeleteCampaign(CampaignTestCase):
 
 
 class TestSubscribeToCampaign(CampaignTestCase):
-    # We test Subscribe Campaign using mocks, because there is no CREATE endpoint.
+    # We test Subscribe Campaign using mocks, because there is no CREATE
+    # endpoint.
 
     @patch.object(sitewit.services.SitewitService, 'post')
     def setUp(self, post_mock):
@@ -287,7 +288,7 @@ class TestUpgradeCampaignSubscription(CampaignTestCase):
         currency = subscription['subscription']['currency']
 
         if subscription['status'] != 'Active':
-            campaign = service.renew_campaign_subscription(
+            service.renew_campaign_subscription(
                 self.account_token, self.campaign_id, self.budget, currency)
 
         self.result = service.upgrade_campaign_subscription(
@@ -330,7 +331,7 @@ class TestDowngradeCampaignSubscription(CampaignTestCase):
         currency = subscription['subscription']['currency']
 
         if subscription['status'] != 'Active':
-            campaign = service.renew_campaign_subscription(
+            service.renew_campaign_subscription(
                 self.account_token, self.campaign_id, self.budget, currency)
 
         self.result = service.downgrade_campaign_subscription(

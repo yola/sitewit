@@ -9,8 +9,7 @@ class CampaignTestCase(SitewitTestCase):
 
     non_existent_campaign_id = 23232323
 
-    campaigns = [
-                    {'id': 23900,
-                     'name': 'test site stuff'},
-                    {'id': 23895,
-                     'name': 'test dont touch'}]
+    campaigns = [{'id': 23900,
+                  'name': 'test site stuff'},
+                 {'id': 23895,
+                  'name': 'test dont touch'}]

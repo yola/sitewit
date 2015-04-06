@@ -170,8 +170,8 @@ class SitewitService(HTTPServiceClient):
             '/api/campaign/%s' % (campaign_id,),
             headers=self._get_auth_header(account_token)).json()
 
-    def subscribe_to_campaign(
-        self, account_token, campaign_id, budget, currency):
+    def subscribe_to_campaign(self, account_token, campaign_id, budget,
+                              currency):
         """Subscribe to campaign.
 
         Create subscription to a given Campaign for given Account.
@@ -207,8 +207,9 @@ class SitewitService(HTTPServiceClient):
             https://sandboxpapi.sitewit.com/Help/Api/
             GET-api-subscription-campaign-id
         """
-        return self.get('/api/subscription/campaign/%s' % (campaign_id,),
-                         headers=self._get_auth_header(account_token)).json()
+        return self.get(
+            '/api/subscription/campaign/%s' % (campaign_id,),
+            headers=self._get_auth_header(account_token)).json()
 
     def list_campaign_subscriptions(self, account_token):
         """Get all subscriptions to given campaign for given account.
@@ -219,11 +220,12 @@ class SitewitService(HTTPServiceClient):
             account_token (str): account token.
             campaign_id (str): campaign to subscribe.
         """
-        return self.get('/api/subscription/campaign/',
-                         headers=self._get_auth_header(account_token)).json()
+        return self.get(
+            '/api/subscription/campaign/',
+            headers=self._get_auth_header(account_token)).json()
 
-    def upgrade_campaign_subscription(
-        self, account_token, campaign_id, new_budget, currency):
+    def upgrade_campaign_subscription(self, account_token, campaign_id,
+                                      new_budget, currency):
         """Upgrade campaign subscription.
 
         Increase campaign budget.
@@ -246,8 +248,8 @@ class SitewitService(HTTPServiceClient):
         return self.put('/api/subscription/campaign/upgrade/', data,
                         headers=self._get_auth_header(account_token)).json()
 
-    def downgrade_campaign_subscription(
-        self, account_token, campaign_id, new_budget, currency):
+    def downgrade_campaign_subscription(self, account_token, campaign_id,
+                                        new_budget, currency):
         """Upgrade campaign subscription.
 
         Decrease campaign budget.
@@ -267,11 +269,12 @@ class SitewitService(HTTPServiceClient):
                 'budget': new_budget,
                 'currency': currency}
 
-        return self.put('/api/subscription/campaign/downgrade', data,
-                        headers=self._get_auth_header(account_token)).json()
+        return self.put(
+            '/api/subscription/campaign/downgrade', data,
+            headers=self._get_auth_header(account_token)).json()
 
-    def renew_campaign_subscription(
-        self, account_token, campaign_id, new_budget, currency):
+    def renew_campaign_subscription(self, account_token, campaign_id,
+                                    new_budget, currency):
         """Renew campaign subscription.
 
         Renew campaign subscription. If campaign is active, it is returned
@@ -290,11 +293,12 @@ class SitewitService(HTTPServiceClient):
                 'budget': new_budget,
                 'currency': currency}
 
-        return self.put('api/subscription/reinstate/campaign', data,
-                        headers=self._get_auth_header(account_token)).json()
+        return self.put(
+            'api/subscription/reinstate/campaign', data,
+            headers=self._get_auth_header(account_token)).json()
 
-    def cancel_campaign_subscription(
-        self, account_token, campaign_id, immediate=True):
+    def cancel_campaign_subscription(self, account_token, campaign_id,
+                                     immediate=True):
         """Cancel campaign subscription.
 
         Cancel campaign subscription.
@@ -313,5 +317,6 @@ class SitewitService(HTTPServiceClient):
         data = {'campaignId': campaign_id,
                 'cancelType': 'Immediate' if immediate else 'EndOfCycle'}
 
-        return self.delete('api/subscription/cancel/campaign/search', data=data,
-                           headers=self._get_auth_header(account_token)).json()
+        return self.delete(
+            'api/subscription/cancel/campaign/search', data=data,
+            headers=self._get_auth_header(account_token)).json()
