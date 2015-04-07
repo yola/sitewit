@@ -270,7 +270,7 @@ class SitewitService(HTTPServiceClient):
                 'currency': currency}
 
         return self.put(
-            '/api/subscription/campaign/downgrade', data,
+            '/api/subscription/campaign/downgrade/', data,
             headers=self._get_auth_header(account_token)).json()
 
     def renew_campaign_subscription(self, account_token, campaign_id,
@@ -294,7 +294,7 @@ class SitewitService(HTTPServiceClient):
                 'currency': currency}
 
         return self.put(
-            'api/subscription/reinstate/campaign', data,
+            'api/subscription/reinstate/campaign/', data,
             headers=self._get_auth_header(account_token)).json()
 
     def cancel_campaign_subscription(self, account_token, campaign_id,
@@ -318,5 +318,5 @@ class SitewitService(HTTPServiceClient):
                 'cancelType': 'Immediate' if immediate else 'EndOfCycle'}
 
         return self.delete(
-            'api/subscription/cancel/campaign/search', data=data,
+            'api/subscription/cancel/campaign/search/', data=data,
             headers=self._get_auth_header(account_token)).json()
