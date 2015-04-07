@@ -17,7 +17,7 @@ class SitewitTestCase(TestCase):
         configure(sitewit=cls.config.common.sitewit)
 
     def assertDemandsIsCalled(self, demands_mock, data=None,
-                              account_token=None):
+                              account_token=None, url='/api/account/'):
         partner_id = self.config.common.sitewit['affiliate_id']
         partner_token = self.config.common.sitewit['affiliate_token']
 
@@ -29,11 +29,9 @@ class SitewitTestCase(TestCase):
         headers = {'PartnerAuth': auth_header}
 
         if data is not None:
-            demands_mock.assert_called_once_with(
-                '/api/account/', data, headers=headers)
+            demands_mock.assert_called_once_with(url, data, headers=headers)
         else:
-            demands_mock.assert_called_once_with(
-                '/api/account/', headers=headers)
+            demands_mock.assert_called_once_with(url, headers=headers)
 
     def _mock_response(self, requests_mock, response):
         response_mock = Mock()
