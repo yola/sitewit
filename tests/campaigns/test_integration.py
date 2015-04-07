@@ -76,8 +76,8 @@ class TestDeleteCampaign(CampaignTestCase):
 
 
 class TestSubscribeToCampaign(CampaignTestCase):
-    # We test Subscribe Campaign using mocks, because there is no CREATE
-    # endpoint.
+    # We test Subscribe Campaign using mocks, because we can't completely
+    # remove subscription once it is created.
 
     @patch.object(sitewit.services.SitewitService, 'post')
     def setUp(self, post_mock):
@@ -177,8 +177,7 @@ class TestRenewCampaignSubscription(CampaignTestCase):
     def setUp(self):
         service = SitewitService()
 
-        # To test "Subscribe" we have to make sure we're not already
-        # subscribed.
+        # To test "Renew" we have to make sure that subscription is cancelled.
         subscription = service.get_campaign_subscription(
             self.account_token, self.campaign_id)
 
@@ -199,20 +198,22 @@ class TestRenewActiveCampaignSubscription(CampaignTestCase):
     def setUp(self):
         service = SitewitService()
 
-        # To test "Subscribe" we have to make sure we're not already
-        # subscribed.
+        # Make sure that subscription is active.
         subscription = service.get_campaign_subscription(
             self.account_token, self.campaign_id)
 
+        # First cancel subscription.
         if subscription['status'] != 'Cancelled':
             campaign = service.cancel_campaign_subscription(
                 self.account_token, self.campaign_id)
             self.assertEqual(campaign['status'], 'Cancelled')
 
+        # Then renew it. Now it is 100% active.
         self.result = service.renew_campaign_subscription(
             self.account_token, self.campaign_id, 500, 'USD')
 
     def test_error_400_is_raised(self):
+        # And try to renew it again (Active->Active).
         self.assertHTTPErrorIsRaised(
             SitewitService().renew_campaign_subscription, (
                 self.account_token,
@@ -280,7 +281,7 @@ class TestUpgradeCampaignSubscription(CampaignTestCase):
     def setUp(self):
         service = SitewitService()
 
-        # First we have to make sure subscription is active.
+        # First we have to make sure that subscription is active.
         subscription = service.get_campaign_subscription(
             self.account_token, self.campaign_id)
 
@@ -323,7 +324,7 @@ class TestDowngradeCampaignSubscription(CampaignTestCase):
     def setUp(self):
         service = SitewitService()
 
-        # First we have to make sure subscription is active.
+        # First we have to make sure that subscription is active.
         subscription = service.get_campaign_subscription(
             self.account_token, self.campaign_id)
 
