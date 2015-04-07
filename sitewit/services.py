@@ -274,7 +274,7 @@ class SitewitService(HTTPServiceClient):
             headers=self._get_auth_header(account_token)).json()
 
     def resume_campaign_subscription(self, account_token, campaign_id,
-                                    new_budget, currency):
+                                     new_budget, currency):
         """Resume campaign subscription.
 
         Resume campaign subscription. If campaign is active, it is returned
