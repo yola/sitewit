@@ -25,10 +25,17 @@ class SitewitService(HTTPServiceClient):
 
         super(SitewitService, self).__init__(**kwargs)
 
-    def _get_auth_header(self, account_token=None):
+    def _get_account_auth_header(self, account_token):
+        auth_raw = '%s:%s:%s' % (
+            self._partner_id, self._partner_token, account_token)
+
+        return {'PartnerAuth': base64.b64encode(auth_raw)}
+
+    def _get_partner_auth_header(self, subpartner_id=None):
         auth_raw = '%s:%s' % (self._partner_id, self._partner_token)
-        if account_token is not None:
-            auth_raw += ':%s' % account_token
+        if subpartner_id is not None:
+            auth_raw += ':%s' % subpartner_id
+
         return {'PartnerAuth': base64.b64encode(auth_raw)}
 
     def create_account(self, site_id, url, user_name, user_email,
@@ -63,7 +70,7 @@ class SitewitService(HTTPServiceClient):
             data['userToken'] = user_token
 
         return self.post(
-            '/api/account/', data, headers=self._get_auth_header()).json()
+            '/api/account/', data, headers=self._get_partner_auth_header()).json()
 
     def get_account(self, account_token):
         """Get SiteWit account.
@@ -77,7 +84,7 @@ class SitewitService(HTTPServiceClient):
         """
         return self.get(
             '/api/account/',
-            headers=self._get_auth_header(account_token)).json()
+            headers=self._get_account_auth_header(account_token)).json()
 
     def update_account(self, account_token, url, country_code, currency):
         """Update SiteWit account.
@@ -98,7 +105,7 @@ class SitewitService(HTTPServiceClient):
 
         return self.put(
             '/api/account/', data,
-            headers=self._get_auth_header(account_token)).json()
+            headers=self._get_account_auth_header(account_token)).json()
 
     def delete_account(self, account_token):
         """Delete SiteWit account.
@@ -112,7 +119,7 @@ class SitewitService(HTTPServiceClient):
         """
         return self.delete(
             '/api/account/',
-            headers=self._get_auth_header(account_token)).json()
+            headers=self._get_account_auth_header(account_token)).json()
 
     def generate_sso_token(self, user_token, account_token):
         """Generate temporary SSO token for given user.
@@ -126,7 +133,7 @@ class SitewitService(HTTPServiceClient):
         """
         result = self.get(
             '/api/sso/token', params={'userToken': user_token},
-            headers=self._get_auth_header(account_token)).json()
+            headers=self._get_account_auth_header(account_token)).json()
 
         return result['token']
 
@@ -141,7 +148,7 @@ class SitewitService(HTTPServiceClient):
         """
         return self.get(
             '/api/campaign/%s' % (campaign_id,),
-            headers=self._get_auth_header(account_token)).json()
+            headers=self._get_account_auth_header(account_token)).json()
 
     def list_campaigns(self, account_token):
         """List campaigns available for given account.
@@ -155,7 +162,7 @@ class SitewitService(HTTPServiceClient):
         """
         return self.get(
             '/api/campaign/',
-            headers=self._get_auth_header(account_token)).json()
+            headers=self._get_account_auth_header(account_token)).json()
 
     def delete_campaign(self, account_token, campaign_id):
         """Delete Campaign by campaign ID
@@ -168,7 +175,7 @@ class SitewitService(HTTPServiceClient):
         """
         return self.delete(
             '/api/campaign/%s' % (campaign_id,),
-            headers=self._get_auth_header(account_token)).json()
+            headers=self._get_account_auth_header(account_token)).json()
 
     def subscribe_to_campaign(self, account_token, campaign_id, budget,
                               currency):
@@ -192,8 +199,9 @@ class SitewitService(HTTPServiceClient):
                 'budget': budget,
                 'currency': currency}
 
-        return self.post('/api/subscription/campaign/', data,
-                         headers=self._get_auth_header(account_token)).json()
+        return self.post(
+            '/api/subscription/campaign/', data,
+            headers=self._get_account_auth_header(account_token)).json()
 
     def get_campaign_subscription(self, account_token, campaign_id):
         """Get campaign subscription info.
@@ -209,7 +217,7 @@ class SitewitService(HTTPServiceClient):
         """
         return self.get(
             '/api/subscription/campaign/%s' % (campaign_id,),
-            headers=self._get_auth_header(account_token)).json()
+            headers=self._get_account_auth_header(account_token)).json()
 
     def list_campaign_subscriptions(self, account_token):
         """Get all subscriptions to given campaign for given account.
@@ -222,7 +230,7 @@ class SitewitService(HTTPServiceClient):
         """
         return self.get(
             '/api/subscription/campaign/',
-            headers=self._get_auth_header(account_token)).json()
+            headers=self._get_account_auth_header(account_token)).json()
 
     def upgrade_campaign_subscription(self, account_token, campaign_id,
                                       new_budget, currency):
@@ -246,7 +254,7 @@ class SitewitService(HTTPServiceClient):
                 'currency': currency}
 
         return self.put('/api/subscription/campaign/upgrade/', data,
-                        headers=self._get_auth_header(account_token)).json()
+                        headers=self._get_account_auth_header(account_token)).json()
 
     def downgrade_campaign_subscription(self, account_token, campaign_id,
                                         new_budget, currency):
@@ -271,7 +279,7 @@ class SitewitService(HTTPServiceClient):
 
         return self.put(
             '/api/subscription/campaign/downgrade/', data,
-            headers=self._get_auth_header(account_token)).json()
+            headers=self._get_account_auth_header(account_token)).json()
 
     def resume_campaign_subscription(self, account_token, campaign_id,
                                      new_budget, currency):
@@ -295,7 +303,7 @@ class SitewitService(HTTPServiceClient):
 
         return self.put(
             'api/subscription/reinstate/campaign/', data,
-            headers=self._get_auth_header(account_token)).json()
+            headers=self._get_account_auth_header(account_token)).json()
 
     def cancel_campaign_subscription(self, account_token, campaign_id,
                                      immediate=True):
@@ -319,4 +327,86 @@ class SitewitService(HTTPServiceClient):
 
         return self.delete(
             'api/subscription/cancel/campaign/search/', data=data,
-            headers=self._get_auth_header(account_token)).json()
+            headers=self._get_account_auth_header(account_token)).json()
+
+    def create_partner(self, name, address, settings):
+        """Create partner.
+
+        Create subpartner for current partner.
+
+        Args:
+            name (str): partner name.
+            address (dict): partner's address.
+                https://sandboxpapi.sitewit.com/Help/ResourceModel?
+                modelName=Address%20%28Create%29
+            settings (dict): WL settings.
+                https://sandboxpapi.sitewit.com/Help/ResourceModel?modelName=
+                White%20Label%20Settings%20%28Create%29
+
+        Returns:
+            Please see response specification here:
+            https://sandboxpapi.sitewit.com/Help/Api/GET-api-Partner
+        """
+        data = {'name': name,
+                'address': address,
+                'whitelabelSettings': settings}
+
+        return self.post(
+            'api/partner/', data=data,
+            headers=self._get_partner_header()).json()
+
+    def get_partner(self, subpartner_id):
+        """Get subpartner by subpartner id.
+
+        Get subpartner by subpartner id.
+
+        Args:
+            subpartner_id (str): Subpartner ID.
+
+        Returns:
+            Please see response specification here:
+            https://sandboxpapi.sitewit.com/Help/Api/GET-api-Partner
+        """
+        return self.get(
+            'api/partner/',
+            headers=self._get_partner_header(subpartner_id)).json()
+
+    def update_partner_address(self, subpartner_id, address):
+        """Update partner's address.
+
+        Update partner's address.
+
+        Args:
+            subpartner_id (str): Subpartner ID.
+            address (dict): partner's address.
+                See details here:
+                https://sandboxpapi.sitewit.com/Help/Api/
+                PUT-api-partner-address
+
+        Returns:
+            Address specification, see details here:
+            https://sandboxpapi.sitewit.com/Help/Api/PUT-api-partner-address
+        """
+        return self.put(
+            'api/partner/address', data=address,
+            headers=self._get_partner_header()).json()
+
+    def update_partner_settings(self, subpartner_id, settings):
+        """Update partner's settings.
+
+        Update partner's settings.
+
+        Args:
+            subpartner_id (str): Subpartner ID.
+            settings (dict): partner's wl settings.
+                See details here:
+                https://sandboxpapi.sitewit.com/Help/Api/
+                PUT-api-partner-whitelabel
+
+        Returns:
+            Settings specification, see details here:
+            https://sandboxpapi.sitewit.com/Help/Api/PUT-api-partner-whitelabel
+        """
+        return self.put(
+            'api/partner/whitelabel', data=settings,
+            headers=self._get_partner_header()).json()
