@@ -310,6 +310,29 @@ class TestUpgradeSubscriptionValidationFailed(CampaignTestCase):
                 self.campaign_id, 500, 'UAH'), 400)
 
 
+class TestUpgradeCampaignSubscriptionLowerBudget(CampaignTestCase):
+
+    def setUp(self):
+        service = SitewitService()
+
+        # First we have to make sure that subscription is active.
+        subscription = service.get_campaign_subscription(
+            self.account_token, self.campaign_id)
+
+        self.budget = subscription['subscription']['budget']
+        currency = subscription['subscription']['currency']
+
+        if subscription['status'] != 'Active':
+            service.renew_campaign_subscription(
+                self.account_token, self.campaign_id, self.budget, currency)
+
+    def test_error_400_is_raised(self):
+        self.assertHTTPErrorIsRaised(
+            SitewitService().upgrade_campaign_subscription, (
+                self.account_token,
+                self.campaign_id, self.budget - 10, 'USD'), 400)
+
+
 class TestUpgradeSubscriptionNotFound(CampaignTestCase):
 
     def test_error_404_is_raised(self):
@@ -351,6 +374,29 @@ class TestDowngradeSubscriptionValidationFailed(CampaignTestCase):
             SitewitService().downgrade_campaign_subscription, (
                 self.account_token,
                 self.campaign_id, 500, 'UAH'), 400)
+
+
+class TestDowngradeCampaignSubscriptionHigherBudget(CampaignTestCase):
+
+    def setUp(self):
+        service = SitewitService()
+
+        # First we have to make sure that subscription is active.
+        subscription = service.get_campaign_subscription(
+            self.account_token, self.campaign_id)
+
+        self.budget = subscription['subscription']['budget']
+        currency = subscription['subscription']['currency']
+
+        if subscription['status'] != 'Active':
+            service.renew_campaign_subscription(
+                self.account_token, self.campaign_id, self.budget, currency)
+
+    def test_error_400_is_raised(self):
+        self.assertHTTPErrorIsRaised(
+            SitewitService().upgrade_campaign_subscription, (
+                self.account_token,
+                self.campaign_id, self.budget + 10, 'USD'), 400)
 
 
 class TestDowngradeSubscriptionNotFound(CampaignTestCase):
