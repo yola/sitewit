@@ -172,12 +172,12 @@ class TestListCampaignSubscriptionsBadAccountToken(CampaignTestCase):
             401, {u'Message': u'Invalid SubPartner Identifier'})
 
 
-class TestRenewCampaignSubscription(CampaignTestCase):
+class TestResumeCampaignSubscription(CampaignTestCase):
 
     def setUp(self):
         service = SitewitService()
 
-        # To test "Renew" we have to make sure that subscription is cancelled.
+        # To test "resume" we have to make sure that subscription is cancelled.
         subscription = service.get_campaign_subscription(
             self.account_token, self.campaign_id)
 
@@ -186,14 +186,14 @@ class TestRenewCampaignSubscription(CampaignTestCase):
                 self.account_token, self.campaign_id)
             self.assertEqual(campaign['status'], 'Cancelled')
 
-        self.result = service.renew_campaign_subscription(
+        self.result = service.resume_campaign_subscription(
             self.account_token, self.campaign_id, 500, 'USD')
 
     def test_campaign_is_returned(self):
         self.assertEqual(self.result['status'], 'Active')
 
 
-class TestRenewActiveCampaignSubscription(CampaignTestCase):
+class TestResumeActiveCampaignSubscription(CampaignTestCase):
 
     def setUp(self):
         service = SitewitService()
@@ -208,32 +208,32 @@ class TestRenewActiveCampaignSubscription(CampaignTestCase):
                 self.account_token, self.campaign_id)
             self.assertEqual(campaign['status'], 'Cancelled')
 
-        # Then renew it. Now it is 100% active.
-        self.result = service.renew_campaign_subscription(
+        # Then resume it. Now it is 100% active.
+        self.result = service.resume_campaign_subscription(
             self.account_token, self.campaign_id, 500, 'USD')
 
     def test_error_400_is_raised(self):
-        # And try to renew it again (Active->Active).
+        # And try to resume it again (Active->Active).
         self.assertHTTPErrorIsRaised(
-            SitewitService().renew_campaign_subscription, (
+            SitewitService().resume_campaign_subscription, (
                 self.account_token,
                 self.campaign_id, 500, 'USD'), 400)
 
 
-class TestRenewCampaignSubscriptionBadAccountToken(CampaignTestCase):
+class TestResumeCampaignSubscriptionBadAccountToken(CampaignTestCase):
 
     def test_error_401_is_raised(self):
         self.assertHTTPErrorIsRaised(
-            SitewitService().renew_campaign_subscription, (
+            SitewitService().resume_campaign_subscription, (
                 self.random_token, self.campaign_id, 500, 'USD'),
             401, {u'Message': u'Invalid SubPartner Identifier'})
 
 
-class TestRenewCampaignSubscriptionNotFound(CampaignTestCase):
+class TestResumeCampaignSubscriptionNotFound(CampaignTestCase):
 
     def test_error_404_is_raised(self):
         self.assertHTTPErrorIsRaised(
-            SitewitService().renew_campaign_subscription, (
+            SitewitService().resume_campaign_subscription, (
                 self.account_token, self.non_existent_campaign_id,
                 500, 'USD'), 404)
 
@@ -248,7 +248,7 @@ class TestCancelCampaignSubscription(CampaignTestCase):
             self.account_token, self.campaign_id)
 
         if subscription['status'] != 'Active':
-            campaign = service.renew_campaign_subscription(
+            campaign = service.resume_campaign_subscription(
                 self.account_token, self.campaign_id, 500, 'USD')
             self.assertEqual(campaign['status'], 'Active')
 
@@ -289,7 +289,7 @@ class TestUpgradeCampaignSubscription(CampaignTestCase):
         currency = subscription['subscription']['currency']
 
         if subscription['status'] != 'Active':
-            service.renew_campaign_subscription(
+            service.resume_campaign_subscription(
                 self.account_token, self.campaign_id, self.budget, currency)
 
         self.result = service.upgrade_campaign_subscription(
@@ -323,7 +323,7 @@ class TestUpgradeCampaignSubscriptionLowerBudget(CampaignTestCase):
         currency = subscription['subscription']['currency']
 
         if subscription['status'] != 'Active':
-            service.renew_campaign_subscription(
+            service.resume_campaign_subscription(
                 self.account_token, self.campaign_id, self.budget, currency)
 
     def test_error_400_is_raised(self):
@@ -355,7 +355,7 @@ class TestDowngradeCampaignSubscription(CampaignTestCase):
         currency = subscription['subscription']['currency']
 
         if subscription['status'] != 'Active':
-            service.renew_campaign_subscription(
+            service.resume_campaign_subscription(
                 self.account_token, self.campaign_id, self.budget, currency)
 
         self.result = service.downgrade_campaign_subscription(
@@ -389,12 +389,12 @@ class TestDowngradeCampaignSubscriptionHigherBudget(CampaignTestCase):
         currency = subscription['subscription']['currency']
 
         if subscription['status'] != 'Active':
-            service.renew_campaign_subscription(
+            service.resume_campaign_subscription(
                 self.account_token, self.campaign_id, self.budget, currency)
 
     def test_error_400_is_raised(self):
         self.assertHTTPErrorIsRaised(
-            SitewitService().upgrade_campaign_subscription, (
+            SitewitService().downgrade_campaign_subscription, (
                 self.account_token,
                 self.campaign_id, self.budget + 10, 'USD'), 400)
 

@@ -273,11 +273,11 @@ class SitewitService(HTTPServiceClient):
             '/api/subscription/campaign/downgrade/', data,
             headers=self._get_auth_header(account_token)).json()
 
-    def renew_campaign_subscription(self, account_token, campaign_id,
+    def resume_campaign_subscription(self, account_token, campaign_id,
                                     new_budget, currency):
-        """Renew campaign subscription.
+        """Resume campaign subscription.
 
-        Renew campaign subscription. If campaign is active, it is returned
+        Resume campaign subscription. If campaign is active, it is returned
         without any actions.
 
         Args:
