@@ -1,15 +1,38 @@
+import uuid
+
 from tests.base import SitewitTestCase
 
 
-class CampaignTestCase(SitewitTestCase):
-    # We have to hardcode these values for integration testing, because SiteWit
-    # doesn't have Create Campaign API endpoint. Campaigns are created via UI.
-    account_token = '0sj0to2h1so78a6w'
-    campaign_id = 23895
+class PartnerTestCase(SitewitTestCase):
 
-    non_existent_campaign_id = 23232323
+    address = {
+        'street1': '123 Baxter Ct.',
+        'street2': 'Apt. 100',
+        'city': 'Coolsville',
+        'stateProv': 'FL',
+        'countryCode': 'US',
+        'postalCode': '55555-5555'
+    }
 
-    campaigns = [{'id': 23900,
-                  'name': 'test site stuff'},
-                 {'id': 23895,
-                  'name': 'test dont touch'}]
+    settings = {
+        'headerColor': 'cccccc',
+        'headerTextColor': '000000',
+        'headerLogoUrl': 'https://www.partner.com/resources/sw-wl-logo.png',
+        'supportPhone': '800-555-0001',
+        'supportEmail': 'support@partner.com',
+        'supportUrl': 'https://support.partner.com',
+        'mobileAppPrimaryColor': 'cccccc',
+        'mobileAppSecondaryColor': '222222',
+        'mobileAppLogoUrl': 'https://www.partner.com/resources/sw.png',
+        'features': [
+          'SEM',
+          'Connect',
+          'Analytics'
+        ]
+    }
+
+    partner_data = {
+      'name': uuid.uuid4(),
+      'address': address,
+      'whiteLabelSettings': settings
+    }

@@ -349,11 +349,11 @@ class SitewitService(HTTPServiceClient):
         """
         data = {'name': name,
                 'address': address,
-                'whitelabelSettings': settings}
+                'whiteLabelSettings': settings}
 
         return self.post(
-            'api/partner/', data=data,
-            headers=self._get_partner_header()).json()
+            '/api/partner/', data=data,
+            headers=self._get_partner_auth_header(), send_as_json=True).json()
 
     def get_partner(self, subpartner_id):
         """Get subpartner by subpartner id.
@@ -369,7 +369,7 @@ class SitewitService(HTTPServiceClient):
         """
         return self.get(
             'api/partner/',
-            headers=self._get_partner_header(subpartner_id)).json()
+            headers=self._get_partner_auth_header(subpartner_id)).json()
 
     def update_partner_address(self, subpartner_id, address):
         """Update partner's address.
@@ -389,7 +389,7 @@ class SitewitService(HTTPServiceClient):
         """
         return self.put(
             'api/partner/address', data=address,
-            headers=self._get_partner_header()).json()
+            headers=self._get_partner_auth_header(subpartner_id)).json()
 
     def update_partner_settings(self, subpartner_id, settings):
         """Update partner's settings.
@@ -409,4 +409,5 @@ class SitewitService(HTTPServiceClient):
         """
         return self.put(
             'api/partner/whitelabel', data=settings,
-            headers=self._get_partner_header()).json()
+            headers=self._get_partner_auth_header(subpartner_id),
+            send_as_json=True).json()
