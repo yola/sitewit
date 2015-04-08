@@ -70,7 +70,8 @@ class SitewitService(HTTPServiceClient):
             data['userToken'] = user_token
 
         return self.post(
-            '/api/account/', data, headers=self._get_partner_auth_header()).json()
+            '/api/account/', data,
+            headers=self._get_partner_auth_header()).json()
 
     def get_account(self, account_token):
         """Get SiteWit account.
@@ -253,8 +254,9 @@ class SitewitService(HTTPServiceClient):
                 'budget': new_budget,
                 'currency': currency}
 
-        return self.put('/api/subscription/campaign/upgrade/', data,
-                        headers=self._get_account_auth_header(account_token)).json()
+        return self.put(
+            '/api/subscription/campaign/upgrade/', data,
+            headers=self._get_account_auth_header(account_token)).json()
 
     def downgrade_campaign_subscription(self, account_token, campaign_id,
                                         new_budget, currency):

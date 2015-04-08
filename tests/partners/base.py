@@ -25,14 +25,14 @@ class PartnerTestCase(SitewitTestCase):
         'mobileAppSecondaryColor': '222222',
         'mobileAppLogoUrl': 'https://www.partner.com/resources/sw.png',
         'features': [
-          'SEM',
-          'Connect',
-          'Analytics'
+            'SEM',
+            'Connect',
+            'Analytics'
         ]
     }
 
     partner_data = {
-      'name': uuid.uuid4(),
-      'address': address,
-      'whiteLabelSettings': settings
+        'name': uuid.uuid4(),
+        'address': address,
+        'whiteLabelSettings': settings
     }

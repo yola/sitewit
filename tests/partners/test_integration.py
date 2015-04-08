@@ -2,7 +2,6 @@ import copy
 import uuid
 
 from base import PartnerTestCase
-import sitewit.services
 from sitewit.services import SitewitService
 
 
@@ -68,9 +67,6 @@ class TestGetPartner(PartnerTestCase):
 
 
 class TestGetPartnerBadPartnerId(PartnerTestCase):
-
-    def setUp(self):
-        service = SitewitService()
 
     def test_error_401_is_raised(self):
         self.assertHTTPErrorIsRaised(
@@ -145,7 +141,7 @@ class TestUpdatePartnerSettings(PartnerTestCase):
             'mobileAppSecondaryColor': '333333',
             'mobileAppLogoUrl': 'https://www.new.com/new/sw.png',
             'features': [
-              'SEM'
+                'SEM'
             ]
         }
 
@@ -180,7 +176,7 @@ class TestUpdatePartnerSettingsValidationFailed(PartnerTestCase):
             'mobileAppSecondaryColor': '333333',
             'mobileAppLogoUrl': 'https://www.new.com/new/sw.png',
             'features': [
-              'SEM', 'nonexistent feature'
+                'SEM', 'nonexistent feature'
             ]
         }
 
