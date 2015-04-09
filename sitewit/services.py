@@ -26,17 +26,19 @@ class SitewitService(HTTPServiceClient):
         super(SitewitService, self).__init__(**kwargs)
 
     def _get_account_auth_header(self, account_token):
-        auth_raw = '%s:%s:%s' % (
-            self._partner_id, self._partner_token, account_token)
+        auth_raw = ':'.join((
+            self._partner_id, self._partner_token, account_token))
 
         return {'PartnerAuth': base64.b64encode(auth_raw)}
 
     def _get_partner_auth_header(self, subpartner_id=None):
-        auth_raw = '%s:%s' % (self._partner_id, self._partner_token)
+        auth_list = [self._partner_id, self._partner_token]
         if subpartner_id is not None:
-            auth_raw += ':%s' % subpartner_id
+            auth_list.append(subpartner_id)
 
-        return {'PartnerAuth': base64.b64encode(auth_raw)}
+        auth_str = ':'.join(auth_list)
+
+        return {'PartnerAuth': base64.b64encode(auth_str)}
 
     def create_account(self, site_id, url, user_name, user_email,
                        currency, country_code, user_token=None):
