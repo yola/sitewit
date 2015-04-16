@@ -3,6 +3,8 @@ import base64
 from demands import HTTPServiceClient
 from yoconfig import get_config
 
+import sitewit
+
 
 class SitewitService(HTTPServiceClient):
     """Client for SiteWit's API.
@@ -18,12 +20,16 @@ class SitewitService(HTTPServiceClient):
     DEFAULT_TIME_ZONE = 'GMT Standard Time'
 
     def __init__(self, **kwargs):
-        self._config = get_config('sitewit')
-        self._partner_id = self._config['affiliate_id']
-        self._partner_token = self._config['affiliate_token']
-        kwargs['url'] = self._config['url']
+        config = get_config('sitewit')
+        config['client_name'] = sitewit.__name__
+        config['client_version'] = sitewit.__version__
+        config['send_as_json'] = True
+        config.update(kwargs)
 
-        super(SitewitService, self).__init__(**kwargs)
+        self._partner_id = config['affiliate_id']
+        self._partner_token = config['affiliate_token']
+
+        super(SitewitService, self).__init__(**config)
 
     def _get_account_auth_header(self, account_token):
         return self._compose_auth_header((
@@ -355,7 +361,7 @@ class SitewitService(HTTPServiceClient):
 
         return self.post(
             '/api/partner/', data=data,
-            headers=self._get_partner_auth_header(), send_as_json=True).json()
+            headers=self._get_partner_auth_header()).json()
 
     def get_partner(self, subpartner_id):
         """Get subpartner by subpartner id.
@@ -412,4 +418,4 @@ class SitewitService(HTTPServiceClient):
         return self.put(
             'api/partner/whitelabel', data=settings,
             headers=self._get_partner_auth_header(subpartner_id),
-            send_as_json=True).json()
+        ).json()

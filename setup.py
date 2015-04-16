@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 from setuptools import setup
 import sitewit
 
@@ -13,5 +12,7 @@ setup(
     packages=['sitewit'],
     install_requires=[
         'suds == 0.4',
+        'demands < 2.0.0',
+        'yoconfig < 0.3.0'
     ]
 )

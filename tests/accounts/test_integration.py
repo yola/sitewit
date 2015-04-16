@@ -59,7 +59,7 @@ class TestCreateAccountBadRequest(AccountTestCase):
     def test_bad_request_error_is_raised(self):
         expected_error_details = {
             u'ModelState': {
-                u'account.url': [u'Missing url parameter']
+                u'account.url': [u'Missing url parameter', u'Invalid Url']
             },
             u'Message': u'The request is invalid.'
         }
