@@ -31,7 +31,7 @@ class TestCreatePartner(PartnerTestCase):
         del self.result['partnerId']
         del self.result['partnerToken']
 
-    def test_campaign_is_returned(self):
+    def test_partner_is_returned(self):
         expected_result = dict(self.partner_data)
         expected_result['name'] = self.partner_name
         self.assertEqual(self.result, expected_result)
