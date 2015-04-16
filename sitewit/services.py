@@ -1,4 +1,5 @@
 import base64
+from copy import deepcopy
 
 from demands import HTTPServiceClient
 from yoconfig import get_config
@@ -20,7 +21,7 @@ class SitewitService(HTTPServiceClient):
     DEFAULT_TIME_ZONE = 'GMT Standard Time'
 
     def __init__(self, **kwargs):
-        config = get_config('sitewit')
+        config = deepcopy(get_config('sitewit'))
         config['client_name'] = sitewit.__name__
         config['client_version'] = sitewit.__version__
         config['send_as_json'] = True
@@ -29,7 +30,7 @@ class SitewitService(HTTPServiceClient):
         self._partner_id = config['affiliate_id']
         self._partner_token = config['affiliate_token']
 
-        super(SitewitService, self).__init__(**config)
+        super(SitewitService, self).__init__(config.pop('api_url'), **config)
 
     def _get_account_auth_header(self, account_token):
         return self._compose_auth_header((
