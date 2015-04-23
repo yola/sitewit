@@ -290,8 +290,7 @@ class SitewitService(HTTPServiceClient):
             '/api/subscription/campaign/downgrade/', data,
             headers=self._get_account_auth_header(account_token)).json()
 
-    def resume_campaign_subscription(self, account_token, campaign_id,
-                                     new_budget, currency):
+    def resume_campaign_subscription(self, account_token, campaign_id):
         """Resume campaign subscription.
 
         Resume campaign subscription. If campaign is active, it is returned
@@ -306,9 +305,7 @@ class SitewitService(HTTPServiceClient):
             https://sandboxpapi.sitewit.com/Help/Api/
             GET-api-subscription-campaign-id
         """
-        data = {'campaignId': campaign_id,
-                'budget': new_budget,
-                'currency': currency}
+        data = {'campaignId': campaign_id}
 
         return self.put(
             'api/subscription/reinstate/campaign/', data,

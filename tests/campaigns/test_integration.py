@@ -153,7 +153,6 @@ class TestListCampaignSubscriptions(CampaignTestCase):
 
     def test_campaigns_are_returned(self):
         self.assertEqual(len(self.result), len(self.campaigns))
-
         returned_campaigns = sorted(self.result)
         campaigns = sorted(self.campaigns)
 
@@ -187,7 +186,7 @@ class TestResumeCampaignSubscription(CampaignTestCase):
             self.assertEqual(campaign['status'], 'Cancelled')
 
         self.result = service.resume_campaign_subscription(
-            self.account_token, self.campaign_id, 500, 'USD')
+            self.account_token, self.campaign_id)
 
     def test_campaign_is_returned(self):
         self.assertEqual(self.result['status'], 'Active')
@@ -210,14 +209,13 @@ class TestResumeActiveCampaignSubscription(CampaignTestCase):
 
         # Then resume it. Now it is 100% active.
         self.result = service.resume_campaign_subscription(
-            self.account_token, self.campaign_id, 500, 'USD')
+            self.account_token, self.campaign_id)
 
     def test_error_400_is_raised(self):
         # And try to resume it again (Active->Active).
         self.assertHTTPErrorIsRaised(
             SitewitService().resume_campaign_subscription, (
-                self.account_token,
-                self.campaign_id, 500, 'USD'), 400)
+                self.account_token, self.campaign_id), 400)
 
 
 class TestResumeCampaignSubscriptionBadAccountToken(CampaignTestCase):
@@ -225,7 +223,7 @@ class TestResumeCampaignSubscriptionBadAccountToken(CampaignTestCase):
     def test_error_401_is_raised(self):
         self.assertHTTPErrorIsRaised(
             SitewitService().resume_campaign_subscription, (
-                self.random_token, self.campaign_id, 500, 'USD'),
+                self.random_token, self.campaign_id),
             401, {u'Message': u'Invalid SubPartner Identifier'})
 
 
@@ -234,8 +232,7 @@ class TestResumeCampaignSubscriptionNotFound(CampaignTestCase):
     def test_error_404_is_raised(self):
         self.assertHTTPErrorIsRaised(
             SitewitService().resume_campaign_subscription, (
-                self.account_token, self.non_existent_campaign_id,
-                500, 'USD'), 404)
+                self.account_token, self.non_existent_campaign_id), 404)
 
 
 class TestCancelCampaignSubscription(CampaignTestCase):
@@ -356,7 +353,7 @@ class TestDowngradeCampaignSubscription(CampaignTestCase):
 
         if subscription['status'] != 'Active':
             service.resume_campaign_subscription(
-                self.account_token, self.campaign_id, self.budget, currency)
+                self.account_token, self.campaign_id)
 
         self.result = service.downgrade_campaign_subscription(
             self.account_token, self.campaign_id, self.budget - 10, currency)
@@ -390,7 +387,7 @@ class TestDowngradeCampaignSubscriptionHigherBudget(CampaignTestCase):
 
         if subscription['status'] != 'Active':
             service.resume_campaign_subscription(
-                self.account_token, self.campaign_id, self.budget, currency)
+                self.account_token, self.campaign_id)
 
     def test_error_400_is_raised(self):
         self.assertHTTPErrorIsRaised(
