@@ -208,14 +208,14 @@ class TestResumeActiveCampaignSubscription(CampaignTestCase):
             self.assertEqual(campaign['status'], 'Cancelled')
 
         # Then resume it. Now it is 100% active.
-        self.result = service.resume_campaign_subscription(
+        self.result1 = service.resume_campaign_subscription(
             self.account_token, self.campaign_id)
 
-    def test_error_400_is_raised(self):
-        # And try to resume it again (Active->Active).
-        self.assertHTTPErrorIsRaised(
-            SitewitService().resume_campaign_subscription, (
-                self.account_token, self.campaign_id), 400)
+        self.result2 = service.resume_campaign_subscription(
+            self.account_token, self.campaign_id)
+
+    def test_same_subscription_is_returned(self):
+        self.assertEqual(self.result1, self.result2)
 
 
 class TestResumeCampaignSubscriptionBadAccountToken(CampaignTestCase):
