@@ -211,7 +211,7 @@ class TestResumeActiveCampaignSubscription(CampaignTestCase):
         self.result1 = service.resume_campaign_subscription(
             self.account_token, self.campaign_id)
 
-        self.result2 = SitewitService().resume_campaign_subscription(
+        self.result2 = service.resume_campaign_subscription(
             self.account_token, self.campaign_id)
 
     def test_same_subscription_is_returned(self):
