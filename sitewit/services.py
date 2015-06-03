@@ -177,6 +177,18 @@ class SitewitService(HTTPServiceClient):
 
         return result['token']
 
+    def create_campaign(self, account_token):
+        """Create new Campaign (for testing purpose)
+
+        Args:
+            account_token (str): account token.
+
+        Returns:
+            dict of the format:   {'id': 1, 'name': 'test', 'status': 'Unpaid'}
+        """
+        return self.post('/api/campaign/',
+            headers=self._get_account_auth_header(account_token)).json()
+
     def get_campaign(self, account_token, campaign_id):
         """Get Campaign info by campaign ID
 
