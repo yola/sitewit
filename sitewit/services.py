@@ -129,6 +129,38 @@ class SitewitService(HTTPServiceClient):
             '/api/account/',
             headers=self._get_account_auth_header(account_token)).json()
 
+
+    def set_account_address(self, account_token, street1, city, country_code,
+                    street2=None, state=None, postal_code=None):
+        """Set address for SiteWit account.
+
+        Args:
+            account_token (str): account token
+            street1 (str): main street address
+            city (str): city name
+            country_code (str): user's location
+            street2 (str): additional address info (e.g. Apt, Ste.,
+                etc...) (optional)
+            state (str): state or province is applicable
+            postal_code (str): postal/zip code if applicable
+
+        Returns:
+            str 'OK' in case of success
+       """
+        data = {
+            'street1': street1,
+            'street2': street2,
+            'city': city,
+            'stateProv': state,
+            'countryCode': country_code,
+            'postalCode': postal_code
+        }
+
+        self.post(
+            '/api/account/address/', data,
+            headers=self._get_account_auth_header(account_token)
+        )
+
     def generate_sso_token(self, user_token, account_token):
         """Generate temporary SSO token for given user.
 
