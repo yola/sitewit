@@ -1,8 +1,5 @@
 # [Changelog](https://github.com/yola/sitewit/releases)
 
-## 0.2.1
-
-* Remove SOAP support, use RESTful endpoints only.
 
 ## 0.2.0
 
