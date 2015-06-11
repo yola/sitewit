@@ -165,43 +165,6 @@ class TestListCampaignSubscriptionsBadAccountToken(BaseCampaignTestCase):
             401, {u'Message': u'Invalid SubPartner Identifier'})
 
 
-class TestResumeCampaignSubscription(BaseSubscriptionTestCase):
-    def setUp(self):
-        # To test "resume" we have to make sure that subscription is cancelled.
-        self.service.cancel_campaign_subscription(
-            self.account_token, self.campaign_id)
-
-        self.result = self. service.resume_campaign_subscription(
-            self.account_token, self.campaign_id)
-
-    def test_campaign_is_returned(self):
-        self.assertEqual(self.result['status'], 'Active')
-
-
-class TestResumeActiveCampaignSubscription(BaseSubscriptionTestCase):
-    def setUp(self):
-        self.result = self.service.resume_campaign_subscription(
-            self.account_token, self.campaign_id)
-
-    def test_is_idempotent(self):
-        self.assertEqual(self.result['status'], 'Active')
-
-
-class TestResumeCampaignSubscriptionBadAccountToken(BaseCampaignTestCase):
-    def test_error_401_is_raised(self):
-        self.assertHTTPErrorIsRaised(
-            self.service.resume_campaign_subscription, (
-                self.random_token, self.campaign_id),
-            401, {u'Message': u'Invalid SubPartner Identifier'})
-
-
-class TestResumeCampaignSubscriptionNotFound(BaseCampaignTestCase):
-    def test_error_404_is_raised(self):
-        self.assertHTTPErrorIsRaised(
-            self.service.resume_campaign_subscription, (
-                self.account_token, self.non_existent_campaign_id), 404)
-
-
 class TestCancelCampaignSubscription(BaseSubscriptionTestCase):
     def setUp(self):
         self.result = self.service.cancel_campaign_subscription(

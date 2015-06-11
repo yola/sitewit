@@ -129,38 +129,6 @@ class SitewitService(HTTPServiceClient):
             '/api/account/',
             headers=self._get_account_auth_header(account_token)).json()
 
-
-    def set_account_address(self, account_token, street1, city, country_code,
-                    street2=None, state=None, postal_code=None):
-        """Set address for SiteWit account.
-
-        Args:
-            account_token (str): account token
-            street1 (str): main street address
-            city (str): city name
-            country_code (str): user's location
-            street2 (str): additional address info (e.g. Apt, Ste.,
-                etc...) (optional)
-            state (str): state or province is applicable
-            postal_code (str): postal/zip code if applicable
-
-        Returns:
-            str 'OK' in case of success
-       """
-        data = {
-            'street1': street1,
-            'street2': street2,
-            'city': city,
-            'stateProv': state,
-            'countryCode': country_code,
-            'postalCode': postal_code
-        }
-
-        self.post(
-            '/api/account/address/', data,
-            headers=self._get_account_auth_header(account_token)
-        )
-
     def generate_sso_token(self, user_token, account_token):
         """Generate temporary SSO token for given user.
 
@@ -284,76 +252,6 @@ class SitewitService(HTTPServiceClient):
             '/api/subscription/campaign/',
             headers=self._get_account_auth_header(account_token)).json()
 
-    def upgrade_campaign_subscription(self, account_token, campaign_id,
-                                      new_budget, currency):
-        """Upgrade campaign subscription.
-
-        Increase campaign budget.
-
-        Args:
-            account_token (str): account token.
-            campaign_id (str): campaign to subscribe.
-            new_budget (decimal): new campaign budget.
-            currency (decimal): currency for new budget.
-
-        Returns:
-            Please see response format here:
-            https://sandboxpapi.sitewit.com/Help/Api/
-            GET-api-subscription-campaign-id
-        """
-        data = {'campaignId': campaign_id,
-                'budget': new_budget,
-                'currency': currency}
-
-        return self.put(
-            '/api/subscription/campaign/upgrade/', data,
-            headers=self._get_account_auth_header(account_token)).json()
-
-    def downgrade_campaign_subscription(self, account_token, campaign_id,
-                                        new_budget, currency):
-        """Upgrade campaign subscription.
-
-        Decrease campaign budget.
-
-        Args:
-            account_token (str): account token.
-            campaign_id (str): campaign to subscribe.
-            new_budget (decimal): new campaign budget.
-            currency (decimal): currency for new budget.
-
-        Returns:
-            Please see response format here:
-            https://sandboxpapi.sitewit.com/Help/Api/
-            GET-api-subscription-campaign-id
-        """
-        data = {'campaignId': campaign_id,
-                'budget': new_budget,
-                'currency': currency}
-
-        return self.put(
-            '/api/subscription/campaign/downgrade/', data,
-            headers=self._get_account_auth_header(account_token)).json()
-
-    def resume_campaign_subscription(self, account_token, campaign_id):
-        """Resume campaign subscription.
-
-        Resume campaign subscription. If campaign is active, it is returned
-        without any actions.
-
-        Args:
-            account_token (str): account token.
-            campaign_id (str): campaign to subscribe.
-
-        Returns:
-            Please see response format here:
-            https://sandboxpapi.sitewit.com/Help/Api/
-            GET-api-subscription-campaign-id
-        """
-        data = {'campaignId': campaign_id}
-
-        return self.put(
-            'api/subscription/reinstate/campaign/', data,
-            headers=self._get_account_auth_header(account_token)).json()
 
     def cancel_campaign_subscription(self, account_token, campaign_id,
                                      immediate=True):
