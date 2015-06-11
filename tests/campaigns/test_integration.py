@@ -1,44 +1,63 @@
-from mock import patch
+from uuid import uuid4
 
-from base import CampaignTestCase
-import sitewit.services
 from sitewit.services import SitewitService
+from tests.base import SitewitTestCase
 
 
-class TestGetCampaign(CampaignTestCase):
+class BaseCampaignTestCase(SitewitTestCase):
 
-    def setUp(self):
+    non_existent_campaign_id = 23232323
+
+    @classmethod
+    def setUpClass(cls):
+        super(BaseCampaignTestCase, cls).setUpClass()
+
         service = SitewitService()
-        self.result = service.get_campaign(
+        cls.account_token = service.create_account(
+            uuid4().hex, 'http://www.test.site.com', 'Foo',
+            'foo{0}@bar.com'.format(uuid4().hex), 'USD', 'US'
+        )['accountInfo']['token']
+
+        service.set_account_address(cls.account_token, 'street1', 'SF', 'US')
+        cls.campaign_id = service.create_campaign(cls.account_token)['id']
+
+
+class BaseSubscriptionTestCase(BaseCampaignTestCase):
+    @classmethod
+    def setUpClass(cls):
+        super(BaseSubscriptionTestCase, cls).setUpClass()
+        cls.campaign = SitewitService().subscribe_to_campaign(
+            cls.account_token, cls.campaign_id, 500, 'USD')
+
+
+class TestGetCampaign(BaseCampaignTestCase):
+    def setUp(self):
+        self.result = self.service.get_campaign(
             self.account_token, self.campaign_id)
 
     def test_campaign_is_returned(self):
         self.assertEqual(self.result['id'], self.campaign_id)
-        self.assertEqual(self.result['name'], self.campaigns[1]['name'])
+        self.assertTrue(self.result['name'].startswith('Test Campaign'))
 
 
-class TestGetCampaignNotFound(CampaignTestCase):
-
+class TestGetCampaignNotFound(BaseCampaignTestCase):
     def test_error_404_is_raised(self):
         self.assertHTTPErrorIsRaised(
-            SitewitService().get_campaign, (
+            self.service.get_campaign, (
                 self.account_token, self.non_existent_campaign_id), 404)
 
 
-class TestGetCampaignBadAccountToken(CampaignTestCase):
-
+class TestGetCampaignBadAccountToken(BaseCampaignTestCase):
     def test_error_401_is_raised(self):
         self.assertHTTPErrorIsRaised(
-            SitewitService().get_campaign, (
+            self.service.get_campaign, (
                 self.random_token, self.campaign_id),
             401, {u'Message': u'Invalid SubPartner Identifier'})
 
 
-class TestListCampaigns(CampaignTestCase):
-
+class TestListCampaigns(BaseCampaignTestCase):
     def setUp(self):
-        service = SitewitService()
-        self.result = service.list_campaigns(self.account_token)
+        self.result = self.service.list_campaigns(self.account_token)
 
     def test_campaigns_list_is_returned(self):
         for campaign in self.result:
@@ -47,359 +66,177 @@ class TestListCampaigns(CampaignTestCase):
             self.assertIsNotNone(campaign.get('status'))
 
 
-class TestListCampaignsBadAccountToken(CampaignTestCase):
-
+class TestListCampaignsBadAccountToken(BaseCampaignTestCase):
     def test_error_401_is_raised(self):
         self.assertHTTPErrorIsRaised(
-            SitewitService().list_campaigns, (self.random_token,),
+            self.service.list_campaigns, (self.random_token,),
             401, {u'Message': u'Invalid SubPartner Identifier'})
 
 
-class TestDeleteCampaign(CampaignTestCase):
-    # We test DELETE using mocks, because there is no CREATE endpoint.
-
-    @patch.object(sitewit.services.SitewitService, 'delete')
-    def setUp(self, delete_mock):
-        self.delete_mock = delete_mock
-        self._mock_response(delete_mock, 'result')
-        service = SitewitService()
-        self.result = service.delete_campaign(
+class TestDeleteCampaign(BaseCampaignTestCase):
+    def setUp(self):
+        self.result = self.service.delete_campaign(
             self.account_token, self.campaign_id)
 
-    def test_requests_is_called(self):
-        self.assertDemandsIsCalled(
-            self.delete_mock, account_token=self.account_token,
-            url='/api/campaign/%s' % (self.campaign_id,))
+    def test_deleted_campaign_is_returned(self):
+        self.assertEqual(self.result['status'], 'Deleted')
 
+
+class TestSubscribeToCampaign(BaseSubscriptionTestCase):
     def test_subscription_is_returned(self):
-        self.assertEqual(self.result, 'result')
+        self.assertTrue(self.campaign['subscription']['active'])
 
 
-class TestSubscribeToCampaign(CampaignTestCase):
-    # We test Subscribe Campaign using mocks, because we can't completely
-    # remove subscription once it is created.
-
-    @patch.object(sitewit.services.SitewitService, 'post')
-    def setUp(self, post_mock):
-        self.post_mock = post_mock
-        self._mock_response(post_mock, 'result')
-        service = SitewitService()
-        self.result = service.subscribe_to_campaign(
-            self.account_token, self.campaign_id, 500, 'USD')
-
-    def test_requests_is_called(self):
-        self.assertDemandsIsCalled(
-            self.post_mock, data={'campaignId': self.campaign_id,
-                                  'budget': 500,
-                                  'currency': 'USD'},
-            account_token=self.account_token,
-            url='/api/subscription/campaign/')
-
-    def test_subscription_is_returned(self):
-        self.assertEqual(self.result, 'result')
-
-
-class TestSubscribeToCampaignNotFound(CampaignTestCase):
+class TestSubscribeToCampaignNotFound(BaseCampaignTestCase):
     def test_error_404_is_raised(self):
         self.assertHTTPErrorIsRaised(
-            SitewitService().subscribe_to_campaign, (
+            self.service.subscribe_to_campaign, (
                 self.account_token,
                 self.non_existent_campaign_id, 500, 'USD'), 404)
 
 
-class TestSubscribeToCampaignValidationError(CampaignTestCase):
+class TestSubscribeToCampaignValidationError(BaseCampaignTestCase):
     def test_error_400_is_raised(self):
         self.assertHTTPErrorIsRaised(
-            SitewitService().subscribe_to_campaign, (
+            self.service.subscribe_to_campaign, (
                 self.account_token,
                 self.non_existent_campaign_id, 0, 'UAH'), 400)
 
 
-class TestGetCampaignSubscription(CampaignTestCase):
-
+class TestGetCampaignSubscription(BaseCampaignTestCase):
     def setUp(self):
-        service = SitewitService()
-        self.result = service.get_campaign_subscription(
+        self.result = self.service.get_campaign_subscription(
             self.account_token, self.campaign_id)
 
     def test_campaign_info_is_returned(self):
         self.assertEqual(self.result['id'], self.campaign_id)
-        self.assertEqual(self.result['name'], 'test dont touch')
+        self.assertTrue(self.result['name'].startswith('Test Campaign'))
         self.assertTrue('subscription' in self.result)
 
 
-class TestGetCampaignSubscriptionNotFound(CampaignTestCase):
-
+class TestGetCampaignSubscriptionNotFound(BaseCampaignTestCase):
     def test_error_404_is_raised(self):
         self.assertHTTPErrorIsRaised(
-            SitewitService().get_campaign_subscription, (
+            self.service.get_campaign_subscription, (
                 self.account_token, self.non_existent_campaign_id), 404)
 
 
-class TestGetCampaignSubscriptionBadAccountToken(CampaignTestCase):
-
+class TestGetCampaignSubscriptionBadAccountToken(BaseCampaignTestCase):
     def test_error_401_is_raised(self):
         self.assertHTTPErrorIsRaised(
-            SitewitService().get_campaign_subscription, (
+            self.service.get_campaign_subscription, (
                 self.random_token, self.campaign_id),
             401, {u'Message': u'Invalid SubPartner Identifier'})
 
 
-class TestListCampaignSubscriptions(CampaignTestCase):
-
+class TestListCampaignSubscriptions(BaseSubscriptionTestCase):
     def setUp(self):
-        service = SitewitService()
-        self.result = service.list_campaign_subscriptions(self.account_token)
+        campaign_id = self.service.create_campaign(self.account_token)['id']
+        self.service.subscribe_to_campaign(
+            self.account_token, campaign_id, 100, 'USD')
 
-    def test_campaigns_are_returned(self):
-        self.assertEqual(len(self.result), len(self.campaigns))
-        returned_campaigns = sorted(self.result)
-        campaigns = sorted(self.campaigns)
+        self.result = self.service.list_campaign_subscriptions(
+            self.account_token)
 
-        for i in range(len(returned_campaigns)):
-            campaign = returned_campaigns[i]
-            self.assertEqual(campaign['id'], campaigns[i]['id'])
-            self.assertEqual(campaign['name'], campaigns[i]['name'])
-            self.assertTrue('subscription' in campaign)
+    def test_campaign_subscriptions_are_returned(self):
+        self.assertEqual(len(self.result), 2)
+
+        for sub in self.result:
+            self.assertTrue(sub['name'].startswith('Test Campaign'))
 
 
-class TestListCampaignSubscriptionsBadAccountToken(CampaignTestCase):
-
+class TestListCampaignSubscriptionsBadAccountToken(BaseCampaignTestCase):
     def test_error_401_is_raised(self):
         self.assertHTTPErrorIsRaised(
-            SitewitService().list_campaign_subscriptions, (self.random_token,),
+            self.service.list_campaign_subscriptions, (self.random_token,),
             401, {u'Message': u'Invalid SubPartner Identifier'})
 
 
-class TestResumeCampaignSubscription(CampaignTestCase):
-
+class TestResumeCampaignSubscription(BaseSubscriptionTestCase):
     def setUp(self):
-        service = SitewitService()
-
         # To test "resume" we have to make sure that subscription is cancelled.
-        subscription = service.get_campaign_subscription(
+        self.service.cancel_campaign_subscription(
             self.account_token, self.campaign_id)
 
-        if subscription['status'] != 'Cancelled':
-            campaign = service.cancel_campaign_subscription(
-                self.account_token, self.campaign_id)
-            self.assertEqual(campaign['status'], 'Cancelled')
-
-        self.result = service.resume_campaign_subscription(
+        self.result = self. service.resume_campaign_subscription(
             self.account_token, self.campaign_id)
 
     def test_campaign_is_returned(self):
         self.assertEqual(self.result['status'], 'Active')
 
 
-class TestResumeActiveCampaignSubscription(CampaignTestCase):
-
+class TestResumeActiveCampaignSubscription(BaseSubscriptionTestCase):
     def setUp(self):
-        service = SitewitService()
-
-        # Make sure that subscription is active.
-        subscription = service.get_campaign_subscription(
+        self.result = self.service.resume_campaign_subscription(
             self.account_token, self.campaign_id)
 
-        # First cancel subscription.
-        if subscription['status'] != 'Cancelled':
-            campaign = service.cancel_campaign_subscription(
-                self.account_token, self.campaign_id)
-            self.assertEqual(campaign['status'], 'Cancelled')
-
-        # Then resume it. Now it is 100% active.
-        self.result1 = service.resume_campaign_subscription(
-            self.account_token, self.campaign_id)
-
-        self.result2 = service.resume_campaign_subscription(
-            self.account_token, self.campaign_id)
-
-    def test_same_subscription_is_returned(self):
-        self.assertEqual(self.result1, self.result2)
+    def test_is_idempotent(self):
+        self.assertEqual(self.result['status'], 'Active')
 
 
-class TestResumeCampaignSubscriptionBadAccountToken(CampaignTestCase):
-
+class TestResumeCampaignSubscriptionBadAccountToken(BaseCampaignTestCase):
     def test_error_401_is_raised(self):
         self.assertHTTPErrorIsRaised(
-            SitewitService().resume_campaign_subscription, (
+            self.service.resume_campaign_subscription, (
                 self.random_token, self.campaign_id),
             401, {u'Message': u'Invalid SubPartner Identifier'})
 
 
-class TestResumeCampaignSubscriptionNotFound(CampaignTestCase):
-
+class TestResumeCampaignSubscriptionNotFound(BaseCampaignTestCase):
     def test_error_404_is_raised(self):
         self.assertHTTPErrorIsRaised(
-            SitewitService().resume_campaign_subscription, (
+            self.service.resume_campaign_subscription, (
                 self.account_token, self.non_existent_campaign_id), 404)
 
 
-class TestCancelCampaignSubscription(CampaignTestCase):
-
+class TestCancelCampaignSubscription(BaseSubscriptionTestCase):
     def setUp(self):
-        service = SitewitService()
-
-        # To test "Cancel" we have to make sure subscription is active.
-        subscription = service.get_campaign_subscription(
-            self.account_token, self.campaign_id)
-
-        if subscription['status'] != 'Active':
-            campaign = service.resume_campaign_subscription(
-                self.account_token, self.campaign_id, 500, 'USD')
-            self.assertEqual(campaign['status'], 'Active')
-
-        self.result = service.cancel_campaign_subscription(
+        self.result = self.service.cancel_campaign_subscription(
             self.account_token, self.campaign_id)
 
     def test_campaign_is_cancelled(self):
         self.assertEqual(self.result['status'], 'Cancelled')
 
 
-class TestCancelCampaignSubscriptionBadAccountToken(CampaignTestCase):
-
+class TestCancelCampaignSubscriptionBadAccountToken(BaseCampaignTestCase):
     def test_error_401_is_raised(self):
         self.assertHTTPErrorIsRaised(
-            SitewitService().cancel_campaign_subscription, (
+            self.service.cancel_campaign_subscription, (
                 self.random_token, self.campaign_id),
             401, {u'Message': u'Invalid SubPartner Identifier'})
 
 
-class TestCancelCampaignSubscriptionNotFound(CampaignTestCase):
-
+class TestCancelCampaignSubscriptionNotFound(BaseCampaignTestCase):
     def test_error_404_is_raised(self):
         self.assertHTTPErrorIsRaised(
-            SitewitService().cancel_campaign_subscription, (
+            self.service.cancel_campaign_subscription, (
                 self.account_token, self.non_existent_campaign_id), 404)
 
 
-class TestUpgradeCampaignSubscription(CampaignTestCase):
-
+class TestUpgradeCampaignSubscription(BaseSubscriptionTestCase):
     def setUp(self):
-        service = SitewitService()
-
-        # First we have to make sure that subscription is active.
-        subscription = service.get_campaign_subscription(
-            self.account_token, self.campaign_id)
-
-        self.budget = subscription['subscription']['budget']
-        currency = subscription['subscription']['currency']
-
-        if subscription['status'] != 'Active':
-            service.resume_campaign_subscription(
-                self.account_token, self.campaign_id, self.budget, currency)
-
-        self.result = service.upgrade_campaign_subscription(
-            self.account_token, self.campaign_id, self.budget + 10, currency)
+        self.result = self.service.subscribe_to_campaign(
+            self.account_token, self.campaign_id, 600, 'USD')
 
     def test_upgraded_campaign_is_returned(self):
         self.assertEqual(self.result['id'], self.campaign_id)
         self.assertEqual(
-            self.result['subscription']['budget'], self.budget + 10)
+            self.result['subscription']['budget'], 600)
 
 
-class TestUpgradeSubscriptionValidationFailed(CampaignTestCase):
-
+class TestUpgradeCurrencyMismatch(BaseSubscriptionTestCase):
     def test_error_400_is_raised(self):
         self.assertHTTPErrorIsRaised(
-            SitewitService().upgrade_campaign_subscription, (
+            self.service.subscribe_to_campaign, (
                 self.account_token,
                 self.campaign_id, 500, 'UAH'), 400)
 
-
-class TestUpgradeCampaignSubscriptionLowerBudget(CampaignTestCase):
-
+class TestDowngrade(BaseSubscriptionTestCase):
     def setUp(self):
-        service = SitewitService()
-
-        # First we have to make sure that subscription is active.
-        subscription = service.get_campaign_subscription(
-            self.account_token, self.campaign_id)
-
-        self.budget = subscription['subscription']['budget']
-        currency = subscription['subscription']['currency']
-
-        if subscription['status'] != 'Active':
-            service.resume_campaign_subscription(
-                self.account_token, self.campaign_id, self.budget, currency)
-
-    def test_error_400_is_raised(self):
-        self.assertHTTPErrorIsRaised(
-            SitewitService().upgrade_campaign_subscription, (
-                self.account_token,
-                self.campaign_id, self.budget - 10, 'USD'), 400)
-
-
-class TestUpgradeSubscriptionNotFound(CampaignTestCase):
-
-    def test_error_404_is_raised(self):
-        self.assertHTTPErrorIsRaised(
-            SitewitService().upgrade_campaign_subscription, (
-                self.account_token, self.non_existent_campaign_id,
-                500, 'USD'), 404)
-
-
-class TestDowngradeCampaignSubscription(CampaignTestCase):
-
-    def setUp(self):
-        service = SitewitService()
-
-        # First we have to make sure that subscription is active.
-        subscription = service.get_campaign_subscription(
-            self.account_token, self.campaign_id)
-
-        self.budget = subscription['subscription']['budget']
-        currency = subscription['subscription']['currency']
-
-        if subscription['status'] != 'Active':
-            service.resume_campaign_subscription(
-                self.account_token, self.campaign_id)
-
-        self.result = service.downgrade_campaign_subscription(
-            self.account_token, self.campaign_id, self.budget - 10, currency)
+        self.result = self.service.subscribe_to_campaign(
+            self.account_token, self.campaign_id, 100, 'USD')
 
     def test_downgraded_campaign_is_returned(self):
         self.assertEqual(self.result['id'], self.campaign_id)
         self.assertEqual(
-            self.result['subscription']['budget'], self.budget - 10)
-
-
-class TestDowngradeSubscriptionValidationFailed(CampaignTestCase):
-
-    def test_error_400_is_raised(self):
-        self.assertHTTPErrorIsRaised(
-            SitewitService().downgrade_campaign_subscription, (
-                self.account_token,
-                self.campaign_id, 500, 'UAH'), 400)
-
-
-class TestDowngradeCampaignSubscriptionHigherBudget(CampaignTestCase):
-
-    def setUp(self):
-        service = SitewitService()
-
-        # First we have to make sure that subscription is active.
-        subscription = service.get_campaign_subscription(
-            self.account_token, self.campaign_id)
-
-        self.budget = subscription['subscription']['budget']
-        currency = subscription['subscription']['currency']
-
-        if subscription['status'] != 'Active':
-            service.resume_campaign_subscription(
-                self.account_token, self.campaign_id)
-
-    def test_error_400_is_raised(self):
-        self.assertHTTPErrorIsRaised(
-            SitewitService().downgrade_campaign_subscription, (
-                self.account_token,
-                self.campaign_id, self.budget + 10, 'USD'), 400)
-
-
-class TestDowngradeSubscriptionNotFound(CampaignTestCase):
-
-    def test_error_404_is_raised(self):
-        self.assertHTTPErrorIsRaised(
-            SitewitService().downgrade_campaign_subscription, (
-                self.account_token, self.non_existent_campaign_id,
-                500, 'USD'), 404)
+            self.result['subscription']['budget'], 100)

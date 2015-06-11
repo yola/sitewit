@@ -8,6 +8,8 @@ from unittest2 import TestCase
 from yoconfig import configure
 from yoconfigurator.base import read_config
 
+from sitewit.services import SitewitService
+
 
 class SitewitTestCase(TestCase):
     @classmethod
@@ -50,3 +52,7 @@ class SitewitTestCase(TestCase):
     @property
     def random_token(self):
         return uuid.uuid4().hex
+
+    @property
+    def service(self):
+        return SitewitService()
