@@ -18,7 +18,6 @@ class BaseCampaignTestCase(SitewitTestCase):
             'foo{0}@bar.com'.format(uuid4().hex), 'USD', 'US'
         )['accountInfo']['token']
 
-        service.set_account_address(cls.account_token, 'street1', 'SF', 'US')
         cls.campaign_id = service.create_campaign(cls.account_token)['id']
 
 
@@ -28,6 +27,20 @@ class BaseSubscriptionTestCase(BaseCampaignTestCase):
         super(BaseSubscriptionTestCase, cls).setUpClass()
         cls.campaign = SitewitService().subscribe_to_campaign(
             cls.account_token, cls.campaign_id, 500, 'USD')
+
+    def assert_sub_returned(self, response, campaign_id, budget,
+                            is_active=True):
+        self.assertEqual(response['id'], campaign_id)
+        self.assertEqual(response['subscription']['active'], is_active)
+        self.assertEqual(response['subscription']['budget'], budget)
+
+
+class BaseCancelledSubscriptionTestCase(BaseSubscriptionTestCase):
+    @classmethod
+    def setUpClass(cls):
+        super(BaseCancelledSubscriptionTestCase, cls).setUpClass()
+        cls.campaign = SitewitService().cancel_campaign_subscription(
+            cls.account_token, cls.campaign_id)
 
 
 class TestGetCampaign(BaseCampaignTestCase):
@@ -213,30 +226,65 @@ class TestCancelCampaignSubscriptionNotFound(BaseCampaignTestCase):
                 self.account_token, self.non_existent_campaign_id), 404)
 
 
-class TestUpgradeCampaignSubscription(BaseSubscriptionTestCase):
-    def setUp(self):
-        self.result = self.service.subscribe_to_campaign(
-            self.account_token, self.campaign_id, 600, 'USD')
-
-    def test_upgraded_campaign_is_returned(self):
-        self.assertEqual(self.result['id'], self.campaign_id)
-        self.assertEqual(
-            self.result['subscription']['budget'], 600)
-
-
-class TestUpgradeCurrencyMismatch(BaseSubscriptionTestCase):
+class TestSubscribeToCampaignCurrencyMismatch(BaseSubscriptionTestCase):
     def test_error_400_is_raised(self):
         self.assertHTTPErrorIsRaised(
             self.service.subscribe_to_campaign, (
                 self.account_token,
                 self.campaign_id, 500, 'UAH'), 400)
 
-class TestDowngrade(BaseSubscriptionTestCase):
+
+class SubscribeToCampaignActiveSub(BaseSubscriptionTestCase):
+    def setUp(self):
+        self.result = self.service.subscribe_to_campaign(
+            self.account_token, self.campaign_id, 500, 'USD')
+
+    def test_upgraded_campaign_is_returned(self):
+        self.assert_sub_returned(self.result, self.campaign_id, 500)
+
+
+class SubscribeToCampaignActiveSubDowngrade(BaseSubscriptionTestCase):
     def setUp(self):
         self.result = self.service.subscribe_to_campaign(
             self.account_token, self.campaign_id, 100, 'USD')
 
     def test_downgraded_campaign_is_returned(self):
-        self.assertEqual(self.result['id'], self.campaign_id)
-        self.assertEqual(
-            self.result['subscription']['budget'], 100)
+        self.assert_sub_returned(self.result, self.campaign_id, 100)
+
+
+class SubscribeToCampaignActiveSubUpgrade(BaseSubscriptionTestCase):
+    def setUp(self):
+        self.result = self.service.subscribe_to_campaign(
+            self.account_token, self.campaign_id, 600, 'USD')
+
+    def test_upgraded_campaign_is_returned(self):
+        self.assert_sub_returned(self.result, self.campaign_id, 600)
+
+
+class SubscribeToCampaignCancelledSub(BaseCancelledSubscriptionTestCase):
+    def setUp(self):
+        self.result = self.service.subscribe_to_campaign(
+            self.account_token, self.campaign_id, 500, 'USD')
+
+    def test_resumes_subscription(self):
+        self.assert_sub_returned(self.result, self.campaign_id, 500)
+
+
+class SubscribeToCampaignCancelledSubUpgrade(
+        BaseCancelledSubscriptionTestCase):
+    def setUp(self):
+        self.result = self.service.subscribe_to_campaign(
+            self.account_token, self.campaign_id, 1000, 'USD')
+
+    def test_upgrades_subscription(self):
+        self.assert_sub_returned(self.result, self.campaign_id, 1000)
+
+
+class SubscribeToCampaignCancelledSubDowngrade(
+        BaseCancelledSubscriptionTestCase):
+    def setUp(self):
+        self.result = self.service.subscribe_to_campaign(
+            self.account_token, self.campaign_id, 100, 'USD')
+
+    def test_downgrades_subscription(self):
+        self.assert_sub_returned(self.result, self.campaign_id, 100)
