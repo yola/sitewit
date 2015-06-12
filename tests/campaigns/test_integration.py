@@ -37,7 +37,7 @@ class BaseCancelledSubscriptionTestCase(BaseSubscriptionTestCase):
     @classmethod
     def setUpClass(cls):
         super(BaseCancelledSubscriptionTestCase, cls).setUpClass()
-        cls.campaign = cls.sesrvice.cancel_campaign_subscription(
+        cls.campaign = cls.service.cancel_campaign_subscription(
             cls.account_token, cls.campaign_id)
 
 
