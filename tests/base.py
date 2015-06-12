@@ -17,6 +17,7 @@ class SitewitTestCase(TestCase):
         cls.config = read_config(
             os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
         configure(sitewit=cls.config.common.sitewit)
+        cls.service = SitewitService()
 
     def assertDemandsIsCalled(self, demands_mock, data=None,
                               account_token=None, url='/api/account/'):
@@ -52,7 +53,3 @@ class SitewitTestCase(TestCase):
     @property
     def random_token(self):
         return uuid.uuid4().hex
-
-    @property
-    def service(self):
-        return SitewitService()

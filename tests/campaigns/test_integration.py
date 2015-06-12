@@ -1,6 +1,5 @@
 from uuid import uuid4
 
-from sitewit.services import SitewitService
 from tests.base import SitewitTestCase
 
 
@@ -12,20 +11,19 @@ class BaseCampaignTestCase(SitewitTestCase):
     def setUpClass(cls):
         super(BaseCampaignTestCase, cls).setUpClass()
 
-        service = SitewitService()
-        cls.account_token = service.create_account(
+        cls.account_token = cls.service.create_account(
             uuid4().hex, 'http://www.test.site.com', 'Foo',
             'foo{0}@bar.com'.format(uuid4().hex), 'USD', 'US'
         )['accountInfo']['token']
 
-        cls.campaign_id = service.create_campaign(cls.account_token)['id']
+        cls.campaign_id = cls.service.create_campaign(cls.account_token)['id']
 
 
 class BaseSubscriptionTestCase(BaseCampaignTestCase):
     @classmethod
     def setUpClass(cls):
         super(BaseSubscriptionTestCase, cls).setUpClass()
-        cls.campaign = SitewitService().subscribe_to_campaign(
+        cls.campaign = cls.service.subscribe_to_campaign(
             cls.account_token, cls.campaign_id, 500, 'USD')
 
     def assert_sub_returned(self, response, campaign_id, budget,
@@ -39,7 +37,7 @@ class BaseCancelledSubscriptionTestCase(BaseSubscriptionTestCase):
     @classmethod
     def setUpClass(cls):
         super(BaseCancelledSubscriptionTestCase, cls).setUpClass()
-        cls.campaign = SitewitService().cancel_campaign_subscription(
+        cls.campaign = cls.sesrvice.cancel_campaign_subscription(
             cls.account_token, cls.campaign_id)
 
 
