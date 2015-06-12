@@ -8,6 +8,8 @@ from unittest2 import TestCase
 from yoconfig import configure
 from yoconfigurator.base import read_config
 
+from sitewit.services import SitewitService
+
 
 class SitewitTestCase(TestCase):
     @classmethod
@@ -15,6 +17,7 @@ class SitewitTestCase(TestCase):
         cls.config = read_config(
             os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
         configure(sitewit=cls.config.common.sitewit)
+        cls.service = SitewitService()
 
     def assertDemandsIsCalled(self, demands_mock, data=None,
                               account_token=None, url='/api/account/'):

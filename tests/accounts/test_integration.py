@@ -53,9 +53,6 @@ class TestCreateExistingAccount(AccountTestCase):
 
 
 class TestCreateAccountBadRequest(AccountTestCase):
-    def setUp(self):
-        self.service = SitewitService()
-
     def test_bad_request_error_is_raised(self):
         expected_error_details = {
             u'ModelState': {
@@ -131,7 +128,6 @@ class TestUpdateAccount(AccountTestCase):
 
 class TestUpdateAccountBadRequest(AccountTestCase):
     def setUp(self):
-        self.service = SitewitService()
         created_account = self.service.create_account(
             self.site_id, self.url, self.user_name, self.user_email,
             self.currency, self.country_code)

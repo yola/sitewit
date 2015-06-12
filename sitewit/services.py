@@ -145,6 +145,20 @@ class SitewitService(HTTPServiceClient):
 
         return result['token']
 
+    def create_campaign(self, account_token):
+        """Create new Campaign (for testing purpose)
+
+        Args:
+            account_token (str): account token.
+
+        Returns:
+            dict of the format:   {'id': 1, 'name': 'test', 'status': 'Unpaid'}
+        """
+        return self.post(
+            '/api/campaign/',
+            headers=self._get_account_auth_header(account_token)
+        ).json()
+
     def get_campaign(self, account_token, campaign_id):
         """Get Campaign info by campaign ID
 
@@ -240,76 +254,6 @@ class SitewitService(HTTPServiceClient):
             '/api/subscription/campaign/',
             headers=self._get_account_auth_header(account_token)).json()
 
-    def upgrade_campaign_subscription(self, account_token, campaign_id,
-                                      new_budget, currency):
-        """Upgrade campaign subscription.
-
-        Increase campaign budget.
-
-        Args:
-            account_token (str): account token.
-            campaign_id (str): campaign to subscribe.
-            new_budget (decimal): new campaign budget.
-            currency (decimal): currency for new budget.
-
-        Returns:
-            Please see response format here:
-            https://sandboxpapi.sitewit.com/Help/Api/
-            GET-api-subscription-campaign-id
-        """
-        data = {'campaignId': campaign_id,
-                'budget': new_budget,
-                'currency': currency}
-
-        return self.put(
-            '/api/subscription/campaign/upgrade/', data,
-            headers=self._get_account_auth_header(account_token)).json()
-
-    def downgrade_campaign_subscription(self, account_token, campaign_id,
-                                        new_budget, currency):
-        """Upgrade campaign subscription.
-
-        Decrease campaign budget.
-
-        Args:
-            account_token (str): account token.
-            campaign_id (str): campaign to subscribe.
-            new_budget (decimal): new campaign budget.
-            currency (decimal): currency for new budget.
-
-        Returns:
-            Please see response format here:
-            https://sandboxpapi.sitewit.com/Help/Api/
-            GET-api-subscription-campaign-id
-        """
-        data = {'campaignId': campaign_id,
-                'budget': new_budget,
-                'currency': currency}
-
-        return self.put(
-            '/api/subscription/campaign/downgrade/', data,
-            headers=self._get_account_auth_header(account_token)).json()
-
-    def resume_campaign_subscription(self, account_token, campaign_id):
-        """Resume campaign subscription.
-
-        Resume campaign subscription. If campaign is active, it is returned
-        without any actions.
-
-        Args:
-            account_token (str): account token.
-            campaign_id (str): campaign to subscribe.
-
-        Returns:
-            Please see response format here:
-            https://sandboxpapi.sitewit.com/Help/Api/
-            GET-api-subscription-campaign-id
-        """
-        data = {'campaignId': campaign_id}
-
-        return self.put(
-            'api/subscription/reinstate/campaign/', data,
-            headers=self._get_account_auth_header(account_token)).json()
 
     def cancel_campaign_subscription(self, account_token, campaign_id,
                                      immediate=True):
