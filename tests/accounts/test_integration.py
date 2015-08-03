@@ -52,7 +52,7 @@ class TestCreateExistingAccount(AccountTestCase):
                          self.account2['accountInfo']['accountNumber'])
 
 
-class TestCreateSecondAccountForTheSameUser(AccountTestCase):
+class TestAccountCreationWithUserTokenPassed(AccountTestCase):
     def setUp(self):
         service = SitewitService()
         site_id = uuid.uuid4()
@@ -64,10 +64,11 @@ class TestCreateSecondAccountForTheSameUser(AccountTestCase):
         self.user_token = response['userInfo']['token']
 
         self.response = service.create_account(
-            uuid.uuid4(), 'https://foo.bar', self.user_name, self.user_email,
+            uuid.uuid4(), 'https://foo.bar', self.user_name,
+            '{}@yola.com'.format(uuid.uuid4()),
             self.currency, self.country_code, self.user_token)
 
-    def test_the_same_user_token_is_returned(self):
+    def test_creates_new_account_for_the_given_user(self):
         self.assertIsNotNone(self.user_token)
         self.assertEqual(self.user_token, self.response['userInfo']['token'])
 
