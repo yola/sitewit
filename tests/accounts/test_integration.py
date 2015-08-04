@@ -52,11 +52,32 @@ class TestCreateExistingAccount(AccountTestCase):
                          self.account2['accountInfo']['accountNumber'])
 
 
+class TestAccountCreationWithUserTokenPassed(AccountTestCase):
+    def setUp(self):
+        service = SitewitService()
+        site_id = uuid.uuid4()
+
+        response = service.create_account(
+            site_id, self.url, self.user_name, self.user_email,
+            self.currency, self.country_code)
+
+        self.user_token = response['userInfo']['token']
+
+        self.response = service.create_account(
+            uuid.uuid4(), 'https://foo.bar', self.user_name,
+            '{}@yola.com'.format(uuid.uuid4()),
+            self.currency, self.country_code, self.user_token)
+
+    def test_creates_new_account_for_the_given_user(self):
+        self.assertIsNotNone(self.user_token)
+        self.assertEqual(self.user_token, self.response['userInfo']['token'])
+
+
 class TestCreateAccountBadRequest(AccountTestCase):
     def test_bad_request_error_is_raised(self):
         expected_error_details = {
             u'ModelState': {
-                u'account.url': [u'Missing url parameter', u'Invalid Url']
+                u'account.url': [u'Invalid Url', u'Missing url parameter']
             },
             u'Message': u'The request is invalid.'
         }
