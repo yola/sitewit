@@ -244,16 +244,30 @@ class SitewitService(HTTPServiceClient):
     def list_campaign_subscriptions(self, account_token):
         """Get all subscriptions to given campaign for given account.
 
-        Create subscription to a given Campaign for given Account.
-
         Args:
             account_token (str): account token.
-            campaign_id (str): campaign to subscribe.
         """
         return self.get(
             '/api/subscription/campaign/',
             headers=self._get_account_auth_header(account_token)).json()
 
+    def list_subscriptions(self, page_number=0, page_size=50):
+        """Get all active subscriptions grouped by SiteWit account
+
+        Args:
+            page_number (int): current page
+            page_size (int): number of accounts per page
+
+        Returns:
+            Please see response format here:
+            https://sandboxpapi.sitewit.com/Help/Api/
+            GET-api-subscription-audit_limit_skip
+        """
+        return self.get(
+            '/api/subscription/audit',
+            params={'limit': page_size, 'skip': page_number},
+            headers=self._get_partner_auth_header()
+        ).json()
 
     def cancel_campaign_subscription(self, account_token, campaign_id,
                                      immediate=True):
