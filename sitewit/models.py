@@ -8,9 +8,17 @@ class User(object):
         self.token = token
 
 
-class Account(object):
+class SiteWitServiceModel(object):
     _sitewitservice = None
 
+    @classmethod
+    def get_service(cls):
+        if cls._sitewitservice is None:
+            cls._sitewitservice = SitewitService()
+        return cls._sitewitservice
+
+
+class Account(SiteWitServiceModel):
     def __init__(self, account_data, user_data=None):
         self.id = account_data['accountNumber']
         self.token = account_data['token']
@@ -25,12 +33,6 @@ class Account(object):
                              user_data['token'])
         else:
             self.user = None
-
-    @classmethod
-    def get_service(cls):
-        if cls._sitewitservice is None:
-            cls._sitewitservice = SitewitService()
-        return cls._sitewitservice
 
     @classmethod
     def create(cls, user, site, url, user_token=None):
