@@ -132,6 +132,7 @@ class Subscription(SiteWitServiceModel):
 
     @classmethod
     def iter_subscriptions(cls):
+        """Iterate over all active subscriptions"""
         service = cls.get_service()
         limit = 100
 
