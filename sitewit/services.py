@@ -1,7 +1,7 @@
 import base64
 from copy import deepcopy
 
-from demands import HTTPServiceClient
+from demands import HTTPServiceClient, HTTPServiceError  # NOQA
 from yoconfig import get_config
 
 import sitewit
@@ -251,12 +251,12 @@ class SitewitService(HTTPServiceClient):
             '/api/subscription/campaign/',
             headers=self._get_account_auth_header(account_token)).json()
 
-    def list_subscriptions(self, page_number=0, page_size=50):
+    def list_subscriptions(self, offset=0, limit=50):
         """Get all active subscriptions grouped by SiteWit account
 
         Args:
-            page_number (int): current page
-            page_size (int): number of accounts per page
+            offset (int): The number of accounts to skip
+            limit (int): number of accounts returned per call
 
         Returns:
             Please see response format here:
@@ -265,7 +265,7 @@ class SitewitService(HTTPServiceClient):
         """
         return self.get(
             '/api/subscription/audit',
-            params={'limit': page_size, 'skip': page_number},
+            params={'limit': limit, 'skip': offset},
             headers=self._get_partner_auth_header()
         ).json()
 
