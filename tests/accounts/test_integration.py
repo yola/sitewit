@@ -1,7 +1,7 @@
 import uuid
 
 from base import AccountTestCase
-from sitewit.services import SitewitService
+from sitewit.services import HTTPServiceError, SitewitService
 
 
 class TestCreateAccount(AccountTestCase):
@@ -75,17 +75,15 @@ class TestAccountCreationWithUserTokenPassed(AccountTestCase):
 
 class TestCreateAccountBadRequest(AccountTestCase):
     def test_bad_request_error_is_raised(self):
-        expected_error_details = {
-            u'ModelState': {
-                u'account.url': [u'Invalid Url', u'Missing url parameter']
-            },
-            u'Message': u'The request is invalid.'
-        }
-
-        self.assertHTTPErrorIsRaised(
-            SitewitService().create_account, (
+        with self.assertRaises(HTTPServiceError) as e:
+            SitewitService().create_account(
                 '', '', self.user_name, self.user_email, self.currency,
-                self.country_code), 400, expected_error_details)
+                self.country_code)
+
+        self.assertEqual(e.exception.response.status_code, 400)
+        self.assertEqual(
+            e.exception.details['Message'], 'The request is invalid.')
+        self.assertIn('account.url', e.exception.details['ModelState'])
 
 
 class TestGetAccount(AccountTestCase):

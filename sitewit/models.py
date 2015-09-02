@@ -1,3 +1,7 @@
+from decimal import Decimal
+import itertools
+from uuid import UUID
+
 from sitewit.services import SitewitService
 
 
@@ -115,3 +119,30 @@ class Account(SiteWitServiceModel):
         result = cls.get_service().delete_account(account_token)
 
         return Account(result)
+
+
+class Subscription(SiteWitServiceModel):
+    def __init__(self, site_id, url, data):
+        self.site_id = site_id
+        self.url = url
+        self.ad_spend = Decimal(data['budget'])
+        self.price = Decimal(data['fee'])
+        self.campaign_id = data['campaignId']
+        self.currency = data['currency']
+
+    @classmethod
+    def iter_subscriptions(cls):
+        service = cls.get_service()
+        limit = 100
+
+        for offset in itertools.count(0, limit):
+            batch = service.list_subscriptions(offset, limit)
+
+            for account_data in batch:
+                url = account_data['url']
+                site_id = UUID(account_data['clientId']).hex
+                for subscription_data in account_data['subscriptions']:
+                    yield cls(url, site_id, subscription_data)
+
+            if len(batch) < limit:
+                return
