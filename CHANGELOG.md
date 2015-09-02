@@ -1,5 +1,10 @@
 # [Changelog](https://github.com/yola/sitewit/releases)
 
+## 0.3.1
+
+* Add `list_subscriptions` service method (to get all active subscriptions)
+* Add `Subscription` model with `iter_subscriptions` classmethod
+
 ## 0.3.0
 
 * Add `create_campaign` service method (for testing purpose)
