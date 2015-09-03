@@ -252,7 +252,9 @@ class SitewitService(HTTPServiceClient):
             headers=self._get_account_auth_header(account_token)).json()
 
     def list_subscriptions(self, offset=0, limit=50):
-        """Get all active subscriptions grouped by SiteWit account
+        """Get active subscriptions for all SiteWit accounts.
+
+        Returned data is grouped by account.
 
         Args:
             offset (int): The number of accounts to skip
