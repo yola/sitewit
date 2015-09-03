@@ -1,5 +1,6 @@
 from uuid import uuid4
 
+from sitewit.models import Subscription
 from tests.base import SitewitTestCase
 
 
@@ -249,3 +250,19 @@ class SubscribeToCampaignCancelledSubDowngrade(
 
     def test_downgrades_subscription(self):
         self.assert_sub_returned(self.result, self.campaign_id, 100)
+
+
+class TestIterSubscriptions(BaseCampaignTestCase):
+    def setUp(self):
+        self.subscription = Subscription.iter_subscriptions().next()
+
+    def test_returns_iterator_over_subscription_objects(self):
+        self.assertIsInstance(self.subscription, Subscription)
+
+
+class TestListSubscriptions(BaseCampaignTestCase):
+    def setUp(self):
+        self.subscriptions = self.service.list_subscriptions(0, 1)
+
+    def test_limits_returned_result_to_given_limit(self):
+        self.assertEqual(len(self.subscriptions), 1)

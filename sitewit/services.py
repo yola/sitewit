@@ -1,7 +1,7 @@
 import base64
 from copy import deepcopy
 
-from demands import HTTPServiceClient
+from demands import HTTPServiceClient, HTTPServiceError  # NOQA
 from yoconfig import get_config
 
 import sitewit
@@ -244,16 +244,32 @@ class SitewitService(HTTPServiceClient):
     def list_campaign_subscriptions(self, account_token):
         """Get all subscriptions to given campaign for given account.
 
-        Create subscription to a given Campaign for given Account.
-
         Args:
             account_token (str): account token.
-            campaign_id (str): campaign to subscribe.
         """
         return self.get(
             '/api/subscription/campaign/',
             headers=self._get_account_auth_header(account_token)).json()
 
+    def list_subscriptions(self, offset=0, limit=50):
+        """Get active subscriptions for all SiteWit accounts.
+
+        Returned data is grouped by account.
+
+        Args:
+            offset (int): The number of accounts to skip
+            limit (int): number of accounts returned per call
+
+        Returns:
+            Please see response format here:
+            https://sandboxpapi.sitewit.com/Help/Api/
+            GET-api-subscription-audit_limit_skip
+        """
+        return self.get(
+            '/api/subscription/audit',
+            params={'limit': limit, 'skip': offset},
+            headers=self._get_partner_auth_header()
+        ).json()
 
     def cancel_campaign_subscription(self, account_token, campaign_id,
                                      immediate=True):

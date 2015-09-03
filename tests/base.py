@@ -4,7 +4,7 @@ import uuid
 
 from demands import HTTPServiceError
 from mock import Mock
-from unittest2 import TestCase
+from unittest import TestCase
 from yoconfig import configure
 from yoconfigurator.base import read_config
 
