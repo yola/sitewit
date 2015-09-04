@@ -2,6 +2,8 @@ from decimal import Decimal
 import itertools
 from uuid import UUID
 
+from dateutil.parser import parse
+
 from sitewit.services import SitewitService
 
 
@@ -129,6 +131,7 @@ class Subscription(SiteWitServiceModel):
         self.price = Decimal(data['fee'])
         self.campaign_id = data['campaignId']
         self.currency = data['currency']
+        self.billing_date = parse(data['nextBillDate']).date()
 
     @classmethod
     def iter_subscriptions(cls):
