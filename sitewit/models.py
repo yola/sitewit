@@ -129,7 +129,7 @@ class Subscription(SiteWitServiceModel):
         self.url = url
         self.ad_spend = Decimal(data['budget'])
         self.price = Decimal(data['fee'])
-        self.campaign_id = data['campaignId']
+        self.campaign_id = str(data['campaignId'])
         self.currency = data['currency']
         self.billing_date = parse(data['nextBillDate']).date()
 

@@ -3,6 +3,7 @@
 ## 0.3.2
 
 * Add `billing_date` attribute to `Subscription`
+* Convert `campaign_id` to string
 
 ## 0.3.1
 
