@@ -1,5 +1,9 @@
 # [Changelog](https://github.com/yola/sitewit/releases)
 
+## 0.3.2
+
+* Add `billing_date` attribute to `Subscription`
+
 ## 0.3.1
 
 * Add `list_subscriptions` service method (to get all active subscriptions)
