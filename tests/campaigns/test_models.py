@@ -2,7 +2,6 @@ from datetime import date
 from decimal import Decimal
 from unittest import TestCase
 
-
 from sitewit.models import Subscription
 
 
