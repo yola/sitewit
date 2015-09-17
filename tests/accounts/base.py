@@ -11,7 +11,7 @@ class AccountTestCase(SitewitTestCase):
     token = 'token'
     time_zone = 'GMT Standard Time'
     user_name = 'yola test user'
-    user_email = 'ekoval@lohika.test.ua'
+    user_email = '{}@lohika.test.ua'.format(uuid.uuid4().hex)
     password = 'password'
     user_token = 'user_token'
     url = 'http://www.test.site.com'
