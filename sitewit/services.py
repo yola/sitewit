@@ -115,6 +115,33 @@ class SitewitService(HTTPServiceClient):
             '/api/account/', data,
             headers=self._get_account_auth_header(account_token)).json()
 
+    def change_account_owner(self, account_token, user_token=None,
+                             user_email=None, user_name=None):
+        """Change owner for SiteWit account.
+
+        Associate account with either existing user (if user_token is passed)
+        or with a new user (creates it automatically using user_email and
+        user_name.
+
+        Args:
+            account_token (str): account token.
+            user_name (str, optional): name of account owner.
+            user_email (str, optinal): email of account owner.
+            user_token (str, optional): user token of existing user.
+
+        Returns:
+            JSON of format:
+            https://sandboxpapi.sitewit.com/Help/Api/PUT-api-Account-Owner
+        """
+        data = {
+            'email': user_email,
+            'name': user_name,
+            'userToken': user_token
+        }
+        return self.put(
+            '/api/account/owner', data,
+            headers=self._get_account_auth_header(account_token)).json()
+
     def delete_account(self, account_token):
         """Delete SiteWit account.
 
