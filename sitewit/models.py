@@ -57,7 +57,6 @@ class Account(SiteWitServiceModel):
         Raises:
             demands.HTTPServiceError: if any error happened on HTTP level.
         """
-
         email = cls._get_email(user.id)
         user_name = cls._get_valid_user_name(user.name)
         result = cls.get_service().create_account(
