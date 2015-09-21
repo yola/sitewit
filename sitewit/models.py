@@ -32,7 +32,7 @@ class Account(SiteWitServiceModel):
         self.url = account_data['url']
         self.site_id = account_data['clientId']
         self.currency = account_data['currency']
-        self.country_code = account_data['country']
+        self.country_code = account_data['countryCode']
 
         if user_data is not None:
             self.user = User(user_data['name'], user_data['email'],
@@ -109,7 +109,24 @@ class Account(SiteWitServiceModel):
 
     @classmethod
     def associate_with_new_user(cls, account_token, user):
-        pass
+        """Associate account token with a new user on SiteWit side.
+
+        Args:
+            account_token (str): account token.
+            user (yousers.models.User instance): user.
+
+        Returns:
+            Instance of Account class.
+
+        Raises:
+            demands.HTTPServiceError: if any error happened on HTTP level.
+        """
+        email = cls._get_email(user.id)
+        user_name = cls._get_valid_user_name(user.name)
+        response = cls.get_service().change_account_owner(
+            account_token, user_email=email, user_name=user_name)
+
+        return Account(response['accountInfo'], user_data=response['userInfo'])
 
     @classmethod
     def delete(cls, account_token):

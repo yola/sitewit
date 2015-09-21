@@ -1,7 +1,14 @@
 import uuid
 
 from base import AccountTestCase
+from sitewit.models import Account
 from sitewit.services import HTTPServiceError, SitewitService
+
+
+class FakeUser(object):
+    def __init__(self, user_id, name):
+        self.id = user_id
+        self.name = name
 
 
 class TestCreateAccount(AccountTestCase):
@@ -231,3 +238,29 @@ class TestGenerateSSOTokenBadRequest(AccountTestCase):
             SitewitService().generate_sso_token,
             (self.random_token, self.random_token),
             401, {u'Message': u'Invalid SubPartner Identifier'})
+
+
+class AccountAssociationWithNewUser(AccountTestCase):
+    """Account.associate_with_new_user()"""
+
+    @classmethod
+    def setUpClass(cls):
+        super(AccountAssociationWithNewUser, cls).setUpClass()
+        user = FakeUser(cls.user_id, cls.user_name)
+        cls.old_account = Account.create(user, cls.site_id, cls.url)
+
+        cls.new_user = FakeUser(uuid.uuid4().hex, 'new name')
+        cls.new_account = Account.associate_with_new_user(
+            cls.old_account.token, cls.new_user)
+
+    def test_changes_user_token(self):
+        self.assertNotEqual(
+            self.old_account.user.token, self.new_account.user.token)
+
+    def test_new_user_is_created_with_given_attributes(self):
+        self.assertEqual(
+            self.new_account.user.email, Account._get_email(self.new_user.id))
+        self.assertEqual(self.new_account.user.name, 'new name')
+
+    def test_account_remains_unchanged(self):
+        self.assertEqual(self.new_account.token, self.old_account.token)
