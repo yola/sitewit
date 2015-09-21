@@ -1,17 +1,18 @@
-import uuid
+from uuid import uuid4
 
 from tests.base import SitewitTestCase
 
 
 class AccountTestCase(SitewitTestCase):
     account_id = 9999
-    site_id = uuid.uuid4().hex
+    site_id = uuid4().hex
+    user_id = uuid4().hex
     country_code = 'US'
     currency = 'USD'
     token = 'token'
     time_zone = 'GMT Standard Time'
     user_name = 'yola test user'
-    user_email = '{}@lohika.test.ua'.format(uuid.uuid4().hex)
+    user_email = '{}@yola.yola'.format(user_id)
     password = 'password'
     user_token = 'user_token'
     url = 'http://www.test.site.com'
