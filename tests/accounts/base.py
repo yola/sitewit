@@ -20,7 +20,7 @@ class AccountTestCase(SitewitTestCase):
     response_brief = {
         'accountNumber': account_id,
         'url': url,
-        'country': country_code,
+        'countryCode': country_code,
         'timeZone': time_zone,
         'currency': currency,
         'clientId': site_id,

@@ -14,7 +14,7 @@ class TestModelsCreateAccount(AccountTestCase):
             'accountInfo': {
                 'accountNumber': self.account_id,
                 'url': self.url,
-                'country': self.country_code,
+                'countryCode': self.country_code,
                 'timeZone': self.time_zone,
                 'currency': self.currency,
                 'clientId': self.site_id,
