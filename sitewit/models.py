@@ -129,6 +129,25 @@ class Account(SiteWitServiceModel):
         return Account(response['accountInfo'], user_data=response['userInfo'])
 
     @classmethod
+    def associate_with_existent_user(cls, account_token, user_token):
+        """Associate account token with an existent user on SiteWit side.
+
+        Args:
+            account_token (str): account token.
+            user_token (str): user token.
+
+        Returns:
+            Instance of Account class.
+
+        Raises:
+            demands.HTTPServiceError: if any error happened on HTTP level.
+        """
+        response = cls.get_service().change_account_owner(
+            account_token, user_token=user_token)
+
+        return Account(response['accountInfo'], user_data=response['userInfo'])
+
+    @classmethod
     def delete(cls, account_token):
         """Get SiteWit account by account token.
 
