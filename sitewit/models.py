@@ -32,7 +32,7 @@ class Account(SiteWitServiceModel):
         self.url = account_data['url']
         self.site_id = account_data['clientId']
         self.currency = account_data['currency']
-        self.country_code = account_data['country']
+        self.country_code = account_data['countryCode']
 
         if user_data is not None:
             self.user = User(user_data['name'], user_data['email'],
@@ -41,12 +41,12 @@ class Account(SiteWitServiceModel):
             self.user = None
 
     @classmethod
-    def create(cls, user, site, url, user_token=None):
-        """Create SiteWit account for site.
+    def create(cls, user, site_id, url, user_token=None):
+        """Create SiteWit account for given site_id.
 
         Args:
             user (yousers.models.User instance): user.
-            site (yosites.models.Site instance): site.
+            site_id (str): Site's ID, UUID
             url (str): url of given account.
             user_token (str, optional): user token. Is specified if the user
                 has another accounts.
@@ -57,9 +57,10 @@ class Account(SiteWitServiceModel):
         Raises:
             demands.HTTPServiceError: if any error happened on HTTP level.
         """
+        email = cls._get_email(user.id)
+        user_name = cls._get_valid_user_name(user.name)
         result = cls.get_service().create_account(
-            site.id, url, user.name, user.email, user.currency,
-            user.location, user_token=user_token)
+            site_id, url, user_name, email, 'USD', 'US', user_token)
 
         return Account(result['accountInfo'], user_data=result['userInfo'])
 
@@ -106,6 +107,46 @@ class Account(SiteWitServiceModel):
         return Account(result)
 
     @classmethod
+    def associate_with_new_user(cls, account_token, user):
+        """Associate account token with a new user on SiteWit side.
+
+        Args:
+            account_token (str): account token.
+            user (yousers.models.User instance): user.
+
+        Returns:
+            Instance of Account class.
+
+        Raises:
+            demands.HTTPServiceError: if any error happened on HTTP level.
+        """
+        email = cls._get_email(user.id)
+        user_name = cls._get_valid_user_name(user.name)
+        response = cls.get_service().change_account_owner(
+            account_token, user_email=email, user_name=user_name)
+
+        return Account(response['accountInfo'], user_data=response['userInfo'])
+
+    @classmethod
+    def associate_with_existent_user(cls, account_token, user_token):
+        """Associate account token with an existent user on SiteWit side.
+
+        Args:
+            account_token (str): account token.
+            user_token (str): user token.
+
+        Returns:
+            Instance of Account class.
+
+        Raises:
+            demands.HTTPServiceError: if any error happened on HTTP level.
+        """
+        response = cls.get_service().change_account_owner(
+            account_token, user_token=user_token)
+
+        return Account(response['accountInfo'], user_data=response['userInfo'])
+
+    @classmethod
     def delete(cls, account_token):
         """Get SiteWit account by account token.
 
@@ -121,6 +162,21 @@ class Account(SiteWitServiceModel):
         result = cls.get_service().delete_account(account_token)
 
         return Account(result)
+
+    @classmethod
+    def _get_valid_user_name(cls, user_name):
+        """Return a user name suitable for passing to SiteWit API.
+
+        Account creation will fail for names that are too short or too long.
+        """
+        if 1 < len(user_name) < 256:
+            return user_name
+
+        return 'User'
+
+    @classmethod
+    def _get_email(cls, user_id):
+        return '{}@yola.yola'.format(user_id)
 
 
 class Subscription(SiteWitServiceModel):

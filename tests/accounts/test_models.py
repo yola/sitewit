@@ -14,7 +14,7 @@ class TestModelsCreateAccount(AccountTestCase):
             'accountInfo': {
                 'accountNumber': self.account_id,
                 'url': self.url,
-                'country': self.country_code,
+                'countryCode': self.country_code,
                 'timeZone': self.time_zone,
                 'currency': self.currency,
                 'clientId': self.site_id,
@@ -35,14 +35,13 @@ class TestModelsCreateAccount(AccountTestCase):
 
         self._mock_response(post_mock, self.response)
 
-        self.site = Mock(id=self.site_id)
         self.user = Mock(
             location=self.country_code, currency=self.currency,
             time_zone=self.time_zone)
-        self.user.configure_mock(name=self.user_name, email=self.user_email)
+        self.user.configure_mock(id=self.user_id, name=self.user_name)
 
         self.result = Account.create(
-            self.user, self.site, self.url, user_token=self.user_token)
+            self.user, self.site_id, self.url, user_token=self.user_token)
 
     def test_demands_post_is_called(self):
         post_data = {
