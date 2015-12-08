@@ -156,6 +156,20 @@ class SitewitService(HTTPServiceClient):
             '/api/account/',
             headers=self._get_account_auth_header(account_token)).json()
 
+    def get_account_owners(self, account_token):
+        """Get all account owners.
+
+        Args:
+            account_token (str): account token.
+
+        Returns:
+            JSON of format:
+            https://sandboxpapi.sitewit.com/Help/Api/GET-api-User
+        """
+        return self.get(
+            'api/user', headers=self._get_account_auth_header(account_token)
+        ).json()
+
     def generate_sso_token(self, user_token, account_token):
         """Generate temporary SSO token for given user.
 
