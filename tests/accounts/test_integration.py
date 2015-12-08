@@ -14,10 +14,7 @@ class FakeUser(object):
 class TestCreateAccount(AccountTestCase):
 
     def setUp(self):
-        service = SitewitService()
-        self.result = service.create_account(
-            self.site_id, self.url, self.user_name, self.user_email,
-            self.currency, self.country_code)
+        self.result = self.create_account()
 
     def test_account_info_is_returned(self):
         account = self.result['accountInfo']
@@ -41,18 +38,14 @@ class TestCreateAccount(AccountTestCase):
 class TestCreateExistingAccount(AccountTestCase):
 
     def setUp(self):
-        service = SitewitService()
         site_id = uuid.uuid4()
-
-        self.account1 = service.create_account(
-            site_id, self.url, self.user_name, self.user_email,
-            self.currency, self.country_code)
+        self.account1 = self.create_account(site_id=site_id)
 
         # Please note that we create account with same site_id, but different
         # fields. This should return existing account with given site_id.
-        self.account2 = service.create_account(
-            site_id, 'http://another.url', 'another_user',
-            'another@email.com', self.currency, self.country_code)
+        self.account2 = self.create_account(
+            site_id=site_id, url='http://another.url',
+            user_name='another_user', user_email='another@email.com')
 
     def test_existing_account_is_returned(self):
         self.assertEqual(self.account1['accountInfo']['accountNumber'],
@@ -61,19 +54,16 @@ class TestCreateExistingAccount(AccountTestCase):
 
 class TestAccountCreationWithUserTokenPassed(AccountTestCase):
     def setUp(self):
-        service = SitewitService()
         site_id = uuid.uuid4()
-
-        response = service.create_account(
-            site_id, self.url, self.user_name, self.user_email,
-            self.currency, self.country_code)
+        response = self.create_account(site_id=site_id)
 
         self.user_token = response['userInfo']['token']
 
-        self.response = service.create_account(
-            uuid.uuid4(), 'https://foo.bar', self.user_name,
-            '{}@yola.com'.format(uuid.uuid4()),
-            self.currency, self.country_code, self.user_token)
+        self.response = self.create_account(
+            site_id=uuid.uuid4(), url='https://foo.bar',
+            user_email='{}@yola.com'.format(uuid.uuid4()),
+            user_token=self.user_token
+        )
 
     def test_creates_new_account_for_the_given_user(self):
         self.assertIsNotNone(self.user_token)
@@ -83,9 +73,7 @@ class TestAccountCreationWithUserTokenPassed(AccountTestCase):
 class TestCreateAccountBadRequest(AccountTestCase):
     def test_bad_request_error_is_raised(self):
         with self.assertRaises(HTTPServiceError) as e:
-            SitewitService().create_account(
-                '', '', self.user_name, self.user_email, self.currency,
-                self.country_code)
+            self.create_account(site_id='', url='')
 
         self.assertEqual(e.exception.response.status_code, 400)
         self.assertEqual(
@@ -97,9 +85,7 @@ class TestGetAccount(AccountTestCase):
 
     def setUp(self):
         service = SitewitService()
-        self.created_account = service.create_account(
-            self.site_id, self.url, self.user_name, self.user_email,
-            self.currency, self.country_code)
+        self.created_account = self.create_account()
 
         self.retrieved_account = service.get_account(
             self.created_account['accountInfo']['token'])
@@ -124,9 +110,7 @@ class TestUpdateAccount(AccountTestCase):
 
     def setUp(self):
         service = SitewitService()
-        self.created_account = service.create_account(
-            self.site_id, self.url, self.user_name, self.user_email,
-            self.currency, self.country_code)
+        self.created_account = self.create_account()
 
         self.updated_account = service.update_account(
             self.created_account['accountInfo']['token'], 'http://url.new',
@@ -154,9 +138,7 @@ class TestUpdateAccount(AccountTestCase):
 
 class TestUpdateAccountBadRequest(AccountTestCase):
     def setUp(self):
-        created_account = self.service.create_account(
-            self.site_id, self.url, self.user_name, self.user_email,
-            self.currency, self.country_code)
+        created_account = self.create_account()
         self.token = created_account['accountInfo']['token']
 
     def test_bad_request_error_is_raised(self):
@@ -184,9 +166,7 @@ class TestDeleteAccount(AccountTestCase):
 
     def setUp(self):
         service = SitewitService()
-        self.created_account = service.create_account(
-            self.site_id, self.url, self.user_name, self.user_email,
-            self.currency, self.country_code)['accountInfo']
+        self.created_account = self.create_account()['accountInfo']
 
         self.assertEqual(self.created_account['status'], 'Active')
 
@@ -217,9 +197,7 @@ class TestGenerateSSOToken(AccountTestCase):
 
     def setUp(self):
         service = SitewitService()
-        created_account = service.create_account(
-            self.site_id, self.url, self.user_name, self.user_email,
-            self.currency, self.country_code)
+        created_account = self.create_account()
 
         user_token = created_account['userInfo']['token']
         account_token = created_account['accountInfo']['token']
