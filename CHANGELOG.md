@@ -1,5 +1,10 @@
 # [Changelog](https://github.com/yola/sitewit/releases)
 
+## 0.5.0
+
+* Use new endpoint for subscription creation
+* Add `get_account_owners` service method
+
 ## 0.4.0
 
 * Add service method to change account owner
