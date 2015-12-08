@@ -1,5 +1,6 @@
 from uuid import uuid4
 
+from sitewit.services import SitewitService
 from tests.base import SitewitTestCase
 
 
@@ -45,3 +46,8 @@ class AccountTestCase(SitewitTestCase):
         self.assertEqual(account.user.name, self.user_name)
         self.assertEqual(account.user.email, self.user_email)
         self.assertEqual(account.user.token, self.user_token)
+
+    def create_account(self):
+        return SitewitService().create_account(
+            self.site_id, self.url, self.user_name, self.user_email,
+            self.currency, self.country_code)
