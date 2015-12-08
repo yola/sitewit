@@ -266,3 +266,14 @@ class AccountAssociationWithExistentUser(AccountTestCase):
 
     def _test_account_remains_unchanged(self):
         self.assertEqual(self.account3.token, self.account1.token)
+
+
+class GetAccountOwners(AccountTestCase):
+    def setUp(self):
+        account = self.create_account()
+        self.user_token = account['userInfo']['token']
+        self.users = SitewitService().get_account_owners(
+            account['accountInfo']['token'])
+
+    def test_returns_list_of_account_owners(self):
+        self.assertEqual(self.user_token, self.users[0]['token'])
