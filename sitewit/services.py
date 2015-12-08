@@ -242,14 +242,14 @@ class SitewitService(HTTPServiceClient):
         Returns:
             Please see response format here:
             https://sandboxpapi.sitewit.com/Help/Api/
-            POST-api-subscription-campaign
+            POST-api-subscription-campaign-search
         """
         data = {'campaignId': campaign_id,
                 'budget': budget,
                 'currency': currency}
 
         return self.post(
-            '/api/subscription/campaign/', data,
+            '/api/subscription/campaign/search', data,
             headers=self._get_account_auth_header(account_token)).json()
 
     def get_campaign_subscription(self, account_token, campaign_id):
