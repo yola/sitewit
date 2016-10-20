@@ -24,7 +24,6 @@ class SitewitService(HTTPServiceClient):
         config = deepcopy(get_config('sitewit'))
         config['client_name'] = sitewit.__name__
         config['client_version'] = sitewit.__version__
-        config['send_as_json'] = True
         config.update(kwargs)
 
         self._partner_id = config['affiliate_id']
@@ -112,7 +111,7 @@ class SitewitService(HTTPServiceClient):
         }
 
         return self.put(
-            '/api/account/', data,
+            '/api/account/', json=data,
             headers=self._get_account_auth_header(account_token)).json()
 
     def change_account_owner(self, account_token, user_token=None,
@@ -139,7 +138,7 @@ class SitewitService(HTTPServiceClient):
             'userToken': user_token
         }
         return self.put(
-            '/api/account/owner', data,
+            '/api/account/owner', json=data,
             headers=self._get_account_auth_header(account_token)).json()
 
     def delete_account(self, account_token):
@@ -196,7 +195,7 @@ class SitewitService(HTTPServiceClient):
             dict of the format:   {'id': 1, 'name': 'test', 'status': 'Unpaid'}
         """
         return self.post(
-            '/api/campaign/create', data={'type': 'search'},
+            '/api/campaign/create', json={'type': 'search'},
             headers=self._get_account_auth_header(account_token)
         ).json()
 
@@ -263,7 +262,7 @@ class SitewitService(HTTPServiceClient):
                 'currency': currency}
 
         return self.post(
-            '/api/subscription/campaign/search', data,
+            '/api/subscription/campaign/search', json=data,
             headers=self._get_account_auth_header(account_token)).json()
 
     def get_campaign_subscription(self, account_token, campaign_id):
@@ -359,7 +358,7 @@ class SitewitService(HTTPServiceClient):
                 'whiteLabelSettings': settings}
 
         return self.post(
-            '/api/partner/', data=data,
+            '/api/partner/', json=data,
             headers=self._get_partner_auth_header()).json()
 
     def get_partner(self, subpartner_id):
@@ -395,7 +394,7 @@ class SitewitService(HTTPServiceClient):
             https://sandboxpapi.sitewit.com/Help/Api/PUT-api-partner-address
         """
         return self.put(
-            'api/partner/address', data=address,
+            'api/partner/address', json=address,
             headers=self._get_partner_auth_header(subpartner_id)).json()
 
     def update_partner_settings(self, subpartner_id, settings):
@@ -415,6 +414,6 @@ class SitewitService(HTTPServiceClient):
             https://sandboxpapi.sitewit.com/Help/Api/PUT-api-partner-whitelabel
         """
         return self.put(
-            'api/partner/whitelabel', data=settings,
+            'api/partner/whitelabel', json=settings,
             headers=self._get_partner_auth_header(subpartner_id),
         ).json()

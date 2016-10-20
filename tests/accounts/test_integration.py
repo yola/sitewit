@@ -1,4 +1,3 @@
-import time
 import uuid
 
 from base import AccountTestCase
@@ -277,6 +276,4 @@ class GetAccountOwners(AccountTestCase):
             account['accountInfo']['token'])
 
     def test_returns_list_of_account_owners(self):
-        # Wow. Doesn't work without this delay.
-        time.sleep(1)
-        self.assertEqual(self.user_token, self.users[0]['token'])
+        self.assertIn(self.user_token, [u['token'] for u in self.users])

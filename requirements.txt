@@ -1,5 +1,5 @@
 coverage < 4.0.0
-demands < 2.0.0
+demands == 4.0.0
 flake8 < 3.0.0
 mock == 1.0.1
 nose < 2.0.0
