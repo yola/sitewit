@@ -196,7 +196,7 @@ class SitewitService(HTTPServiceClient):
             dict of the format:   {'id': 1, 'name': 'test', 'status': 'Unpaid'}
         """
         return self.post(
-            '/api/campaign/',
+            '/api/campaign/create', data={'type': 'search'},
             headers=self._get_account_auth_header(account_token)
         ).json()
 
