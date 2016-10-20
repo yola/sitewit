@@ -2,7 +2,7 @@
 
 ## DEV
 
-* Switch to Demands >= 4.0.0
+* Switch to Demands == 4.0.0
 
 ## 0.5.0
 
