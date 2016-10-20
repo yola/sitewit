@@ -1,5 +1,9 @@
 # [Changelog](https://github.com/yola/sitewit/releases)
 
+## DEV
+
+* Switch to Demands == 4.0.0
+
 ## 0.5.0
 
 * Use new endpoint for subscription creation

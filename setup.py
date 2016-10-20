@@ -13,7 +13,7 @@ setup(
     packages=['sitewit'],
     install_requires=[
         'suds == 0.4',
-        'demands < 2.0.0',
+        'demands >= 4.0.0, < 5.0.0',
         'python-dateutil < 3.0.0',
         'yoconfig < 0.3.0'
     ]
