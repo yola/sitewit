@@ -140,6 +140,7 @@ class TestUpdatePartnerSettings(PartnerTestCase):
             'mobileAppPrimaryColor': 'dddddd',
             'mobileAppSecondaryColor': '333333',
             'mobileAppLogoUrl': 'https://www.new.com/new/sw.png',
+            'uiSettings': ['ShowMenu'],
             'features': [
                 'SEM'
             ]
