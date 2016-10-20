@@ -76,7 +76,7 @@ class SitewitService(HTTPServiceClient):
             data['userToken'] = user_token
 
         return self.post(
-            '/api/account/', data,
+            '/api/account/', json=data,
             headers=self._get_partner_auth_header()).json()
 
     def get_account(self, account_token):

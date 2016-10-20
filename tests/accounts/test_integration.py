@@ -38,7 +38,7 @@ class TestCreateAccount(AccountTestCase):
 class TestCreateExistingAccount(AccountTestCase):
 
     def setUp(self):
-        site_id = uuid.uuid4()
+        site_id = uuid.uuid4().hex
         self.account1 = self.create_account(site_id=site_id)
 
         # Please note that we create account with same site_id, but different
@@ -54,13 +54,12 @@ class TestCreateExistingAccount(AccountTestCase):
 
 class TestAccountCreationWithUserTokenPassed(AccountTestCase):
     def setUp(self):
-        site_id = uuid.uuid4()
+        site_id = uuid.uuid4().hex
         response = self.create_account(site_id=site_id)
 
         self.user_token = response['userInfo']['token']
-
         self.response = self.create_account(
-            site_id=uuid.uuid4(), url='https://foo.bar',
+            site_id=uuid.uuid4().hex, url='https://foo.bar',
             user_email='{}@yola.com'.format(uuid.uuid4()),
             user_token=self.user_token
         )
