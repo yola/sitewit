@@ -32,7 +32,8 @@ class SitewitTestCase(TestCase):
         headers = {'PartnerAuth': auth_header}
 
         if data is not None:
-            demands_mock.assert_called_once_with(url, data, headers=headers)
+            demands_mock.assert_called_once_with(
+                url, json=data, headers=headers)
         else:
             demands_mock.assert_called_once_with(url, headers=headers)
 
