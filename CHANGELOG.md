@@ -1,6 +1,6 @@
 # [Changelog](https://github.com/yola/sitewit/releases)
 
-## DEV
+## 0.6.0
 
 * Switch to Demands == 4.0.0
 
