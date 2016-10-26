@@ -1,5 +1,14 @@
 # [Changelog](https://github.com/yola/sitewit/releases)
 
+## DEV
+
+* Rename `services.subscribe_to_campaign` method to
+  `subscribe_to_search_campaign`
+* Add `subscribe_to_display_campaign` method
+* Rename `services.cancel_campaign_subscription` method to
+  `cancel_search_campaign_subscription`
+* Add `cancel_display_campaign_subscription` method
+
 ## 0.6.0
 
 * Switch to Demands == 4.0.0

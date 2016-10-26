@@ -185,17 +185,18 @@ class SitewitService(HTTPServiceClient):
 
         return result['token']
 
-    def create_campaign(self, account_token):
+    def create_campaign(self, account_token, campaign_type='search'):
         """Create new Campaign (for testing purpose)
 
         Args:
             account_token (str): account token.
+            campaign_type (str): campaign type ("display"/"search").
 
         Returns:
             dict of the format:   {'id': 1, 'name': 'test', 'status': 'Unpaid'}
         """
         return self.post(
-            '/api/campaign/create', json={'type': 'search'},
+            '/api/campaign/create', json={'type': campaign_type},
             headers=self._get_account_auth_header(account_token)
         ).json()
 
@@ -239,11 +240,11 @@ class SitewitService(HTTPServiceClient):
             '/api/campaign/%s' % (campaign_id,),
             headers=self._get_account_auth_header(account_token)).json()
 
-    def subscribe_to_campaign(self, account_token, campaign_id, budget,
-                              currency):
-        """Subscribe to campaign.
+    def subscribe_to_search_campaign(self, account_token, campaign_id, budget,
+                                     currency):
+        """Subscribe to Search campaign.
 
-        Create subscription to a given Campaign for given Account.
+        Create subscription to a given Search Campaign for given Account.
 
         Args:
             account_token (str): account token.
@@ -263,6 +264,32 @@ class SitewitService(HTTPServiceClient):
 
         return self.post(
             '/api/subscription/campaign/search', json=data,
+            headers=self._get_account_auth_header(account_token)).json()
+
+    def subscribe_to_display_campaign(
+            self, account_token, campaign_id, budget, currency):
+        """Subscribe to Display campaign.
+
+        Create subscription to a given Display Campaign for given Account.
+
+        Args:
+            account_token (str): account token.
+            campaign_id (str): campaign to subscribe.
+            budget (decimal): Desired monthly spend budget (50>=budget<=5000).
+            currency (str): https://sandboxpapi.sitewit.com/Help/ResourceModel
+                            ?modelName=BudgetCurrency
+
+        Returns:
+            Please see response format here:
+            https://sandboxpapi.sitewit.com/Help/Api/
+            POST-api-subscription-campaign-display
+        """
+        data = {'campaignId': campaign_id,
+                'budget': budget,
+                'currency': currency}
+
+        return self.post(
+            '/api/subscription/campaign/display', json=data,
             headers=self._get_account_auth_header(account_token)).json()
 
     def get_campaign_subscription(self, account_token, campaign_id):
@@ -311,11 +338,11 @@ class SitewitService(HTTPServiceClient):
             headers=self._get_partner_auth_header()
         ).json()
 
-    def cancel_campaign_subscription(self, account_token, campaign_id,
-                                     immediate=True):
-        """Cancel campaign subscription.
+    def cancel_search_campaign_subscription(self, account_token, campaign_id,
+                                            immediate=True):
+        """Cancel Search campaign subscription.
 
-        Cancel campaign subscription.
+        Cancel Search campaign subscription.
 
         Args:
             account_token (str): account token.
@@ -326,13 +353,37 @@ class SitewitService(HTTPServiceClient):
         Returns:
             Please see response format here:
             https://sandboxpapi.sitewit.com/Help/Api/
-            GET-api-subscription-campaign-id
+            DELETE-api-subscription-cancel-campaign-search
         """
         data = {'campaignId': campaign_id,
                 'cancelType': 'Immediate' if immediate else 'EndOfCycle'}
 
         return self.delete(
             'api/subscription/cancel/campaign/search/', data=data,
+            headers=self._get_account_auth_header(account_token)).json()
+
+    def cancel_display_campaign_subscription(self, account_token, campaign_id,
+                                             immediate=True):
+        """Cancel Display campaign subscription.
+
+        Cancel Display campaign subscription.
+
+        Args:
+            account_token (str): account token.
+            campaign_id (str): campaign to subscribe.
+            immediate (boolean): cancel immediately or wait till the billing
+            period ends.
+
+        Returns:
+            Please see response format here:
+            https://sandboxpapi.sitewit.com/Help/Api/
+            DELETE-api-subscription-cancel-campaign-display
+        """
+        data = {'campaignId': campaign_id,
+                'cancelType': 'Immediate' if immediate else 'EndOfCycle'}
+
+        return self.delete(
+            'api/subscription/cancel/campaign/display/', data=data,
             headers=self._get_account_auth_header(account_token)).json()
 
     def create_partner(self, name, address, settings):
