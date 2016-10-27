@@ -1,6 +1,6 @@
 # [Changelog](https://github.com/yola/sitewit/releases)
 
-## DEV
+## 0.7.0
 
 * Rename `services.subscribe_to_campaign` method to
   `subscribe_to_search_campaign`
