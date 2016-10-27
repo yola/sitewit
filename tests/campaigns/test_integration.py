@@ -21,16 +21,19 @@ class BaseCampaignTestCase(SitewitTestCase):
         cls.campaign_id = cls.service.create_campaign(
             cls.account_token, campaign_type=cls.campaign_type)['id']
 
+        cls.subscribe_method = cls.subscribe_method()
+        cls.unsubscribe_method = cls.unsubscribe_method()
+
     @classmethod
-    def subscribe_method(cls, campaign_type):
-        if campaign_type == 'search':
+    def subscribe_method(cls):
+        if cls.campaign_type == 'search':
             return cls.service.subscribe_to_search_campaign
 
         return cls.service.subscribe_to_display_campaign
 
     @classmethod
-    def unsubscribe_method(cls, campaign_type):
-        if campaign_type == 'search':
+    def unsubscribe_method(cls):
+        if cls.campaign_type == 'search':
             return cls.service.cancel_search_campaign_subscription
 
         return cls.service.cancel_display_campaign_subscription
@@ -41,8 +44,6 @@ class BaseSubscriptionTestCase(BaseCampaignTestCase):
     def setUpClass(cls):
         super(BaseSubscriptionTestCase, cls).setUpClass()
 
-        cls.subscribe_method = cls.subscribe_method(cls.campaign_type)
-        cls.unsubscribe_method = cls.unsubscribe_method(cls.campaign_type)
         cls.campaign = cls.subscribe_method(
             cls.account_token, cls.campaign_id, 500, 'USD')
 
@@ -193,8 +194,7 @@ class TestListCampaignSubscriptions(BaseCampaignTestCase):
 
     def setUp(self):
         campaign_id = self.service.create_campaign(self.account_token)['id']
-        self.subscribe_method(self.campaign_type)(
-            self.account_token, campaign_id, 100, 'USD')
+        self.subscribe_method(self.account_token, campaign_id, 100, 'USD')
 
         self.result = self.service.list_campaign_subscriptions(
             self.account_token)
