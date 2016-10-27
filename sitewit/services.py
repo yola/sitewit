@@ -359,7 +359,7 @@ class SitewitService(HTTPServiceClient):
                 'cancelType': 'Immediate' if immediate else 'EndOfCycle'}
 
         return self.delete(
-            'api/subscription/cancel/campaign/search/', data=data,
+            'api/subscription/cancel/campaign/search/', json=data,
             headers=self._get_account_auth_header(account_token)).json()
 
     def cancel_display_campaign_subscription(self, account_token, campaign_id,
@@ -383,7 +383,7 @@ class SitewitService(HTTPServiceClient):
                 'cancelType': 'Immediate' if immediate else 'EndOfCycle'}
 
         return self.delete(
-            'api/subscription/cancel/campaign/display/', data=data,
+            'api/subscription/cancel/campaign/display/', json=data,
             headers=self._get_account_auth_header(account_token)).json()
 
     def create_partner(self, name, address, settings):
