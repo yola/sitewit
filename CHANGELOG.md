@@ -1,5 +1,9 @@
 # [Changelog](https://github.com/yola/sitewit/releases)
 
+## DEV
+
+* Fix `Subscription` initialization in `iter_subscriptions` method
+
 ## 0.7.0
 
 * Rename `services.subscribe_to_campaign` method to
