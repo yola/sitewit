@@ -58,11 +58,6 @@ class BaseSearchCampaignSubscriptionTestCase(BaseSubscriptionTestCase):
     campaign_type = 'search'
 
 
-class BaseDisplayCampaignSubscriptionTestCase(
-        BaseSubscriptionTestCase):
-    campaign_type = 'display'
-
-
 class BaseCancelledSubscriptionTestCase(BaseSubscriptionTestCase):
     @classmethod
     def setUpClass(cls):
