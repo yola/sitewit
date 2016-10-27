@@ -6,6 +6,7 @@ from tests.base import SitewitTestCase
 
 class BaseCampaignTestCase(SitewitTestCase):
 
+    campaign_type = 'search'
     non_existent_campaign_id = 23232323
 
     @classmethod
@@ -17,14 +18,33 @@ class BaseCampaignTestCase(SitewitTestCase):
             'foo{0}@bar.com'.format(uuid4().hex), 'USD', 'US'
         )['accountInfo']['token']
 
-        cls.campaign_id = cls.service.create_campaign(cls.account_token)['id']
+        cls.campaign_id = cls.service.create_campaign(
+            cls.account_token, campaign_type=cls.campaign_type)['id']
+
+        cls.subscribe_method = cls.subscribe_method()
+        cls.unsubscribe_method = cls.unsubscribe_method()
+
+    @classmethod
+    def subscribe_method(cls):
+        if cls.campaign_type == 'search':
+            return cls.service.subscribe_to_search_campaign
+
+        return cls.service.subscribe_to_display_campaign
+
+    @classmethod
+    def unsubscribe_method(cls):
+        if cls.campaign_type == 'search':
+            return cls.service.cancel_search_campaign_subscription
+
+        return cls.service.cancel_display_campaign_subscription
 
 
 class BaseSubscriptionTestCase(BaseCampaignTestCase):
     @classmethod
     def setUpClass(cls):
         super(BaseSubscriptionTestCase, cls).setUpClass()
-        cls.campaign = cls.service.subscribe_to_campaign(
+
+        cls.campaign = cls.subscribe_method(
             cls.account_token, cls.campaign_id, 500, 'USD')
 
     def assert_sub_returned(self, response, campaign_id, budget,
@@ -34,11 +54,15 @@ class BaseSubscriptionTestCase(BaseCampaignTestCase):
         self.assertEqual(response['subscription']['budget'], budget)
 
 
+class BaseSearchCampaignSubscriptionTestCase(BaseSubscriptionTestCase):
+    campaign_type = 'search'
+
+
 class BaseCancelledSubscriptionTestCase(BaseSubscriptionTestCase):
     @classmethod
     def setUpClass(cls):
         super(BaseCancelledSubscriptionTestCase, cls).setUpClass()
-        cls.campaign = cls.service.cancel_campaign_subscription(
+        cls.campaign = cls.unsubscribe_method(
             cls.account_token, cls.campaign_id)
 
 
@@ -94,25 +118,42 @@ class TestDeleteCampaign(BaseCampaignTestCase):
         self.assertEqual(self.result['status'], 'Deleted')
 
 
-class TestSubscribeToCampaign(BaseSubscriptionTestCase):
+class TestSubscribeToSearchCampaign(BaseSearchCampaignSubscriptionTestCase):
     def test_subscription_is_returned(self):
         self.assertTrue(self.campaign['subscription']['active'])
 
 
-class TestSubscribeToCampaignNotFound(BaseCampaignTestCase):
+class TestSubscribeToDisplayCampaign(TestSubscribeToSearchCampaign):
+    campaign_type = 'display'
+
+
+class TestSubscribeToSearchCampaignNotFound(
+        BaseSearchCampaignSubscriptionTestCase):
     def test_error_404_is_raised(self):
         self.assertHTTPErrorIsRaised(
-            self.service.subscribe_to_campaign, (
+            self.subscribe_method, (
                 self.account_token,
                 self.non_existent_campaign_id, 500, 'USD'), 404)
 
 
-class TestSubscribeToCampaignValidationError(BaseCampaignTestCase):
+class TestSubscribeToDisplayCampaignNotFound(
+        TestSubscribeToSearchCampaignNotFound):
+    campaign_type = 'display'
+
+
+class TestSubscribeToSearchCampaignValidationError(
+        BaseSearchCampaignSubscriptionTestCase):
     def test_error_400_is_raised(self):
         self.assertHTTPErrorIsRaised(
-            self.service.subscribe_to_campaign, (
+            self.subscribe_method, (
                 self.account_token,
-                self.non_existent_campaign_id, 0, 'UAH'), 400)
+                self.non_existent_campaign_id, 0, 'UAH'), 400
+        )
+
+
+class TestSubscribeToDisplayCampaignValidationError(
+        TestSubscribeToSearchCampaignValidationError):
+    campaign_type = 'display'
 
 
 class TestGetCampaignSubscription(BaseCampaignTestCase):
@@ -134,6 +175,8 @@ class TestGetCampaignSubscriptionNotFound(BaseCampaignTestCase):
 
 
 class TestGetCampaignSubscriptionBadAccountToken(BaseCampaignTestCase):
+    campaign_type = 'search'
+
     def test_error_401_is_raised(self):
         self.assertHTTPErrorIsRaised(
             self.service.get_campaign_subscription, (
@@ -141,118 +184,185 @@ class TestGetCampaignSubscriptionBadAccountToken(BaseCampaignTestCase):
             401, {u'Message': u'Invalid SubPartner Identifier'})
 
 
-class TestListCampaignSubscriptions(BaseSubscriptionTestCase):
+class TestListCampaignSubscriptions(BaseCampaignTestCase):
+    campaign_type = 'search'
+
     def setUp(self):
         campaign_id = self.service.create_campaign(self.account_token)['id']
-        self.service.subscribe_to_campaign(
-            self.account_token, campaign_id, 100, 'USD')
+        self.subscribe_method(self.account_token, campaign_id, 100, 'USD')
 
         self.result = self.service.list_campaign_subscriptions(
             self.account_token)
 
     def test_campaign_subscriptions_are_returned(self):
-        self.assertEqual(len(self.result), 2)
+        self.assertEqual(len(self.result), 1)
 
         for sub in self.result:
             self.assertTrue(sub['name'].startswith('Test Campaign'))
 
 
 class TestListCampaignSubscriptionsBadAccountToken(BaseCampaignTestCase):
+    campaign_type = 'search'
+
     def test_error_401_is_raised(self):
         self.assertHTTPErrorIsRaised(
             self.service.list_campaign_subscriptions, (self.random_token,),
             401, {u'Message': u'Invalid SubPartner Identifier'})
 
 
-class TestCancelCampaignSubscription(BaseSubscriptionTestCase):
+class TestCancelSearchCampaignSubscription(
+        BaseSearchCampaignSubscriptionTestCase):
     def setUp(self):
-        self.result = self.service.cancel_campaign_subscription(
+        self.result = self.unsubscribe_method(
             self.account_token, self.campaign_id)
 
     def test_campaign_is_cancelled(self):
         self.assertEqual(self.result['status'], 'Cancelled')
 
 
-class TestCancelCampaignSubscriptionBadAccountToken(BaseCampaignTestCase):
+class TestCancelDisplayCampaignSubscription(
+        TestCancelSearchCampaignSubscription):
+    campaign_type = 'display'
+
+
+class TestCancelSearchCampaignSubscriptionBadAccountToken(
+        BaseSearchCampaignSubscriptionTestCase):
     def test_error_401_is_raised(self):
         self.assertHTTPErrorIsRaised(
-            self.service.cancel_campaign_subscription, (
+            self.unsubscribe_method, (
                 self.random_token, self.campaign_id),
             401, {u'Message': u'Invalid SubPartner Identifier'})
 
 
-class TestCancelCampaignSubscriptionNotFound(BaseCampaignTestCase):
+class TestCancelDisplayCampaignSubscriptionBadAccountToken(
+        TestCancelSearchCampaignSubscriptionBadAccountToken):
+    campaign_type = 'display'
+
+
+class TestCancelSearchCampaignSubscriptionNotFound(
+        BaseSearchCampaignSubscriptionTestCase):
     def test_error_404_is_raised(self):
         self.assertHTTPErrorIsRaised(
-            self.service.cancel_campaign_subscription, (
+            self.unsubscribe_method, (
                 self.account_token, self.non_existent_campaign_id), 404)
 
 
-class TestSubscribeToCampaignCurrencyMismatch(BaseSubscriptionTestCase):
+class TestCancelDisplayCampaignSubscriptionNotFound(
+        TestCancelSearchCampaignSubscriptionNotFound):
+    campaign_type = 'display'
+
+
+class TestSubscribeToSearchCampaignCurrencyMismatch(
+        BaseSearchCampaignSubscriptionTestCase):
     def test_error_400_is_raised(self):
         self.assertHTTPErrorIsRaised(
-            self.service.subscribe_to_campaign, (
+            self.subscribe_method, (
                 self.account_token,
                 self.campaign_id, 500, 'UAH'), 400)
 
 
-class SubscribeToCampaignActiveSub(BaseSubscriptionTestCase):
+class TestSubscribeToDisplayCampaignCurrencyMismatch(
+        TestSubscribeToSearchCampaignCurrencyMismatch):
+    campaign_type = 'display'
+
+
+class SubscribeToSearchCampaignActiveSub(
+        BaseSearchCampaignSubscriptionTestCase):
     def setUp(self):
-        self.result = self.service.subscribe_to_campaign(
+        self.result = self.subscribe_method(
             self.account_token, self.campaign_id, 500, 'USD')
 
     def test_upgraded_campaign_is_returned(self):
         self.assert_sub_returned(self.result, self.campaign_id, 500)
 
 
-class SubscribeToCampaignActiveSubDowngrade(BaseSubscriptionTestCase):
+class SubscribeToDisplayCampaignActiveSub(
+        SubscribeToSearchCampaignActiveSub):
+    campaign_type = 'display'
+
+
+class SubscribeToSeachCampaignActiveSubDowngrade(
+        BaseSearchCampaignSubscriptionTestCase):
     def setUp(self):
-        self.result = self.service.subscribe_to_campaign(
+        self.result = self.subscribe_method(
             self.account_token, self.campaign_id, 100, 'USD')
 
     def test_downgraded_campaign_is_returned(self):
         self.assert_sub_returned(self.result, self.campaign_id, 100)
 
 
-class SubscribeToCampaignActiveSubUpgrade(BaseSubscriptionTestCase):
+class SubscribeToDisplayCampaignActiveSubDowngrade(
+        SubscribeToSeachCampaignActiveSubDowngrade):
+    campaign_type = 'display'
+
+
+class SubscribeToSearchCampaignActiveSubUpgrade(
+        BaseSearchCampaignSubscriptionTestCase):
     def setUp(self):
-        self.result = self.service.subscribe_to_campaign(
+        self.result = self.subscribe_method(
             self.account_token, self.campaign_id, 600, 'USD')
 
     def test_upgraded_campaign_is_returned(self):
         self.assert_sub_returned(self.result, self.campaign_id, 600)
 
 
-class SubscribeToCampaignCancelledSub(BaseCancelledSubscriptionTestCase):
+class SubscribeToDisplayCampaignActiveSubUpgrade(
+        SubscribeToSearchCampaignActiveSubUpgrade):
+    campaign_type = 'display'
+
+
+class SubscribeToSearchCampaignCancelledSub(
+        BaseCancelledSubscriptionTestCase):
     def setUp(self):
-        self.result = self.service.subscribe_to_campaign(
+        self.result = self.subscribe_method(
             self.account_token, self.campaign_id, 500, 'USD')
 
     def test_resumes_subscription(self):
         self.assert_sub_returned(self.result, self.campaign_id, 500)
 
 
-class SubscribeToCampaignCancelledSubUpgrade(
+class SubscribeToDisplayCampaignCancelledSub(
         BaseCancelledSubscriptionTestCase):
+    campaign_type = 'display'
+
+
+class SubscribeToSearchCampaignCancelledSubUpgrade(
+        BaseCancelledSubscriptionTestCase):
+    campaign_type = 'search'
+
     def setUp(self):
-        self.result = self.service.subscribe_to_campaign(
+        self.result = self.subscribe_method(
             self.account_token, self.campaign_id, 1000, 'USD')
 
     def test_upgrades_subscription(self):
         self.assert_sub_returned(self.result, self.campaign_id, 1000)
 
 
-class SubscribeToCampaignCancelledSubDowngrade(
+class SubscribeToDisplayCampaignCancelledSubUpgrade(
         BaseCancelledSubscriptionTestCase):
+    campaign_type = 'display'
+
+
+class SubscribeToSearchCampaignCancelledSubDowngrade(
+        BaseCancelledSubscriptionTestCase):
+    campaign_type = 'search'
+
     def setUp(self):
-        self.result = self.service.subscribe_to_campaign(
+        self.result = self.subscribe_method(
             self.account_token, self.campaign_id, 100, 'USD')
 
     def test_downgrades_subscription(self):
         self.assert_sub_returned(self.result, self.campaign_id, 100)
 
 
+class SubscribeToDisplayCampaignCancelledSubDowngrade(
+        BaseCancelledSubscriptionTestCase):
+    campaign_type = 'display'
+
+
 class TestIterSubscriptions(BaseCampaignTestCase):
+    campaign_type = 'search'
+
     def setUp(self):
         self.subscription = Subscription.iter_subscriptions().next()
 
@@ -261,6 +371,8 @@ class TestIterSubscriptions(BaseCampaignTestCase):
 
 
 class TestListSubscriptions(BaseCampaignTestCase):
+    campaign_type = 'search'
+
     def setUp(self):
         self.subscriptions = self.service.list_subscriptions(0, 1)
 
