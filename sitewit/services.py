@@ -45,7 +45,8 @@ class SitewitService(HTTPServiceClient):
         return {'PartnerAuth': base64.b64encode(':'.join(elements))}
 
     def create_account(self, site_id, url, user_name, user_email,
-                       currency, country_code, user_token=None):
+                       currency, country_code, user_token=None,
+                       partner_id=None):
         """Create new SiteWit account.
 
         Args:
@@ -57,6 +58,7 @@ class SitewitService(HTTPServiceClient):
             country_code (str): user's location.
             user_token (str, optional): user token in case this account is
                 owned by existing user.
+            partner_id (str, optional): Yola user's partner_id
 
         Returns:
             JSON of format:
@@ -70,8 +72,11 @@ class SitewitService(HTTPServiceClient):
             'name': user_name,
             'email': user_email,
             'currency': currency,
-            'countryCode': country_code
+            'countryCode': country_code,
         }
+        if partner_id is not None:
+            data['partner_id'] = partner_id
+
         if user_token is not None:
             data['userToken'] = user_token
 

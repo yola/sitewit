@@ -60,7 +60,8 @@ class Account(SiteWitServiceModel):
         email = cls._get_email(user.id)
         user_name = cls._get_valid_user_name(user.name)
         result = cls.get_service().create_account(
-            site_id, url, user_name, email, 'USD', 'US', user_token)
+            site_id, url, user_name, email, 'USD', 'US', user_token,
+            user.partner_id)
 
         return Account(result['accountInfo'], user_data=result['userInfo'])
 

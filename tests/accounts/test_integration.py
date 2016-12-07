@@ -6,9 +6,10 @@ from sitewit.services import HTTPServiceError, SitewitService
 
 
 class FakeUser(object):
-    def __init__(self, user_id, name):
+    def __init__(self, user_id, name, partner_id):
         self.id = user_id
         self.name = name
+        self.partner_id = partner_id
 
 
 class TestCreateAccount(AccountTestCase):
@@ -223,10 +224,10 @@ class AccountAssociationWithNewUser(AccountTestCase):
     @classmethod
     def setUpClass(cls):
         super(AccountAssociationWithNewUser, cls).setUpClass()
-        user = FakeUser(cls.user_id, cls.user_name)
+        user = FakeUser(cls.user_id, cls.user_name, cls.partner_id)
         cls.old_account = Account.create(user, cls.site_id, cls.url)
 
-        cls.new_user = FakeUser(uuid.uuid4().hex, 'new name')
+        cls.new_user = FakeUser(uuid.uuid4().hex, 'new name', cls.partner_id)
         cls.new_account = Account.associate_with_new_user(
             cls.old_account.token, cls.new_user)
 
@@ -249,10 +250,10 @@ class AccountAssociationWithExistentUser(AccountTestCase):
     @classmethod
     def setUpClass(cls):
         super(AccountAssociationWithExistentUser, cls).setUpClass()
-        user1 = FakeUser(cls.user_id, cls.user_name)
+        user1 = FakeUser(cls.user_id, cls.user_name, 'Yola')
         cls.account1 = Account.create(user1, cls.site_id, cls.url)
 
-        user2 = FakeUser(uuid.uuid4().hex, 'new name')
+        user2 = FakeUser(uuid.uuid4().hex, 'new name', 'Yola')
         cls.account2 = Account.create(
             user2, uuid.uuid4().hex, 'http://foo2.com')
 

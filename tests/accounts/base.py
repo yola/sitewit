@@ -8,6 +8,7 @@ class AccountTestCase(SitewitTestCase):
     account_id = 9999
     site_id = uuid4().hex
     user_id = uuid4().hex
+    partner_id = 'Yola'
     country_code = 'US'
     currency = 'USD'
     token = 'token'
