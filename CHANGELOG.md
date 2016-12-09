@@ -1,5 +1,9 @@
 # [Changelog](https://github.com/yola/sitewit/releases)
 
+## 0.8.1
+
+* Pass `partner_id` as a part of account data on Accout creation
+
 ## 0.7.1
 
 * Fix `Subscription` initialization in `iter_subscriptions` method
