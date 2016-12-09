@@ -35,14 +35,24 @@ class SitewitService(HTTPServiceClient):
         return self._compose_auth_header((
             self._partner_id, self._partner_token, account_token))
 
-    def _get_partner_auth_headers(self, subpartner_id=None, remote_id=None):
+    def _get_partner_auth_headers(
+            self, subpartner_id=None, remote_subpartner_id=None):
+
+        if subpartner_id is not None and remote_subpartner_id is not None:
+            raise ValueError(
+                'Params subpartner_id and remote_subpartner_id are mutually'
+                'exclusive'
+            )
+
         headers = {}
         auth_list = [self._partner_id, self._partner_token]
 
         if subpartner_id is not None:
             auth_list.append(subpartner_id)
-        elif remote_id is not None:
-            headers['RemoteSubPartnerId'] = base64.b64encode(remote_id)
+
+        if remote_subpartner_id is not None:
+            headers['RemoteSubPartnerId'] = base64.b64encode(
+                remote_subpartner_id)
 
         headers.update(self._compose_auth_header(auth_list))
         return headers
@@ -87,7 +97,7 @@ class SitewitService(HTTPServiceClient):
         return self.post(
             '/api/account/', json=data,
             headers=self._get_partner_auth_headers(
-                remote_id=remote_id)).json()
+                remote_subpartner_id=remote_id)).json()
 
     def get_account(self, account_token):
         """Get SiteWit account.

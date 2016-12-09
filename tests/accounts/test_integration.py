@@ -1,16 +1,17 @@
 import uuid
 
 from base import AccountTestCase
-from sitewit.tests.partners.base import PartnerTestCase
 from sitewit.models import Account
 from sitewit.services import HTTPServiceError, SitewitService
+from tests.partners.base import PartnerTestCase
 
 
 class FakeUser(object):
-    def __init__(self, user_id, name, partner_id):
+    def __init__(self, user_id, name, partner_id, is_whitelabel=False):
         self.id = user_id
         self.name = name
         self.partner_id = partner_id
+        self.is_whitelabel = is_whitelabel
 
 
 class TestCreateAccount(AccountTestCase):

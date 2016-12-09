@@ -1,6 +1,6 @@
 # [Changelog](https://github.com/yola/sitewit/releases)
 
-## 0.8.0
+## DEV
 
 * Add ability to pass `remote_id` to `create_partner` and `create_account`.
 
