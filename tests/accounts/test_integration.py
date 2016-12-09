@@ -1,6 +1,7 @@
 import uuid
 
 from base import AccountTestCase
+from sitewit.tests.partners.base import PartnerTestCase
 from sitewit.models import Account
 from sitewit.services import HTTPServiceError, SitewitService
 
@@ -16,6 +17,33 @@ class TestCreateAccount(AccountTestCase):
 
     def setUp(self):
         self.result = self.create_account()
+
+    def test_account_info_is_returned(self):
+        account = self.result['accountInfo']
+
+        self.assertIsNotNone(account['accountNumber'])
+        self.assertIsNotNone(account['token'])
+
+        self.assertEqual(account['url'], self.url)
+        self.assertEqual(account['countryCode'], self.country_code)
+        self.assertEqual(account['timeZone'], self.time_zone)
+        self.assertEqual(account['currency'], self.currency)
+        self.assertEqual(account['status'], 'Active')
+
+    def test_user_info_is_returned(self):
+        user = self.result['userInfo']
+        self.assertEqual(user['name'], self.user_name)
+        self.assertEqual(user['email'], self.user_email)
+        self.assertIsNotNone(user['token'])
+
+
+class TestCreateAccountWithRemoteID(AccountTestCase, PartnerTestCase):
+    def setUp(self):
+        self.remote_id = uuid.uuid4().hex
+        self.partner = self.service.create_partner(
+            'SubPartner{}'.format(self.remote_id), self.address,
+            self.settings, remote_id=self.remote_id)
+        self.result = self.create_account(remote_id=self.remote_id)
 
     def test_account_info_is_returned(self):
         account = self.result['accountInfo']

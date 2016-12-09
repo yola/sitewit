@@ -20,11 +20,15 @@ class SitewitTestCase(TestCase):
         cls.service = SitewitService()
 
     def assertDemandsIsCalled(self, demands_mock, data=None,
-                              account_token=None, url='/api/account/'):
+                              account_token=None, url='/api/account/',
+                              subpartner_id=None):
         partner_id = self.config.common.sitewit['affiliate_id']
         partner_token = self.config.common.sitewit['affiliate_token']
 
         auth_info = '%s:%s' % (partner_id, partner_token)
+        if subpartner_id is not None:
+            auth_info = '%s:%s' % (auth_info, subpartner_id)
+
         if account_token is not None:
             auth_info = '%s:%s' % (auth_info, account_token)
 
