@@ -21,19 +21,19 @@ class SitewitTestCase(TestCase):
 
     def assertDemandsIsCalled(self, demands_mock, data=None,
                               account_token=None, url='/api/account/',
-                              subpartner_id=None):
+                              remote_id=None):
         partner_id = self.config.common.sitewit['affiliate_id']
         partner_token = self.config.common.sitewit['affiliate_token']
 
         auth_info = '%s:%s' % (partner_id, partner_token)
-        if subpartner_id is not None:
-            auth_info = '%s:%s' % (auth_info, subpartner_id)
 
         if account_token is not None:
             auth_info = '%s:%s' % (auth_info, account_token)
 
         auth_header = base64.b64encode(auth_info)
         headers = {'PartnerAuth': auth_header}
+        if remote_id is not None:
+            headers['RemoteSubPartnerId'] = base64.b64encode(remote_id)
 
         if data is not None:
             demands_mock.assert_called_once_with(

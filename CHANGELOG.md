@@ -1,8 +1,8 @@
 # [Changelog](https://github.com/yola/sitewit/releases)
 
-## 0.8.1
+## 0.8.0
 
-* Pass `partner_id` as a part of account data on Accout creation
+* Add ability to pass `remote_id` to `create_partner` and `create_account`.
 
 ## 0.7.1
 
