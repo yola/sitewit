@@ -38,7 +38,7 @@ class SitewitService(HTTPServiceClient):
     def _get_partner_auth_headers(
             self, subpartner_id=None, remote_subpartner_id=None):
 
-        if subpartner_id is not None and remote_subpartner_id is not None:
+        if subpartner_id and remote_subpartner_id:
             raise ValueError(
                 'Params subpartner_id and remote_subpartner_id are mutually'
                 'exclusive'
@@ -426,12 +426,12 @@ class SitewitService(HTTPServiceClient):
             Please see response specification here:
             https://sandboxpapi.sitewit.com/Help/Api/GET-api-Partner
         """
-        data = {'name': name,
-                'address': address,
-                'whiteLabelSettings': settings}
-
-        if remote_id is not None:
-            data['remote_id'] = remote_id
+        data = {
+            'name': name,
+            'address': address,
+            'whiteLabelSettings': settings,
+            'remote_id': remote_id
+        }
 
         return self.post(
             '/api/partner/', json=data,

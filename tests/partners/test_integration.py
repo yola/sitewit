@@ -30,6 +30,7 @@ class TestCreatePartner(PartnerTestCase):
         # These fields are taken from config, no need to compare them.
         del self.result['partnerId']
         del self.result['partnerToken']
+        del self.result['whiteLabelSettings']['urlLinks']
 
     def test_partner_is_returned(self):
         expected_result = dict(self.partner_data)
@@ -59,7 +60,9 @@ class TestGetPartner(PartnerTestCase):
         self.create_result = service.create_partner(
             uuid.uuid4().hex, self.address, self.settings)
 
+        del self.create_result['whiteLabelSettings']['urlLinks']
         self.get_result = service.get_partner(self.create_result['partnerId'])
+        del self.get_result['whiteLabelSettings']['urlLinks']
 
     def test_partner_is_returned(self):
         self.assertEqual(
@@ -130,33 +133,21 @@ class TestUpdatePartnerSettings(PartnerTestCase):
         create_result = service.create_partner(
             uuid.uuid4().hex, self.address, self.settings)
 
-        self.new_settings = {
-            'headerColor': 'aaaaaa',
-            'headerTextColor': '111111',
-            'headerLogoUrl': 'https://www.partner.com/sw.png',
-            'supportPhone': '800-555-1113',
-            'supportEmail': 'somebody@qa.com',
-            'supportUrl': 'https://support.new.com',
-            'mobileAppPrimaryColor': 'dddddd',
-            'mobileAppSecondaryColor': '333333',
-            'mobileAppLogoUrl': 'https://www.new.com/new/sw.png',
-            'uiSettings': ['ShowMenu'],
-            'features': [
-                'SEM'
-            ]
-        }
+        self.settings = service.get_partner(
+            create_result['partnerId'])['whiteLabelSettings']
+        self.settings['headerColor'] = 'aabbcc'
 
         self.update_result = service.update_partner_settings(
-            create_result['partnerId'], self.new_settings)
+            create_result['partnerId'], self.settings)
 
         self.get_result = service.get_partner(
             create_result['partnerId'])['whiteLabelSettings']
 
     def test_partner_settings_are_returned(self):
-        self.assertEqual(self.update_result, self.new_settings)
+        self.assertEqual(self.update_result, self.settings)
 
     def test_settings_are_updated(self):
-        self.assertEqual(self.get_result, self.new_settings)
+        self.assertEqual(self.get_result, self.settings)
 
 
 class TestUpdatePartnerSettingsValidationFailed(PartnerTestCase):

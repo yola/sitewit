@@ -29,7 +29,7 @@ class PartnerTestCase(SitewitTestCase):
             'SEM',
             'Connect',
             'Analytics'
-        ]
+        ],
     }
 
     partner_data = {
@@ -37,4 +37,5 @@ class PartnerTestCase(SitewitTestCase):
         'address': address,
         'whiteLabelSettings': settings,
         'status': 'Active',
+        'remoteId': None,
     }

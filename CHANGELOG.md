@@ -2,7 +2,8 @@
 
 ## DEV
 
-* Add ability to pass `remote_id` to `create_partner` and `create_account`.
+* Add ability optional "remote id" to `create_partner` and `create_account`
+  calls.
 
 ## 0.7.1
 
