@@ -59,10 +59,11 @@ class Account(SiteWitServiceModel):
         """
         email = cls._get_email(user.id)
         user_name = cls._get_valid_user_name(user.name)
+        subpartner_id = user.partner_id if user.is_whitelabel else None
 
         result = cls.get_service().create_account(
             site_id, url, user_name, email, 'USD', 'US', user_token,
-            remote_id=user.partner_id if user.is_whitelabel else None)
+            remote_subpartner_id=subpartner_id)
 
         return Account(result['accountInfo'], user_data=result['userInfo'])
 

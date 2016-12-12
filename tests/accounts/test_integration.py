@@ -40,11 +40,12 @@ class TestCreateAccount(AccountTestCase):
 
 class TestCreateAccountWithRemoteID(AccountTestCase, PartnerTestCase):
     def setUp(self):
-        self.remote_id = uuid.uuid4().hex
+        self.remote_subpartner_id = uuid.uuid4().hex
         self.partner = self.service.create_partner(
-            'SubPartner{}'.format(self.remote_id), self.address,
-            self.settings, remote_id=self.remote_id)
-        self.result = self.create_account(remote_id=self.remote_id)
+            'SubPartner{}'.format(self.remote_subpartner_id), self.address,
+            self.settings, remote_id=self.remote_subpartner_id)
+        self.result = self.create_account(
+            remote_subpartner_id=self.remote_subpartner_id)
 
     def test_account_info_is_returned(self):
         account = self.result['accountInfo']

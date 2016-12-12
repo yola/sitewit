@@ -62,7 +62,7 @@ class SitewitService(HTTPServiceClient):
 
     def create_account(self, site_id, url, user_name, user_email,
                        currency, country_code, user_token=None,
-                       remote_id=None):
+                       remote_subpartner_id=None):
         """Create new SiteWit account.
 
         Args:
@@ -74,7 +74,8 @@ class SitewitService(HTTPServiceClient):
             country_code (str): user's location.
             user_token (str, optional): user token in case this account is
                 owned by existing user.
-            remote_id (str, optional): Yola user's partner_id
+            remote_subpartner_id (str, optional): user's partner_id on
+                                                  customer side)
 
         Returns:
             JSON of format:
@@ -97,7 +98,7 @@ class SitewitService(HTTPServiceClient):
         return self.post(
             '/api/account/', json=data,
             headers=self._get_partner_auth_headers(
-                remote_subpartner_id=remote_id)).json()
+                remote_subpartner_id=remote_subpartner_id)).json()
 
     def get_account(self, account_token):
         """Get SiteWit account.
@@ -431,6 +432,7 @@ class SitewitService(HTTPServiceClient):
 
         if remote_id is not None:
             data['remote_id'] = remote_id
+
         return self.post(
             '/api/partner/', json=data,
             headers=self._get_partner_auth_headers()).json()
