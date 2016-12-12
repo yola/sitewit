@@ -2,8 +2,8 @@
 
 ## DEV
 
-* Add ability optional "remote id" to `create_partner` and `create_account`
-  calls.
+* Add optional `remote_id` param to `create_partner` method.
+* Add optional `remote_subpartner_id` param to `create_account` method.
 
 ## 0.7.1
 

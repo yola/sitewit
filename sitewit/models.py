@@ -203,7 +203,8 @@ class Subscription(SiteWitServiceModel):
 
             for account_data in batch:
                 url = account_data['url']
-                site_id = UUID(account_data['clientId']).hex
+                client_id = account_data['clientId']
+                site_id = UUID(client_id.hex) if client_id else None
                 for subscription_data in account_data['subscriptions']:
                     yield cls(site_id, url, subscription_data)
 
