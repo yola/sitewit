@@ -37,5 +37,4 @@ class PartnerTestCase(SitewitTestCase):
         'address': address,
         'whiteLabelSettings': settings,
         'status': 'Active',
-        'remoteId': None,
     }

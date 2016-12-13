@@ -430,7 +430,7 @@ class SitewitService(HTTPServiceClient):
             'name': name,
             'address': address,
             'whiteLabelSettings': settings,
-            'remote_id': remote_id
+            'remoteId': remote_id,
         }
 
         return self.post(

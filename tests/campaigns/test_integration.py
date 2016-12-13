@@ -360,7 +360,7 @@ class SubscribeToDisplayCampaignCancelledSubDowngrade(
     campaign_type = 'display'
 
 
-class TestIterSubscriptions(BaseCampaignTestCase):
+class TestIterSubscriptions(BaseSubscriptionTestCase):
     campaign_type = 'search'
 
     def setUp(self):
