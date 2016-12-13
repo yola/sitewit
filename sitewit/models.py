@@ -203,9 +203,9 @@ class Subscription(SiteWitServiceModel):
 
             for account_data in batch:
                 url = account_data['url']
-                client_id = account_data['clientId']
+                site_id = account_data['clientId']
                 for subscription_data in account_data['subscriptions']:
-                    yield cls(UUID(client_id).hex, url, subscription_data)
+                    yield cls(UUID(site_id).hex, url, subscription_data)
 
             if len(batch) < limit:
                 return
