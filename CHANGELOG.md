@@ -1,5 +1,10 @@
 # [Changelog](https://github.com/yola/sitewit/releases)
 
+## DEV
+
+* Add optional `remote_id` param to `create_partner` method.
+* Add optional `remote_subpartner_id` param to `create_account` method.
+
 ## 0.7.1
 
 * Fix `Subscription` initialization in `iter_subscriptions` method

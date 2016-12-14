@@ -35,17 +35,34 @@ class SitewitService(HTTPServiceClient):
         return self._compose_auth_header((
             self._partner_id, self._partner_token, account_token))
 
-    def _get_partner_auth_header(self, subpartner_id=None):
+    def _get_partner_auth_headers(
+            self, subpartner_id=None, remote_subpartner_id=None):
+
+        if subpartner_id and remote_subpartner_id:
+            raise ValueError(
+                'Params subpartner_id and remote_subpartner_id are mutually'
+                'exclusive'
+            )
+
+        headers = {}
         auth_list = [self._partner_id, self._partner_token]
+
         if subpartner_id is not None:
             auth_list.append(subpartner_id)
-        return self._compose_auth_header(auth_list)
+
+        if remote_subpartner_id is not None:
+            headers['RemoteSubPartnerId'] = base64.b64encode(
+                remote_subpartner_id)
+
+        headers.update(self._compose_auth_header(auth_list))
+        return headers
 
     def _compose_auth_header(self, elements):
         return {'PartnerAuth': base64.b64encode(':'.join(elements))}
 
     def create_account(self, site_id, url, user_name, user_email,
-                       currency, country_code, user_token=None):
+                       currency, country_code, user_token=None,
+                       remote_subpartner_id=None):
         """Create new SiteWit account.
 
         Args:
@@ -57,6 +74,8 @@ class SitewitService(HTTPServiceClient):
             country_code (str): user's location.
             user_token (str, optional): user token in case this account is
                 owned by existing user.
+            remote_subpartner_id (str, optional): user's partner_id on
+                                                  customer side)
 
         Returns:
             JSON of format:
@@ -70,14 +89,16 @@ class SitewitService(HTTPServiceClient):
             'name': user_name,
             'email': user_email,
             'currency': currency,
-            'countryCode': country_code
+            'countryCode': country_code,
         }
+
         if user_token is not None:
             data['userToken'] = user_token
 
         return self.post(
             '/api/account/', json=data,
-            headers=self._get_partner_auth_header()).json()
+            headers=self._get_partner_auth_headers(
+                remote_subpartner_id=remote_subpartner_id)).json()
 
     def get_account(self, account_token):
         """Get SiteWit account.
@@ -335,7 +356,7 @@ class SitewitService(HTTPServiceClient):
         return self.get(
             '/api/subscription/audit',
             params={'limit': limit, 'skip': offset},
-            headers=self._get_partner_auth_header()
+            headers=self._get_partner_auth_headers()
         ).json()
 
     def cancel_search_campaign_subscription(self, account_token, campaign_id,
@@ -386,7 +407,7 @@ class SitewitService(HTTPServiceClient):
             'api/subscription/cancel/campaign/display/', json=data,
             headers=self._get_account_auth_header(account_token)).json()
 
-    def create_partner(self, name, address, settings):
+    def create_partner(self, name, address, settings, remote_id=None):
         """Create partner.
 
         Create subpartner for current partner.
@@ -398,19 +419,23 @@ class SitewitService(HTTPServiceClient):
                 modelName=Address%20%28Create%29
             settings (dict): WL settings.
                 https://sandboxpapi.sitewit.com/Help/ResourceModel?modelName=
-                White%20Label%20Settings%20%28Create%29
+                White%20Label%20Settings%20%28Create%29,
+            remote_id (str): remote id of subpartner
 
         Returns:
             Please see response specification here:
             https://sandboxpapi.sitewit.com/Help/Api/GET-api-Partner
         """
-        data = {'name': name,
-                'address': address,
-                'whiteLabelSettings': settings}
+        data = {
+            'name': name,
+            'address': address,
+            'whiteLabelSettings': settings,
+            'remoteId': remote_id,
+        }
 
         return self.post(
             '/api/partner/', json=data,
-            headers=self._get_partner_auth_header()).json()
+            headers=self._get_partner_auth_headers()).json()
 
     def get_partner(self, subpartner_id):
         """Get subpartner by subpartner id.
@@ -426,7 +451,7 @@ class SitewitService(HTTPServiceClient):
         """
         return self.get(
             'api/partner/',
-            headers=self._get_partner_auth_header(subpartner_id)).json()
+            headers=self._get_partner_auth_headers(subpartner_id)).json()
 
     def update_partner_address(self, subpartner_id, address):
         """Update partner's address.
@@ -446,7 +471,7 @@ class SitewitService(HTTPServiceClient):
         """
         return self.put(
             'api/partner/address', json=address,
-            headers=self._get_partner_auth_header(subpartner_id)).json()
+            headers=self._get_partner_auth_headers(subpartner_id)).json()
 
     def update_partner_settings(self, subpartner_id, settings):
         """Update partner's settings.
@@ -466,5 +491,5 @@ class SitewitService(HTTPServiceClient):
         """
         return self.put(
             'api/partner/whitelabel', json=settings,
-            headers=self._get_partner_auth_header(subpartner_id),
+            headers=self._get_partner_auth_headers(subpartner_id),
         ).json()

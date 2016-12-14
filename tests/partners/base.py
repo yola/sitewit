@@ -29,7 +29,7 @@ class PartnerTestCase(SitewitTestCase):
             'SEM',
             'Connect',
             'Analytics'
-        ]
+        ],
     }
 
     partner_data = {

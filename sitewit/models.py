@@ -59,8 +59,11 @@ class Account(SiteWitServiceModel):
         """
         email = cls._get_email(user.id)
         user_name = cls._get_valid_user_name(user.name)
+        subpartner_id = user.partner_id if user.is_whitelabel else None
+
         result = cls.get_service().create_account(
-            site_id, url, user_name, email, 'USD', 'US', user_token)
+            site_id, url, user_name, email, 'USD', 'US', user_token,
+            remote_subpartner_id=subpartner_id)
 
         return Account(result['accountInfo'], user_data=result['userInfo'])
 
@@ -200,9 +203,9 @@ class Subscription(SiteWitServiceModel):
 
             for account_data in batch:
                 url = account_data['url']
-                site_id = UUID(account_data['clientId']).hex
+                site_id = account_data['clientId']
                 for subscription_data in account_data['subscriptions']:
-                    yield cls(site_id, url, subscription_data)
+                    yield cls(UUID(site_id).hex, url, subscription_data)
 
             if len(batch) < limit:
                 return

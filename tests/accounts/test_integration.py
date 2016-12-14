@@ -3,18 +3,49 @@ import uuid
 from base import AccountTestCase
 from sitewit.models import Account
 from sitewit.services import HTTPServiceError, SitewitService
+from tests.partners.base import PartnerTestCase
 
 
 class FakeUser(object):
-    def __init__(self, user_id, name):
+    def __init__(self, user_id, name, partner_id, is_whitelabel=False):
         self.id = user_id
         self.name = name
+        self.partner_id = partner_id
+        self.is_whitelabel = is_whitelabel
 
 
 class TestCreateAccount(AccountTestCase):
 
     def setUp(self):
         self.result = self.create_account()
+
+    def test_account_info_is_returned(self):
+        account = self.result['accountInfo']
+
+        self.assertIsNotNone(account['accountNumber'])
+        self.assertIsNotNone(account['token'])
+
+        self.assertEqual(account['url'], self.url)
+        self.assertEqual(account['countryCode'], self.country_code)
+        self.assertEqual(account['timeZone'], self.time_zone)
+        self.assertEqual(account['currency'], self.currency)
+        self.assertEqual(account['status'], 'Active')
+
+    def test_user_info_is_returned(self):
+        user = self.result['userInfo']
+        self.assertEqual(user['name'], self.user_name)
+        self.assertEqual(user['email'], self.user_email)
+        self.assertIsNotNone(user['token'])
+
+
+class TestCreateAccountWithRemoteID(AccountTestCase, PartnerTestCase):
+    def setUp(self):
+        self.remote_subpartner_id = uuid.uuid4().hex
+        self.partner = self.service.create_partner(
+            'SubPartner{}'.format(self.remote_subpartner_id), self.address,
+            self.settings, remote_id=self.remote_subpartner_id)
+        self.result = self.create_account(
+            remote_subpartner_id=self.remote_subpartner_id)
 
     def test_account_info_is_returned(self):
         account = self.result['accountInfo']
@@ -223,10 +254,10 @@ class AccountAssociationWithNewUser(AccountTestCase):
     @classmethod
     def setUpClass(cls):
         super(AccountAssociationWithNewUser, cls).setUpClass()
-        user = FakeUser(cls.user_id, cls.user_name)
+        user = FakeUser(cls.user_id, cls.user_name, cls.partner_id)
         cls.old_account = Account.create(user, cls.site_id, cls.url)
 
-        cls.new_user = FakeUser(uuid.uuid4().hex, 'new name')
+        cls.new_user = FakeUser(uuid.uuid4().hex, 'new name', cls.partner_id)
         cls.new_account = Account.associate_with_new_user(
             cls.old_account.token, cls.new_user)
 
@@ -249,10 +280,10 @@ class AccountAssociationWithExistentUser(AccountTestCase):
     @classmethod
     def setUpClass(cls):
         super(AccountAssociationWithExistentUser, cls).setUpClass()
-        user1 = FakeUser(cls.user_id, cls.user_name)
+        user1 = FakeUser(cls.user_id, cls.user_name, 'Yola')
         cls.account1 = Account.create(user1, cls.site_id, cls.url)
 
-        user2 = FakeUser(uuid.uuid4().hex, 'new name')
+        user2 = FakeUser(uuid.uuid4().hex, 'new name', 'Yola')
         cls.account2 = Account.create(
             user2, uuid.uuid4().hex, 'http://foo2.com')
 

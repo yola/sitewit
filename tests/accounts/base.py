@@ -8,6 +8,7 @@ class AccountTestCase(SitewitTestCase):
     account_id = 9999
     site_id = uuid4().hex
     user_id = uuid4().hex
+    partner_id = uuid4().hex
     country_code = 'US'
     currency = 'USD'
     token = 'token'
@@ -54,7 +55,7 @@ class AccountTestCase(SitewitTestCase):
             'user_name': self.user_name,
             'user_email': self.user_email,
             'currency': self.currency,
-            'country_code': self.country_code
+            'country_code': self.country_code,
         }
         default_data.update(overrides)
         return SitewitService().create_account(**default_data)
