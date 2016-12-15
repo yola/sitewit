@@ -1,6 +1,6 @@
 # [Changelog](https://github.com/yola/sitewit/releases)
 
-## 0.8.0
+## 0.7.2
 
 * Add optional `remote_id` param to `create_partner` method.
 * Add optional `remote_subpartner_id` param to `create_account` method.
