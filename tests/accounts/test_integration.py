@@ -40,6 +40,8 @@ class TestCreateAccount(AccountTestCase):
         self.assertIsNotNone(user['token'])
 
     def test_subpartner_is_created_dynamically(self):
+        self.assertEqual(
+            self.result['accountInfo']['partnerRemoteId'], self.subpartner_id)
         partner = self.service.get_partner(
             remote_subpartner_id=self.subpartner_id)
         self.assertEqual(partner['remoteId'], self.subpartner_id)
