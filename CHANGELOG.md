@@ -4,7 +4,6 @@
 
 * Fixed broken unittest
 
-
 ## 0.7.2
 
 * Add optional `remote_id` param to `create_partner` method.
