@@ -37,7 +37,8 @@ class TestModelsCreateAccount(AccountTestCase):
 
         self.user = Mock(
             location=self.country_code, currency=self.currency,
-            time_zone=self.time_zone, partner_id=self.partner_id)
+            time_zone=self.time_zone, partner_id=self.partner_id,
+            is_whitelabel=True)
         self.user.configure_mock(id=self.user_id, name=self.user_name)
 
         self.result = Account.create(
@@ -57,7 +58,7 @@ class TestModelsCreateAccount(AccountTestCase):
         }
 
         self.assertDemandsIsCalled(
-            self.post_mock, post_data, remote_id=self.partner_id)
+            self.post_mock, post_data, remote_subpartner_id=self.partner_id)
 
     def test_account_object_is_returned(self):
         account = self.result

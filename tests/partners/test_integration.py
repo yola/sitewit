@@ -27,16 +27,11 @@ class TestCreatePartner(PartnerTestCase):
         self.result = service.create_partner(
             self.partner_name, self.address, self.settings,
             remote_id='remote_{}'.format(self.partner_name))
-        # These fields are taken from config, no need to compare them.
-        del self.result['partnerId']
-        del self.result['partnerToken']
-        del self.result['whiteLabelSettings']['urlLinks']
 
     def test_partner_is_returned(self):
         expected_result = dict(self.partner_data)
         expected_result['name'] = self.partner_name
-        expected_result['remoteId'] = 'remote_{}'.format(self.partner_name)
-        self.assertEqual(self.result, expected_result)
+        self.assertDictContainsDict(self.result, expected_result)
 
 
 class TestCreatePartnerDuplicateName(PartnerTestCase):
@@ -60,14 +55,10 @@ class TestGetPartner(PartnerTestCase):
         service = SitewitService()
         self.create_result = service.create_partner(
             uuid.uuid4().hex, self.address, self.settings)
-
         self.get_result = service.get_partner(self.create_result['partnerId'])
-        del self.get_result['whiteLabelSettings']['urlLinks']
-        del self.create_result['whiteLabelSettings']['urlLinks']
 
     def test_partner_is_returned(self):
-        self.assertEqual(
-            deep_sort(self.create_result), deep_sort(self.get_result))
+        self.assertDictContainsDict(self.create_result, self.get_result)
 
 
 class TestGetPartnerBadPartnerId(PartnerTestCase):
@@ -155,14 +146,14 @@ class TestUpdatePartnerSettings(PartnerTestCase):
 
         self.get_result = service.get_partner(
             create_result['partnerId'])['whiteLabelSettings']
-        del self.get_result['urlLinks']
-        del self.update_result['urlLinks']
 
     def test_partner_settings_are_returned(self):
-        self.assertEqual(self.update_result, self.new_settings)
+        self.assertDictContainsDict(
+            self.update_result, self.new_settings)
 
     def test_settings_are_updated(self):
-        self.assertEqual(self.get_result, self.new_settings)
+        self.assertDictContainsDict(
+            self.get_result, self.new_settings)
 
 
 class TestUpdatePartnerSettingsValidationFailed(PartnerTestCase):

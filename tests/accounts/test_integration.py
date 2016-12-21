@@ -17,7 +17,9 @@ class FakeUser(object):
 class TestCreateAccount(AccountTestCase):
 
     def setUp(self):
-        self.result = self.create_account()
+        self.subpartner_id = uuid.uuid4().hex
+        self.result = self.create_account(
+            remote_subpartner_id=self.subpartner_id)
 
     def test_account_info_is_returned(self):
         account = self.result['accountInfo']
@@ -36,6 +38,13 @@ class TestCreateAccount(AccountTestCase):
         self.assertEqual(user['name'], self.user_name)
         self.assertEqual(user['email'], self.user_email)
         self.assertIsNotNone(user['token'])
+
+    def test_subpartner_is_created_dynamically(self):
+        self.assertEqual(
+            self.result['accountInfo']['partnerRemoteId'], self.subpartner_id)
+        partner = self.service.get_partner(
+            remote_subpartner_id=self.subpartner_id)
+        self.assertEqual(partner['remoteId'], self.subpartner_id)
 
 
 class TestCreateAccountWithRemoteID(AccountTestCase, PartnerTestCase):
