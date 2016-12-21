@@ -1,7 +1,8 @@
 # [Changelog](https://github.com/yola/sitewit/releases)
 
-## DEV
+## 0.7.3
 
+* Added `remote_subpartner_id` parameter to `services.get_partner()` method.
 * Fixed broken unittest
 * Made functional tests more robust
 
