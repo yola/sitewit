@@ -1,6 +1,6 @@
 # [Changelog](https://github.com/yola/sitewit/releases)
 
-## DEV
+## 0.7.3
 
 * Fixed broken unittest
 * Made functional tests more robust
