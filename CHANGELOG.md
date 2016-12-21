@@ -3,6 +3,7 @@
 ## DEV
 
 * Fixed broken unittest
+* Made functional tests more robust
 
 ## 0.7.2
 

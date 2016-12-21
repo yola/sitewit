@@ -437,7 +437,7 @@ class SitewitService(HTTPServiceClient):
             '/api/partner/', json=data,
             headers=self._get_partner_auth_headers()).json()
 
-    def get_partner(self, subpartner_id):
+    def get_partner(self, subpartner_id=None, remote_subpartner_id=None):
         """Get subpartner by subpartner id.
 
         Get subpartner by subpartner id.
@@ -451,7 +451,8 @@ class SitewitService(HTTPServiceClient):
         """
         return self.get(
             'api/partner/',
-            headers=self._get_partner_auth_headers(subpartner_id)).json()
+            headers=self._get_partner_auth_headers(
+                subpartner_id, remote_subpartner_id)).json()
 
     def update_partner_address(self, subpartner_id, address):
         """Update partner's address.
