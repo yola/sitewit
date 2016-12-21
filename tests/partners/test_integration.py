@@ -56,12 +56,9 @@ class TestGetPartner(PartnerTestCase):
         self.create_result = service.create_partner(
             uuid.uuid4().hex, self.address, self.settings)
         self.get_result = service.get_partner(self.create_result['partnerId'])
-        del self.create_result['whiteLabelSettings']['partnerActions']
-        del self.get_result['whiteLabelSettings']['partnerActions']
 
     def test_partner_is_returned(self):
-        self.assertEqual(
-            deep_sort(self.create_result), deep_sort(self.get_result))
+        self.assertDictContainsDict(self.create_result, self.get_result)
 
 
 class TestGetPartnerBadPartnerId(PartnerTestCase):
