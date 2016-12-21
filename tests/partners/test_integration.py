@@ -31,7 +31,6 @@ class TestCreatePartner(PartnerTestCase):
     def test_partner_is_returned(self):
         expected_result = dict(self.partner_data)
         expected_result['name'] = self.partner_name
-        import pdb;pdb.set_trace()
         self.assertDictContainsDict(self.result, expected_result)
 
 
