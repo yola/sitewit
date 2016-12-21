@@ -11,12 +11,12 @@ from yoconfigurator.base import read_config
 from sitewit.services import SitewitService
 
 
-def dictcontainsdict(d1, d2):
+def dict_contains_dict(d1, d2):
     for (key, value) in d2.items():
         if key not in d1:
             return False
         if isinstance(value, dict):
-            return dictcontainsdict(d1[key], value)
+            return dict_contains_dict(d1[key], value)
         if d1[key] != value:
             return False
 
@@ -69,7 +69,7 @@ class SitewitTestCase(TestCase):
             self.assertEqual(exc.exception.details, expected_details)
 
     def assertDictContainsDict(self, d1, d2):
-        return self.assertTrue(dictcontainsdict(d1, d2))
+        return self.assertTrue(dict_contains_dict(d1, d2))
 
     @property
     def random_token(self):

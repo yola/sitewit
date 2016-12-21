@@ -444,7 +444,7 @@ class SitewitService(HTTPServiceClient):
 
         Args:
             subpartner_id (str): Subpartner ID.
-            remote_subpartner_id (str): Renote Subpartner ID.
+            remote_subpartner_id (str): Remote Subpartner ID.
 
         Returns:
             Please see response specification here:
