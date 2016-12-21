@@ -444,10 +444,14 @@ class SitewitService(HTTPServiceClient):
 
         Args:
             subpartner_id (str): Subpartner ID.
+            remote_subpartner_id (str): Renote Subpartner ID.
 
         Returns:
             Please see response specification here:
             https://sandboxpapi.sitewit.com/Help/Api/GET-api-Partner
+
+        Note:
+            Parameters are mutually exclusive.
         """
         return self.get(
             'api/partner/',
