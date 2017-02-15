@@ -225,6 +225,23 @@ class TestDeleteAccount(AccountTestCase):
         self.assertEqual(self.retrieved_account['status'], 'Canceled')
 
 
+class TestSetClientIDForAccount(AccountTestCase):
+
+    def setUp(self):
+        service = SitewitService()
+        self.created_account = self.create_account()
+
+        self.new_client_id = uuid.uuid4()
+        self.updated_account = service.set_account_client_id(
+            self.created_account['accountInfo']['token'], str(self.new_client_id))
+        self.retrieved_account = service.get_account(
+            self.created_account['accountInfo']['token'])
+
+    def test_updated_account_is_returned(self):
+        self.assertEqual(
+            self.updated_account['clientId'], str(self.new_client_id))
+
+
 class TestDeleteAccountDoesNotExist(AccountTestCase):
     def test_error_401_is_raised(self):
         self.assertHTTPErrorIsRaised(

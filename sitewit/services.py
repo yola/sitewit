@@ -91,7 +91,6 @@ class SitewitService(HTTPServiceClient):
             'currency': currency,
             'countryCode': country_code,
         }
-
         if user_token is not None:
             data['userToken'] = user_token
 
@@ -175,6 +174,12 @@ class SitewitService(HTTPServiceClient):
         return self.delete(
             '/api/account/',
             headers=self._get_account_auth_header(account_token)).json()
+
+    def set_account_client_id(self, account_token, client_id):
+        return self.put(
+            '/api/Account/ClientId', json={'clientId': client_id},
+            headers=self._get_account_auth_header(account_token)).json()
+
 
     def get_account_owners(self, account_token):
         """Get all account owners.

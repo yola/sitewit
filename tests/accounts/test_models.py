@@ -1,3 +1,5 @@
+import uuid
+
 from mock import Mock, patch
 
 import sitewit.models
@@ -120,6 +122,28 @@ class TestModelsDeleteAccount(AccountTestCase):
 
     def test_demands_delete_is_called(self):
         self.assertDemandsIsCalled(self.delete_mock, account_token=self.token)
+
+    def test_account_object_is_returned(self):
+        self.assertAccountIsValid(self.account)
+
+
+class TestModelsSetAccountClientId(AccountTestCase):
+    @patch.object(sitewit.models.SitewitService, 'put')
+    def setUp(self, put_mock):
+        self.put_mock = put_mock
+        self._mock_response(put_mock, self.response_brief)
+
+        self.site = Mock(id=self.site_id)
+        self.new_site_id = uuid.uuid4()
+        self.account = Account.set_site_id(
+            self.token, str(self.new_site_id))
+
+    def test_demands_put_is_called(self):
+        put_data = {
+            'clientId': str(self.new_site_id)
+        }
+
+        self.assertDemandsIsCalled(self.put_mock, put_data, self.token, url='/api/Account/ClientId')
 
     def test_account_object_is_returned(self):
         self.assertAccountIsValid(self.account)

@@ -167,6 +167,25 @@ class Account(SiteWitServiceModel):
         return Account(result)
 
     @classmethod
+    def set_site_id(cls, account_token, new_site_id):
+        """Set new site_id (clientId) for SiteWit account.
+
+        Args:
+            account_token (str): account token.
+            new_site_id (str): new site_id (clientId)
+
+        Returns:
+            Instance of Account class.
+
+        Raises:
+            demands.HTTPServiceError: if any error happened on HTTP level.
+        """
+        result = cls.get_service().set_account_client_id(
+            account_token, new_site_id)
+
+        return Account(result)
+
+    @classmethod
     def _get_valid_user_name(cls, user_name):
         """Return a user name suitable for passing to SiteWit API.
 
