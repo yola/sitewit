@@ -98,7 +98,9 @@ class TestModelsUpdateAccount(AccountTestCase):
         self.user.configure_mock(name=self.user_name, email=self.user_email)
 
         self.account = Account.update(
-            self.token, self.url, self.country_code, self.currency)
+            self.token, url=self.url, country_code=self.country_code,
+            currency=self.currency
+        )
 
     def test_demands_put_is_called(self):
         put_data = {

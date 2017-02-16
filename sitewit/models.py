@@ -47,7 +47,7 @@ class Account(SiteWitServiceModel):
         Args:
             user (yousers.models.User instance): user.
             url (str): url of given account.
-            site_id (str): Site's ID, UUID
+            site_id (str, optional): Site's ID, UUID
             user_token (str, optional): user token. Is specified if the user
                 has another accounts.
 
@@ -85,7 +85,8 @@ class Account(SiteWitServiceModel):
         return Account(result)
 
     @classmethod
-    def update(cls, account_token, url, country_code, currency):
+    def update(
+            cls, account_token, url=None, country_code=None, currency=None):
         """Update SiteWit account with given data.
 
         Args:
@@ -105,7 +106,8 @@ class Account(SiteWitServiceModel):
             demands.HTTPServiceError: if any error happened on HTTP level.
         """
         result = cls.get_service().update_account(
-            account_token, url, country_code, currency)
+            account_token, url=url, country_code=country_code,
+            currency=currency)
 
         return Account(result)
 
