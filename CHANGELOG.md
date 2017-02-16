@@ -1,10 +1,19 @@
 # [Changelog](https://github.com/yola/sitewit/releases)
 
+## DEV
+
+* Add `models.Account.set_site_id()` method.
+* Add `services.SitewitService.set_site_id()` method.
+* Re-order parameters of `models.Account.create()` and
+  `services.SitewitService.create()`.
+* Make `site_id/client_id` parameter optional for account creation.
+* Make all field-related parameters of account update optional.
+
 ## 0.7.3
 
-* Added `remote_subpartner_id` parameter to `services.get_partner()` method.
-* Fixed broken unittest
-* Made functional tests more robust
+* Add `remote_subpartner_id` parameter to `services.get_partner()` method.
+* Fix broken unittest
+* Make functional tests more robust
 
 ## 0.7.2
 

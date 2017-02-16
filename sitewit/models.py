@@ -41,13 +41,13 @@ class Account(SiteWitServiceModel):
             self.user = None
 
     @classmethod
-    def create(cls, user, site_id, url, user_token=None):
+    def create(cls, user, url, site_id=None, user_token=None):
         """Create SiteWit account for given site_id.
 
         Args:
             user (yousers.models.User instance): user.
-            site_id (str): Site's ID, UUID
             url (str): url of given account.
+            site_id (str, optional): Site's ID, UUID
             user_token (str, optional): user token. Is specified if the user
                 has another accounts.
 
@@ -62,8 +62,8 @@ class Account(SiteWitServiceModel):
         subpartner_id = user.partner_id if user.is_whitelabel else None
 
         result = cls.get_service().create_account(
-            site_id, url, user_name, email, 'USD', 'US', user_token,
-            remote_subpartner_id=subpartner_id)
+            url, user_name, email, 'USD', 'US', site_id=site_id,
+            user_token=user_token, remote_subpartner_id=subpartner_id)
 
         return Account(result['accountInfo'], user_data=result['userInfo'])
 
@@ -85,7 +85,8 @@ class Account(SiteWitServiceModel):
         return Account(result)
 
     @classmethod
-    def update(cls, account_token, url, country_code, currency):
+    def update(
+            cls, account_token, url=None, country_code=None, currency=None):
         """Update SiteWit account with given data.
 
         Args:
@@ -105,7 +106,8 @@ class Account(SiteWitServiceModel):
             demands.HTTPServiceError: if any error happened on HTTP level.
         """
         result = cls.get_service().update_account(
-            account_token, url, country_code, currency)
+            account_token, url=url, country_code=country_code,
+            currency=currency)
 
         return Account(result)
 
@@ -163,6 +165,25 @@ class Account(SiteWitServiceModel):
             demands.HTTPServiceError: if any error happened on HTTP level.
         """
         result = cls.get_service().delete_account(account_token)
+
+        return Account(result)
+
+    @classmethod
+    def set_site_id(cls, account_token, new_site_id):
+        """Set new site_id (clientId) for SiteWit account.
+
+        Args:
+            account_token (str): account token.
+            new_site_id (str): new site_id (clientId)
+
+        Returns:
+            Instance of Account class.
+
+        Raises:
+            demands.HTTPServiceError: if any error happened on HTTP level.
+        """
+        result = cls.get_service().set_account_client_id(
+            account_token, new_site_id)
 
         return Account(result)
 

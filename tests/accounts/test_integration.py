@@ -147,32 +147,52 @@ class TestGetAccountDoesNotExist(AccountTestCase):
 
 class TestUpdateAccount(AccountTestCase):
 
+    updated_fields = dict(
+        url='http://url.new',
+        country_code='GB',
+        currency='GBP'
+    )
+
+    field_translations = {'country_code': 'countryCode'}
+
     def setUp(self):
         service = SitewitService()
         self.created_account = self.create_account()
 
         self.updated_account = service.update_account(
-            self.created_account['accountInfo']['token'], 'http://url.new',
-            'GB', 'GBP')
+            self.created_account['accountInfo']['token'],
+            **self.updated_fields
+        )
 
         self.retrieved_account = service.get_account(
             self.updated_account['token'])
 
     def test_updated_account_is_returned(self):
         account = self.updated_account
-
-        self.assertEqual(account['url'], 'http://url.new')
-        self.assertEqual(account['countryCode'], 'GB')
-        self.assertEqual(account['currency'], 'GBP')
+        for field, new_value in self.updated_fields.items():
+            response_field = self.field_translations.get(field, field)
+            self.assertEqual(account[response_field], new_value)
 
     def test_other_fields_are_not_updated(self):
         created_account = self.created_account['accountInfo']
 
-        for field in ('accountNumber', 'token', 'status'):
-            self.assertEqual(created_account[field],
-                             self.retrieved_account[field])
-            self.assertEqual(created_account[field],
-                             self.updated_account[field])
+        for field in self.retrieved_account:
+            if (field not in self.updated_fields and
+                    field not in self.field_translations.values()):
+                response_field = self.field_translations.get(field, field)
+                self.assertEqual(
+                    created_account[response_field],
+                    self.retrieved_account[field]
+                )
+
+
+class TestPartialUpdateAccount(AccountTestCase):
+
+    updated_fields = dict(
+        url='http://url.new',
+    )
+
+    field_translations = {'country_code': 'countryCode'}
 
 
 class TestUpdateAccountBadRequest(AccountTestCase):
@@ -225,6 +245,25 @@ class TestDeleteAccount(AccountTestCase):
         self.assertEqual(self.retrieved_account['status'], 'Canceled')
 
 
+class TestSetClientIDForAccount(AccountTestCase):
+
+    def setUp(self):
+        service = SitewitService()
+        self.created_account = self.create_account()
+
+        self.new_client_id = uuid.uuid4()
+        self.updated_account = service.set_account_client_id(
+            self.created_account['accountInfo']['token'],
+            str(self.new_client_id)
+        )
+        self.retrieved_account = service.get_account(
+            self.created_account['accountInfo']['token'])
+
+    def test_updated_account_is_returned(self):
+        self.assertEqual(
+            self.updated_account['clientId'], str(self.new_client_id))
+
+
 class TestDeleteAccountDoesNotExist(AccountTestCase):
     def test_error_401_is_raised(self):
         self.assertHTTPErrorIsRaised(
@@ -264,7 +303,7 @@ class AccountAssociationWithNewUser(AccountTestCase):
     def setUpClass(cls):
         super(AccountAssociationWithNewUser, cls).setUpClass()
         user = FakeUser(cls.user_id, cls.user_name, cls.partner_id)
-        cls.old_account = Account.create(user, cls.site_id, cls.url)
+        cls.old_account = Account.create(user, cls.url, site_id=cls.site_id)
 
         cls.new_user = FakeUser(uuid.uuid4().hex, 'new name', cls.partner_id)
         cls.new_account = Account.associate_with_new_user(
@@ -290,11 +329,10 @@ class AccountAssociationWithExistentUser(AccountTestCase):
     def setUpClass(cls):
         super(AccountAssociationWithExistentUser, cls).setUpClass()
         user1 = FakeUser(cls.user_id, cls.user_name, 'Yola')
-        cls.account1 = Account.create(user1, cls.site_id, cls.url)
+        cls.account1 = Account.create(user1, cls.url)
 
         user2 = FakeUser(uuid.uuid4().hex, 'new name', 'Yola')
-        cls.account2 = Account.create(
-            user2, uuid.uuid4().hex, 'http://foo2.com')
+        cls.account2 = Account.create(user2, 'http://foo2.com')
 
         cls.account3 = Account.associate_with_existent_user(
             cls.account1.token, cls.account2.user.token)

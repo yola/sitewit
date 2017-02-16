@@ -1,3 +1,5 @@
+import uuid
+
 from mock import Mock, patch
 
 import sitewit.models
@@ -42,7 +44,9 @@ class TestModelsCreateAccount(AccountTestCase):
         self.user.configure_mock(id=self.user_id, name=self.user_name)
 
         self.result = Account.create(
-            self.user, self.site_id, self.url, user_token=self.user_token)
+            self.user, self.url, site_id=self.site_id,
+            user_token=self.user_token
+        )
 
     def test_demands_post_is_called(self):
         post_data = {
@@ -94,14 +98,15 @@ class TestModelsUpdateAccount(AccountTestCase):
         self.user.configure_mock(name=self.user_name, email=self.user_email)
 
         self.account = Account.update(
-            self.token, self.url, self.country_code, self.currency)
+            self.token, url=self.url, country_code=self.country_code,
+            currency=self.currency
+        )
 
     def test_demands_put_is_called(self):
         put_data = {
             'url': self.url,
             'currency': self.currency,
             'countryCode': self.country_code,
-            'timeZone': 'GMT Standard Time',
         }
 
         self.assertDemandsIsCalled(self.put_mock, put_data, self.token)
@@ -120,6 +125,29 @@ class TestModelsDeleteAccount(AccountTestCase):
 
     def test_demands_delete_is_called(self):
         self.assertDemandsIsCalled(self.delete_mock, account_token=self.token)
+
+    def test_account_object_is_returned(self):
+        self.assertAccountIsValid(self.account)
+
+
+class TestModelsSetAccountClientId(AccountTestCase):
+    @patch.object(sitewit.models.SitewitService, 'put')
+    def setUp(self, put_mock):
+        self.put_mock = put_mock
+        self._mock_response(put_mock, self.response_brief)
+
+        self.site = Mock(id=self.site_id)
+        self.new_site_id = uuid.uuid4()
+        self.account = Account.set_site_id(
+            self.token, str(self.new_site_id))
+
+    def test_demands_put_is_called(self):
+        put_data = {
+            'clientId': str(self.new_site_id)
+        }
+
+        self.assertDemandsIsCalled(
+            self.put_mock, put_data, self.token, url='/api/Account/ClientId')
 
     def test_account_object_is_returned(self):
         self.assertAccountIsValid(self.account)

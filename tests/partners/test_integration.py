@@ -34,21 +34,6 @@ class TestCreatePartner(PartnerTestCase):
         self.assertDictContainsDict(self.result, expected_result)
 
 
-class TestCreatePartnerDuplicateName(PartnerTestCase):
-
-    def setUp(self):
-        service = SitewitService()
-        self.partner_name = uuid.uuid4().hex
-
-        service.create_partner(
-            self.partner_name, self.address, self.settings)
-
-    def test_error_400_is_raised(self):
-        self.assertHTTPErrorIsRaised(
-            SitewitService().create_partner,
-            (self.partner_name, self.address, self.settings), 400)
-
-
 class TestGetPartner(PartnerTestCase):
 
     def setUp(self):

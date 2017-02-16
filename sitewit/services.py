@@ -7,6 +7,10 @@ from yoconfig import get_config
 import sitewit
 
 
+def _remove_nones(data):
+    return {k: v for k, v in data.items() if v is not None}
+
+
 class SitewitService(HTTPServiceClient):
     """Client for SiteWit's API.
 
@@ -60,18 +64,18 @@ class SitewitService(HTTPServiceClient):
     def _compose_auth_header(self, elements):
         return {'PartnerAuth': base64.b64encode(':'.join(elements))}
 
-    def create_account(self, site_id, url, user_name, user_email,
-                       currency, country_code, user_token=None,
+    def create_account(self, url, user_name, user_email,
+                       currency, country_code, site_id=None, user_token=None,
                        remote_subpartner_id=None):
         """Create new SiteWit account.
 
         Args:
-            site_id (str): site ID (uuid4).
             url: (str): site URL.
             user_name (str): name of account owner.
             user_email (str): email of account owner.
             currency (str): user's currency.
             country_code (str): user's location.
+            site_id (str, optional): site ID (uuid4).
             user_token (str, optional): user token in case this account is
                 owned by existing user.
             remote_subpartner_id (str, optional): user's partner_id on
@@ -85,15 +89,16 @@ class SitewitService(HTTPServiceClient):
             'url': url,
             'businessType': 'SMB',
             'timeZone': self.DEFAULT_TIME_ZONE,
-            'clientId': site_id,
             'name': user_name,
             'email': user_email,
             'currency': currency,
             'countryCode': country_code,
         }
-
         if user_token is not None:
             data['userToken'] = user_token
+
+        if site_id:
+            data['clientId'] = site_id
 
         return self.post(
             '/api/account/', json=data,
@@ -114,7 +119,8 @@ class SitewitService(HTTPServiceClient):
             '/api/account/',
             headers=self._get_account_auth_header(account_token)).json()
 
-    def update_account(self, account_token, url, country_code, currency):
+    def update_account(
+            self, account_token, url=None, country_code=None, currency=None):
         """Update SiteWit account.
 
         Args:
@@ -124,12 +130,12 @@ class SitewitService(HTTPServiceClient):
             account json:
             https://sandboxpapi.sitewit.com/Help/Api/GET-api-Account
         """
-        data = {
+        data = _remove_nones({
             'url': url,
             'countryCode': country_code,
             'currency': currency,
-            'timeZone': self.DEFAULT_TIME_ZONE
-        }
+        })
+
 
         return self.put(
             '/api/account/', json=data,
@@ -174,6 +180,11 @@ class SitewitService(HTTPServiceClient):
         """
         return self.delete(
             '/api/account/',
+            headers=self._get_account_auth_header(account_token)).json()
+
+    def set_account_client_id(self, account_token, client_id):
+        return self.put(
+            '/api/Account/ClientId', json={'clientId': client_id},
             headers=self._get_account_auth_header(account_token)).json()
 
     def get_account_owners(self, account_token):
