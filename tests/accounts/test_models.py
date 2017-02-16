@@ -44,7 +44,7 @@ class TestModelsCreateAccount(AccountTestCase):
         self.user.configure_mock(id=self.user_id, name=self.user_name)
 
         self.result = Account.create(
-            self.user, self.url,  site_id=self.site_id,
+            self.user, self.url, site_id=self.site_id,
             user_token=self.user_token
         )
 
