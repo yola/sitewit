@@ -1,6 +1,6 @@
 # [Changelog](https://github.com/yola/sitewit/releases)
 
-## DEV
+## 0.8.0
 
 * Add `models.Account.set_site_id()` method.
 * Add `services.SitewitService.set_site_id()` method.
