@@ -160,7 +160,9 @@ class TestUpdateAccount(AccountTestCase):
         self.created_account = self.create_account()
 
         self.updated_account = service.update_account(
-            self.created_account['accountInfo']['token'], **self.updated_fields)
+            self.created_account['accountInfo']['token'],
+            **self.updated_fields
+        )
 
         self.retrieved_account = service.get_account(
             self.updated_account['token'])
