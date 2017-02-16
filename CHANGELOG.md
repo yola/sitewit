@@ -3,7 +3,7 @@
 ## DEV
 
 * Added `models.Account.set_site_id()` method.
-* Added `.Account.set_site_id()` method.
+* Added `services.SitewitService.set_site_id()` method.
 * Re-ordered parameters of `models.Account.create()` and
   `services.SitewitService.create()`.
 * `site_id/client_id` parameter made optional for account creation.
