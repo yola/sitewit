@@ -14,13 +14,12 @@ class BaseCampaignTestCase(SitewitTestCase):
         super(BaseCampaignTestCase, cls).setUpClass()
 
         cls.account_token = cls.service.create_account(
-            uuid4().hex, 'http://www.test.site.com', 'Foo',
+            'http://www.test.site.com', 'Foo',
             'foo{0}@bar.com'.format(uuid4().hex), 'USD', 'US'
         )['accountInfo']['token']
 
         cls.campaign_id = cls.service.create_campaign(
             cls.account_token, campaign_type=cls.campaign_type)['id']
-
         cls.subscribe_method = cls.subscribe_method()
         cls.unsubscribe_method = cls.unsubscribe_method()
 
@@ -123,8 +122,24 @@ class TestSubscribeToSearchCampaign(BaseSearchCampaignSubscriptionTestCase):
         self.assertTrue(self.campaign['subscription']['active'])
 
 
+class TestSubscribeToSearchCampaignNoCampaignSpecified(
+        BaseSearchCampaignSubscriptionTestCase):
+    campaign_id = -1
+
+    def test_subscription_is_returned(self):
+        self.assertTrue(self.campaign['subscription']['active'])
+
+
 class TestSubscribeToDisplayCampaign(TestSubscribeToSearchCampaign):
     campaign_type = 'display'
+
+
+class TestSubscribeToDisplayCampaignNoCampaignSpecified(
+        BaseSearchCampaignSubscriptionTestCase):
+    campaign_id = -1
+
+    def test_subscription_is_returned(self):
+        self.assertTrue(self.campaign['subscription']['active'])
 
 
 class TestSubscribeToSearchCampaignNotFound(

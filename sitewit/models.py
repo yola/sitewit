@@ -41,13 +41,13 @@ class Account(SiteWitServiceModel):
             self.user = None
 
     @classmethod
-    def create(cls, user, site_id, url, user_token=None):
+    def create(cls, user, url, site_id=None, user_token=None):
         """Create SiteWit account for given site_id.
 
         Args:
             user (yousers.models.User instance): user.
-            site_id (str): Site's ID, UUID
             url (str): url of given account.
+            site_id (str): Site's ID, UUID
             user_token (str, optional): user token. Is specified if the user
                 has another accounts.
 
@@ -62,8 +62,8 @@ class Account(SiteWitServiceModel):
         subpartner_id = user.partner_id if user.is_whitelabel else None
 
         result = cls.get_service().create_account(
-            site_id, url, user_name, email, 'USD', 'US', user_token,
-            remote_subpartner_id=subpartner_id)
+            url, user_name, email, 'USD', 'US', site_id=site_id,
+            user_token=user_token, remote_subpartner_id=subpartner_id)
 
         return Account(result['accountInfo'], user_data=result['userInfo'])
 

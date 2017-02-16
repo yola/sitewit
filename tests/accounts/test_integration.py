@@ -233,7 +233,9 @@ class TestSetClientIDForAccount(AccountTestCase):
 
         self.new_client_id = uuid.uuid4()
         self.updated_account = service.set_account_client_id(
-            self.created_account['accountInfo']['token'], str(self.new_client_id))
+            self.created_account['accountInfo']['token'],
+            str(self.new_client_id)
+        )
         self.retrieved_account = service.get_account(
             self.created_account['accountInfo']['token'])
 
@@ -281,7 +283,7 @@ class AccountAssociationWithNewUser(AccountTestCase):
     def setUpClass(cls):
         super(AccountAssociationWithNewUser, cls).setUpClass()
         user = FakeUser(cls.user_id, cls.user_name, cls.partner_id)
-        cls.old_account = Account.create(user, cls.site_id, cls.url)
+        cls.old_account = Account.create(user, cls.url, site_id=cls.site_id)
 
         cls.new_user = FakeUser(uuid.uuid4().hex, 'new name', cls.partner_id)
         cls.new_account = Account.associate_with_new_user(
@@ -307,11 +309,10 @@ class AccountAssociationWithExistentUser(AccountTestCase):
     def setUpClass(cls):
         super(AccountAssociationWithExistentUser, cls).setUpClass()
         user1 = FakeUser(cls.user_id, cls.user_name, 'Yola')
-        cls.account1 = Account.create(user1, cls.site_id, cls.url)
+        cls.account1 = Account.create(user1, cls.url)
 
         user2 = FakeUser(uuid.uuid4().hex, 'new name', 'Yola')
-        cls.account2 = Account.create(
-            user2, uuid.uuid4().hex, 'http://foo2.com')
+        cls.account2 = Account.create(user2, 'http://foo2.com')
 
         cls.account3 = Account.associate_with_existent_user(
             cls.account1.token, cls.account2.user.token)

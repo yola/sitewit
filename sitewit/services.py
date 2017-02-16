@@ -60,18 +60,18 @@ class SitewitService(HTTPServiceClient):
     def _compose_auth_header(self, elements):
         return {'PartnerAuth': base64.b64encode(':'.join(elements))}
 
-    def create_account(self, site_id, url, user_name, user_email,
-                       currency, country_code, user_token=None,
+    def create_account(self, url, user_name, user_email,
+                       currency, country_code, site_id=None, user_token=None,
                        remote_subpartner_id=None):
         """Create new SiteWit account.
 
         Args:
-            site_id (str): site ID (uuid4).
             url: (str): site URL.
             user_name (str): name of account owner.
             user_email (str): email of account owner.
             currency (str): user's currency.
             country_code (str): user's location.
+            site_id (str): site ID (uuid4).
             user_token (str, optional): user token in case this account is
                 owned by existing user.
             remote_subpartner_id (str, optional): user's partner_id on
@@ -127,7 +127,6 @@ class SitewitService(HTTPServiceClient):
             'url': url,
             'countryCode': country_code,
             'currency': currency,
-            'timeZone': self.DEFAULT_TIME_ZONE
         }
 
         return self.put(
@@ -179,7 +178,6 @@ class SitewitService(HTTPServiceClient):
         return self.put(
             '/api/Account/ClientId', json={'clientId': client_id},
             headers=self._get_account_auth_header(account_token)).json()
-
 
     def get_account_owners(self, account_token):
         """Get all account owners.
