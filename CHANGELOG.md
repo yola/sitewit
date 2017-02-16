@@ -7,6 +7,7 @@
 * Re-ordered parameters of `models.Account.create()` and
   `services.SitewitService.create()`.
 * `site_id/client_id` parameter made optional for account creation.
+* All parameters which mean updated fields made optional for account update.
 
 ## 0.7.3
 
