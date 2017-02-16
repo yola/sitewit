@@ -147,32 +147,50 @@ class TestGetAccountDoesNotExist(AccountTestCase):
 
 class TestUpdateAccount(AccountTestCase):
 
+    updated_fields = dict(
+        url='http://url.new',
+        country_code='GB',
+        currency='GBP'
+    )
+
+    field_translations = {'country_code': 'countryCode'}
+
     def setUp(self):
         service = SitewitService()
         self.created_account = self.create_account()
 
         self.updated_account = service.update_account(
-            self.created_account['accountInfo']['token'],
-            url='http://url.new', country_code='GB', currency='GBP')
+            self.created_account['accountInfo']['token'], **self.updated_fields)
 
         self.retrieved_account = service.get_account(
             self.updated_account['token'])
 
     def test_updated_account_is_returned(self):
         account = self.updated_account
-
-        self.assertEqual(account['url'], 'http://url.new')
-        self.assertEqual(account['countryCode'], 'GB')
-        self.assertEqual(account['currency'], 'GBP')
+        for field, new_value in self.updated_fields.items():
+            response_field = self.field_translations.get(field, field)
+            self.assertEqual(account[response_field], new_value)
 
     def test_other_fields_are_not_updated(self):
         created_account = self.created_account['accountInfo']
 
-        for field in ('accountNumber', 'token', 'status'):
-            self.assertEqual(created_account[field],
-                             self.retrieved_account[field])
-            self.assertEqual(created_account[field],
-                             self.updated_account[field])
+        for field in self.retrieved_account:
+            if (field not in self.updated_fields and
+                    field not in self.field_translations.values()):
+                response_field = self.field_translations.get(field, field)
+                self.assertEqual(
+                    created_account[response_field],
+                    self.retrieved_account[field]
+                )
+
+
+class TestPartialUpdateAccount(AccountTestCase):
+
+    updated_fields = dict(
+        url='http://url.new',
+    )
+
+    field_translations = {'country_code': 'countryCode'}
 
 
 class TestUpdateAccountBadRequest(AccountTestCase):
