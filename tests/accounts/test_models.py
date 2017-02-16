@@ -44,7 +44,9 @@ class TestModelsCreateAccount(AccountTestCase):
         self.user.configure_mock(id=self.user_id, name=self.user_name)
 
         self.result = Account.create(
-            self.user, self.site_id, self.url, user_token=self.user_token)
+            self.user, self.url,  site_id=self.site_id,
+            user_token=self.user_token
+        )
 
     def test_demands_post_is_called(self):
         post_data = {
@@ -103,7 +105,6 @@ class TestModelsUpdateAccount(AccountTestCase):
             'url': self.url,
             'currency': self.currency,
             'countryCode': self.country_code,
-            'timeZone': 'GMT Standard Time',
         }
 
         self.assertDemandsIsCalled(self.put_mock, put_data, self.token)
@@ -143,7 +144,8 @@ class TestModelsSetAccountClientId(AccountTestCase):
             'clientId': str(self.new_site_id)
         }
 
-        self.assertDemandsIsCalled(self.put_mock, put_data, self.token, url='/api/Account/ClientId')
+        self.assertDemandsIsCalled(
+            self.put_mock, put_data, self.token, url='/api/Account/ClientId')
 
     def test_account_object_is_returned(self):
         self.assertAccountIsValid(self.account)
