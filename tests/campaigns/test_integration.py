@@ -18,10 +18,14 @@ class BaseCampaignTestCase(SitewitTestCase):
             'foo{0}@bar.com'.format(uuid4().hex), 'USD', 'US'
         )['accountInfo']['token']
 
-        cls.campaign_id = cls.service.create_campaign(
-            cls.account_token, campaign_type=cls.campaign_type)['id']
         cls.subscribe_method = cls.subscribe_method()
         cls.unsubscribe_method = cls.unsubscribe_method()
+        cls.campaign_id = cls.create_campaign()
+
+    @classmethod
+    def create_campaign(cls):
+        return cls.service.create_campaign(
+            cls.account_token, campaign_type=cls.campaign_type)['id']
 
     @classmethod
     def subscribe_method(cls):
@@ -260,6 +264,55 @@ class TestCancelSearchCampaignSubscriptionNotFound(
         self.assertHTTPErrorIsRaised(
             self.unsubscribe_method, (
                 self.account_token, self.non_existent_campaign_id), 404)
+
+
+class TestRefundPrePurchasedCampaignSubscriptionTestCase(
+        BaseCampaignTestCase):
+    @classmethod
+    def setUpClass(cls):
+        super(RefundSearchCampaignSubscriptionTestCase, cls).setUpClass()
+        cls.result = cls.service.refund_search_campaign_subscription(
+            cls.account_token, self.campaign_id)
+
+    @classmethod
+    def create_campaign(cls):
+        return cls.subscribe_method(cls.account_token, -1, 500, 'USD')['id']
+
+    def test_refund_request_is_accepted(self):
+        import pdb;pdb.set_trace()
+
+
+class TestCancelPrePurchasedCampaignSubscriptionTestCase(
+        BaseCampaignTestCase):
+    @classmethod
+    def setUpClass(cls):
+        super(TestCancelPrePurchasedCampaignSubscriptionTestCase, cls).setUpClass()
+
+    @classmethod
+    def create_campaign(cls):
+        return cls.subscribe_method(cls.account_token, -1, 500, 'USD')['id']
+
+    def test_refund_request_is_accepted(self):
+        self.assertHTTPErrorIsRaised(
+            self.unsubscribe_method, (
+            self.account_token, self.campaign_id), 409
+        )
+
+
+class TestRefundPrePurchasedCampaignSubscriptionTestCase(
+        BaseCampaignTestCase):
+    @classmethod
+    def setUpClass(cls):
+        super(RefundSearchCampaignSubscriptionTestCase, cls).setUpClass()
+        cls.result = cls.service.refund_search_campaign_subscription(
+            cls.account_token, self.campaign_id)
+
+    @classmethod
+    def create_campaign(cls):
+        return cls.subscribe_method(cls.account_token, -1, 500, 'USD')['id']
+
+    def test_refund_request_is_accepted(self):
+        import pdb;pdb.set_trace()
 
 
 class TestCancelDisplayCampaignSubscriptionNotFound(

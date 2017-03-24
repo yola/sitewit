@@ -378,7 +378,7 @@ class SitewitService(HTTPServiceClient):
 
         Args:
             account_token (str): account token.
-            campaign_id (str): campaign to subscribe.
+            campaign_id (str): campaign to refund.
             immediate (boolean): cancel immediately or wait till the billing
             period ends.
 
@@ -402,7 +402,7 @@ class SitewitService(HTTPServiceClient):
 
         Args:
             account_token (str): account token.
-            campaign_id (str): campaign to subscribe.
+            campaign_id (str): campaign to cancel.
             immediate (boolean): cancel immediately or wait till the billing
             period ends.
 
@@ -416,6 +416,46 @@ class SitewitService(HTTPServiceClient):
 
         return self.delete(
             'api/subscription/cancel/campaign/display/', json=data,
+            headers=self._get_account_auth_header(account_token)).json()
+
+    def refund_search_campaign_subscription(self, account_token, campaign_id):
+        """Cancel search subscription and initiate refund.
+
+        Cancels a pre-purchased search campaign's subscription and issues
+        a refund for accrued spend. This will only work for campaigns that
+        have not launched.
+
+        Args:
+            account_token (str): account token.
+            campaign_id (str): campaign to refund.
+
+        Returns:
+            Please see response format here:
+            https://sandboxpapi.sitewit.com/Help/Api/
+            DELETE-api-subscription-refund-campaign-search-id
+        """
+        return self.delete(
+            'api/subscription/refund/campaign/search/{}'.format(campaign_id),
+            headers=self._get_account_auth_header(account_token)).json()
+
+    def refund_display_campaign_subscription(self, account_token, campaign_id):
+        """Cancel display subscription and initiate refund.
+
+        Cancels a pre-purchased display campaign's subscription and issues
+        a refund for accrued spend. This will only work for campaigns that
+        have not launched.
+
+        Args:
+            account_token (str): account token.
+            campaign_id (str): campaign to refund.
+
+        Returns:
+            Please see response format here:
+            https://sandboxpapi.sitewit.com/Help/Api/
+            DELETE-api-subscription-refund-campaign-display-id
+        """
+        return self.delete(
+            'api/subscription/refund/campaign/display/{}'.format(campaign_id),
             headers=self._get_account_auth_header(account_token)).json()
 
     def create_partner(self, name, address, settings, remote_id=None):
