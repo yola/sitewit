@@ -377,7 +377,7 @@ class SitewitService(HTTPServiceClient):
 
         Args:
             account_token (str): account token.
-            campaign_id (str): campaign to cancel/refund.
+            campaign_id (str): campaign to cancel.
             immediate (boolean): cancel immediately or wait till the billing
             period ends.
 
@@ -446,7 +446,7 @@ class SitewitService(HTTPServiceClient):
 
         Args:
             account_token (str): account token.
-            campaign_id (str): campaign to refund.
+            campaign_id (str): campaign to cancel/refund.
 
         Returns:
             Please see response format here:
