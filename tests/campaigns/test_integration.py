@@ -285,9 +285,6 @@ class TestRefundSubscriptionTestCase(
 
 class TestCancelPrePurchasedSubscriptionTestCase(
         BaseCampaignTestCase):
-    @classmethod
-    def setUpClass(cls):
-        super(TestCancelPrePurchasedSubscriptionTestCase, cls).setUpClass()
 
     @classmethod
     def create_campaign(cls):
