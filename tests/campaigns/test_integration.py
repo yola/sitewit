@@ -295,7 +295,7 @@ class TestCancelPrePurchasedSubscriptionTestCase(
         # to it.
         return cls.subscribe_method(cls.account_token, -1, 500, 'USD')['id']
 
-    def test_refund_request_is_accepted(self):
+    def test_subscription_cannot_be_cancelled(self):
         self.assertHTTPErrorIsRaised(
             self.unsubscribe_method, (
                 self.account_token, self.campaign_id), 409

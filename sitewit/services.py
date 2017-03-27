@@ -136,7 +136,6 @@ class SitewitService(HTTPServiceClient):
             'currency': currency,
         })
 
-
         return self.put(
             '/api/account/', json=data,
             headers=self._get_account_auth_header(account_token)).json()
@@ -427,7 +426,7 @@ class SitewitService(HTTPServiceClient):
 
         Args:
             account_token (str): account token.
-            campaign_id (str): campaign to refund.
+            campaign_id (str): campaign to cancel/refund.
 
         Returns:
             Please see response format here:
