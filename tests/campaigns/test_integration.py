@@ -279,7 +279,8 @@ class TestRefundSubscriptionTestCase(
         return cls.subscribe_method(cls.account_token, -1, 500, 'USD')['id']
 
     def test_refund_request_is_accepted(self):
-        pass
+        self.assertEqual(self.result['campaignInfo']['status'], 'Cancelled')
+        self.assertEqual(self.result['refundAmount'], -500.0)
 
 
 class TestCancelPrePurchasedSubscriptionTestCase(
