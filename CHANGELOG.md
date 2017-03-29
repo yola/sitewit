@@ -2,7 +2,7 @@
 
 ## 0.9.0
 
-* Add `services.SitewitService.refund_search_campaign_subscription()` and
+* Add `SitewitService.refund_search_campaign_subscription()` and
   `SitewitService.refund_display_campaign_subscription()` methods.
 
 ## 0.8.0
