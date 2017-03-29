@@ -1,6 +1,6 @@
 # [Changelog](https://github.com/yola/sitewit/releases)
 
-## 0.9.0
+## 0.8.1
 
 * Add `SitewitService.refund_search_campaign_subscription()` and
   `SitewitService.refund_display_campaign_subscription()` methods.
