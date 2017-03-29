@@ -18,10 +18,14 @@ class BaseCampaignTestCase(SitewitTestCase):
             'foo{0}@bar.com'.format(uuid4().hex), 'USD', 'US'
         )['accountInfo']['token']
 
-        cls.campaign_id = cls.service.create_campaign(
-            cls.account_token, campaign_type=cls.campaign_type)['id']
         cls.subscribe_method = cls.subscribe_method()
         cls.unsubscribe_method = cls.unsubscribe_method()
+        cls.campaign_id = cls.create_campaign()
+
+    @classmethod
+    def create_campaign(cls):
+        return cls.service.create_campaign(
+            cls.account_token, campaign_type=cls.campaign_type)['id']
 
     @classmethod
     def subscribe_method(cls):
@@ -260,6 +264,39 @@ class TestCancelSearchCampaignSubscriptionNotFound(
         self.assertHTTPErrorIsRaised(
             self.unsubscribe_method, (
                 self.account_token, self.non_existent_campaign_id), 404)
+
+
+class TestRefundSubscriptionTestCase(
+        BaseCampaignTestCase):
+    @classmethod
+    def setUpClass(cls):
+        super(TestRefundSubscriptionTestCase, cls).setUpClass()
+        cls.result = cls.service.refund_search_campaign_subscription(
+            cls.account_token, cls.campaign_id)
+
+    @classmethod
+    def create_campaign(cls):
+        return cls.subscribe_method(cls.account_token, -1, 500, 'USD')['id']
+
+    def test_refund_request_is_accepted(self):
+        self.assertEqual(self.result['campaignInfo']['status'], 'Cancelled')
+        self.assertEqual(self.result['refundAmount'], -500.0)
+
+
+class TestCancelPrePurchasedSubscriptionTestCase(
+        BaseCampaignTestCase):
+
+    @classmethod
+    def create_campaign(cls):
+        # Pre-purchased campaign created "on the fly", when we subscribe
+        # to it.
+        return cls.subscribe_method(cls.account_token, -1, 500, 'USD')['id']
+
+    def test_subscription_cannot_be_cancelled(self):
+        self.assertHTTPErrorIsRaised(
+            self.unsubscribe_method, (
+                self.account_token, self.campaign_id), 409
+        )
 
 
 class TestCancelDisplayCampaignSubscriptionNotFound(
