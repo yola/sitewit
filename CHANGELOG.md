@@ -1,5 +1,10 @@
 # [Changelog](https://github.com/yola/sitewit/releases)
 
+## 0.8.2
+
+* Allow emtpy clientId in model.Subscription.iter_subscriptions (pre-purchased
+  campaign case).
+
 ## 0.8.1
 
 * Add `SitewitService.refund_search_campaign_subscription()` and
