@@ -15,7 +15,6 @@ class PartnerTestCase(SitewitTestCase):
     }
 
     settings = {
-        'headerColor': 'cccccc',
         'headerTextColor': '000000',
         'headerLogoUrl': 'https://www.partner.com/resources/sw-wl-logo.png',
         'supportPhone': '800-555-0001',
