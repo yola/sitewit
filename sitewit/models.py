@@ -205,7 +205,7 @@ class Account(SiteWitServiceModel):
 
 class Subscription(SiteWitServiceModel):
     def __init__(self, site_id, url, data):
-        self.site_id = site_id
+        self.site_id = UUID(site_id).hex if site_id else None
         self.url = url
         self.ad_spend = Decimal(data['budget'])
         self.price = Decimal(data['fee'])
@@ -226,7 +226,7 @@ class Subscription(SiteWitServiceModel):
                 url = account_data['url']
                 site_id = account_data['clientId']
                 for subscription_data in account_data['subscriptions']:
-                    yield cls(UUID(site_id).hex, url, subscription_data)
+                    yield cls(site_id, url, subscription_data)
 
             if len(batch) < limit:
                 return
