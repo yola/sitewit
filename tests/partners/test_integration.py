@@ -111,7 +111,6 @@ class TestUpdatePartnerSettings(PartnerTestCase):
             uuid.uuid4().hex, self.address, self.settings)
 
         self.new_settings = {
-            'headerColor': 'aaaaaa',
             'headerTextColor': '111111',
             'headerLogoUrl': 'https://www.partner.com/sw.png',
             'supportPhone': '800-555-1113',
