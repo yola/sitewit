@@ -1,5 +1,6 @@
 from uuid import uuid4
 
+from sitewit.constants import CampaignServiceTypes
 from sitewit.models import Subscription
 from tests.base import SitewitTestCase
 
@@ -430,3 +431,16 @@ class TestListSubscriptions(BaseCampaignTestCase):
 
     def test_limits_returned_result_to_given_limit(self):
         self.assertEqual(len(self.subscriptions), 1)
+
+
+class TestRequestDIFMCampaignService(BaseCampaignTestCase):
+    """
+    SiteWitService.request_difm_campaign_service()
+    """
+
+    def setUp(self):
+        self.response = self.service.request_difm_campaign_service(
+            self.account_token, CampaignServiceTypes.DIFM, uuid4().hex)
+
+    def test_returns_id(self):
+        self.assertIn('id', self.response)

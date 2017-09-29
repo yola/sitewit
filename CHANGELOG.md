@@ -1,5 +1,11 @@
 # [Changelog](https://github.com/yola/sitewit/releases)
 
+## DEV
+
+* Add `SitewitService.request_difm_campaign_service()`.
+* Add `CampaignServiceTypes` and `CAMPAIGN_SERVICES` constants.
+
+
 ## 0.8.2
 
 * Allow emtpy clientId in model.Subscription.iter_subscriptions (pre-purchased
