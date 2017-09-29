@@ -235,6 +235,7 @@ class SitewitService(HTTPServiceClient):
         """Get Campaign info by campaign ID
 
         Args:
+            account_token (str): account token.
             campaign_id (str): id of campaign.
 
         Returns:
@@ -262,6 +263,7 @@ class SitewitService(HTTPServiceClient):
         """Delete Campaign by campaign ID
 
         Args:
+            account_token (str): account token.
             campaign_id (str): id of campaign.
 
         Returns:
