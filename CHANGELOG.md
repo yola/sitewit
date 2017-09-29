@@ -1,6 +1,6 @@
 # [Changelog](https://github.com/yola/sitewit/releases)
 
-## DEV
+## 0.8.3
 
 * Add `SitewitService.request_difm_campaign_service()`.
 * Add `CampaignServiceTypes` and `CAMPAIGN_SERVICES` constants.
