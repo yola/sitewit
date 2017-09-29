@@ -462,7 +462,7 @@ class SitewitService(HTTPServiceClient):
 
     def request_difm_campaign_service(
             self, account_token, service_type, reference_id):
-        """Creates a request for DIFY service.
+        """Create a request for DIFY service.
 
         Args:
             account_token (str): account token.
