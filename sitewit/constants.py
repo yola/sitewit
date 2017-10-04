@@ -7,6 +7,11 @@ class BillingTypes(object):
     TRIGGERED = 'Triggered'
 
 
+class CampaignTypes(object):
+    DISPLAY = 'display'
+    SEARCH = 'search'
+
+
 CAMPAIGN_SERVICES = {
     CampaignServiceTypes.DIFM: 'DIFM Campaign'
 }

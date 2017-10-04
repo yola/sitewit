@@ -5,7 +5,7 @@ from demands import HTTPServiceClient, HTTPServiceError  # NOQA
 from yoconfig import get_config
 
 import sitewit
-from sitewit.constants import BillingTypes, CAMPAIGN_SERVICES
+from sitewit.constants import BillingTypes, CAMPAIGN_SERVICES, CampaignTypes
 
 
 _DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
@@ -220,7 +220,8 @@ class SitewitService(HTTPServiceClient):
 
         return result['token']
 
-    def create_campaign(self, account_token, campaign_type='search'):
+    def create_campaign(self, account_token,
+                        campaign_type=CampaignTypes.SEARCH):
         """Create new Campaign (for testing purpose)
 
         Args:
@@ -301,19 +302,9 @@ class SitewitService(HTTPServiceClient):
             https://sandboxpapi.sitewit.com/Help/Api/
             POST-api-subscription-campaign-search
         """
-        data = {
-            'billingType': billing_type,
-            'budget': budget,
-            'campaignId': campaign_id,
-            'currency': currency,
-        }
-
-        if next_billing_time is not None:
-            data['nextCharge'] = next_billing_time.strftime(_DATETIME_FORMAT)
-
-        return self.post(
-            '/api/subscription/campaign/search', json=data,
-            headers=self._get_account_auth_header(account_token)).json()
+        return self._subscribe_to_campaign(
+            CampaignTypes.SEARCH, account_token, campaign_id, budget,
+            currency, billing_type, next_billing_time)
 
     def subscribe_to_display_campaign(
             self, account_token, campaign_id, budget, currency,
@@ -338,6 +329,13 @@ class SitewitService(HTTPServiceClient):
             https://sandboxpapi.sitewit.com/Help/Api/
             POST-api-subscription-campaign-display
         """
+        return self._subscribe_to_campaign(
+            CampaignTypes.DISPLAY, account_token, campaign_id, budget,
+            currency, billing_type, next_billing_time)
+
+    def _subscribe_to_campaign(
+            self, campaign_type, account_token, campaign_id, budget, currency,
+            billing_type, next_billing_time):
         data = {
             'billingType': billing_type,
             'budget': budget,
@@ -349,7 +347,7 @@ class SitewitService(HTTPServiceClient):
             data['nextCharge'] = next_billing_time.strftime(_DATETIME_FORMAT)
 
         return self.post(
-            '/api/subscription/campaign/display', json=data,
+            '/api/subscription/campaign/{}'.format(campaign_type), json=data,
             headers=self._get_account_auth_header(account_token)).json()
 
     def get_campaign_subscription(self, account_token, campaign_id):
