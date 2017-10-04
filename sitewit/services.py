@@ -8,6 +8,9 @@ import sitewit
 from sitewit.constants import CAMPAIGN_SERVICES
 
 
+_DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
+
+
 def _remove_nones(data):
     return {k: v for k, v in data.items() if v is not None}
 
@@ -275,7 +278,7 @@ class SitewitService(HTTPServiceClient):
             headers=self._get_account_auth_header(account_token)).json()
 
     def subscribe_to_search_campaign(self, account_token, campaign_id, budget,
-                                     currency):
+                                     currency, next_billing_time=None):
         """Subscribe to Search campaign.
 
         Create subscription to a given Search Campaign for given Account.
@@ -284,6 +287,8 @@ class SitewitService(HTTPServiceClient):
             account_token (str): account token.
             campaign_id (str): campaign to subscribe.
             budget (decimal): Desired monthly spend budget (50>=budget<=5000).
+            next_billing_time (datetime, optional): time when the campaign
+                is expected to be charged/refilled.
             currency (str): https://sandboxpapi.sitewit.com/Help/ResourceModel
                             ?modelName=BudgetCurrency
 
@@ -292,16 +297,21 @@ class SitewitService(HTTPServiceClient):
             https://sandboxpapi.sitewit.com/Help/Api/
             POST-api-subscription-campaign-search
         """
-        data = {'campaignId': campaign_id,
-                'budget': budget,
-                'currency': currency}
+        data = {
+            'campaignId': campaign_id,
+            'budget': budget,
+            'currency': currency,
+        }
+
+        if next_billing_time is not None:
+            data['nextCharge'] = next_billing_time.strftime(_DATETIME_FORMAT)
 
         return self.post(
             '/api/subscription/campaign/search', json=data,
             headers=self._get_account_auth_header(account_token)).json()
 
-    def subscribe_to_display_campaign(
-            self, account_token, campaign_id, budget, currency):
+    def subscribe_to_display_campaign(self, account_token, campaign_id, budget,
+                                      currency, next_billing_time=None):
         """Subscribe to Display campaign.
 
         Create subscription to a given Display Campaign for given Account.
@@ -310,6 +320,8 @@ class SitewitService(HTTPServiceClient):
             account_token (str): account token.
             campaign_id (str): campaign to subscribe.
             budget (decimal): Desired monthly spend budget (50>=budget<=5000).
+            next_billing_time (datetime, optional): time when the campaign
+                is expected to be charged/refilled.
             currency (str): https://sandboxpapi.sitewit.com/Help/ResourceModel
                             ?modelName=BudgetCurrency
 
@@ -318,9 +330,14 @@ class SitewitService(HTTPServiceClient):
             https://sandboxpapi.sitewit.com/Help/Api/
             POST-api-subscription-campaign-display
         """
-        data = {'campaignId': campaign_id,
-                'budget': budget,
-                'currency': currency}
+        data = {
+            'campaignId': campaign_id,
+            'budget': budget,
+            'currency': currency,
+        }
+
+        if next_billing_time is not None:
+            data['nextCharge'] = next_billing_time.strftime(_DATETIME_FORMAT)
 
         return self.post(
             '/api/subscription/campaign/display', json=data,
