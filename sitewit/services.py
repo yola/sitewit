@@ -5,7 +5,7 @@ from demands import HTTPServiceClient, HTTPServiceError  # NOQA
 from yoconfig import get_config
 
 import sitewit
-from sitewit.constants import CAMPAIGN_SERVICES
+from sitewit.constants import BillingTypes, CAMPAIGN_SERVICES
 
 
 _DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
@@ -277,8 +277,10 @@ class SitewitService(HTTPServiceClient):
             '/api/campaign/%s' % (campaign_id,),
             headers=self._get_account_auth_header(account_token)).json()
 
-    def subscribe_to_search_campaign(self, account_token, campaign_id, budget,
-                                     currency, next_billing_time=None):
+    def subscribe_to_search_campaign(
+            self, account_token, campaign_id, budget,
+            currency, billing_type=BillingTypes.TRIGGERED,
+            next_billing_time=None):
         """Subscribe to Search campaign.
 
         Create subscription to a given Search Campaign for given Account.
@@ -287,10 +289,12 @@ class SitewitService(HTTPServiceClient):
             account_token (str): account token.
             campaign_id (str): campaign to subscribe.
             budget (decimal): Desired monthly spend budget (50>=budget<=5000).
-            next_billing_time (datetime, optional): time when the campaign
-                is expected to be charged/refilled.
             currency (str): https://sandboxpapi.sitewit.com/Help/ResourceModel
                             ?modelName=BudgetCurrency
+            billing_type (str, optional): type of billing, either 'Triggered'
+                (default) or 'Automatic'
+            next_billing_time (datetime, optional): time when the campaign
+                is expected to be charged/refilled.
 
         Returns:
             Please see response format here:
@@ -298,8 +302,9 @@ class SitewitService(HTTPServiceClient):
             POST-api-subscription-campaign-search
         """
         data = {
-            'campaignId': campaign_id,
+            'billingType': billing_type,
             'budget': budget,
+            'campaignId': campaign_id,
             'currency': currency,
         }
 
@@ -310,8 +315,9 @@ class SitewitService(HTTPServiceClient):
             '/api/subscription/campaign/search', json=data,
             headers=self._get_account_auth_header(account_token)).json()
 
-    def subscribe_to_display_campaign(self, account_token, campaign_id, budget,
-                                      currency, next_billing_time=None):
+    def subscribe_to_display_campaign(
+            self, account_token, campaign_id, budget, currency,
+            billing_type=BillingTypes.TRIGGERED, next_billing_time=None):
         """Subscribe to Display campaign.
 
         Create subscription to a given Display Campaign for given Account.
@@ -320,10 +326,12 @@ class SitewitService(HTTPServiceClient):
             account_token (str): account token.
             campaign_id (str): campaign to subscribe.
             budget (decimal): Desired monthly spend budget (50>=budget<=5000).
-            next_billing_time (datetime, optional): time when the campaign
-                is expected to be charged/refilled.
             currency (str): https://sandboxpapi.sitewit.com/Help/ResourceModel
                             ?modelName=BudgetCurrency
+            billing_type (str, optional): type of billing, either 'Triggered'
+                (default) or 'Automatic'
+            next_billing_time (datetime, optional): time when the campaign
+                is expected to be charged/refilled.
 
         Returns:
             Please see response format here:
@@ -331,8 +339,9 @@ class SitewitService(HTTPServiceClient):
             POST-api-subscription-campaign-display
         """
         data = {
-            'campaignId': campaign_id,
+            'billingType': billing_type,
             'budget': budget,
+            'campaignId': campaign_id,
             'currency': currency,
         }
 

@@ -1,5 +1,11 @@
 # [Changelog](https://github.com/yola/sitewit/releases)
 
+## DEV
+* Add optional `billing_type` and `next_billing_time` to 
+    `subscribe_to_display_campaign` and `subscribe_to_search_campaign` 
+    `SitewitService` methods. 
+
+
 ## 0.8.3
 
 * Add `SitewitService.request_difm_campaign_service()`.
