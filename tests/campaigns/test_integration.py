@@ -58,10 +58,6 @@ class BaseSubscriptionTestCase(BaseCampaignTestCase):
         self.assertEqual(response['subscription']['budget'], budget)
 
 
-class BaseSearchCampaignSubscriptionTestCase(BaseSubscriptionTestCase):
-    campaign_type = CampaignTypes.SEARCH
-
-
 class BaseCancelledSubscriptionTestCase(BaseSubscriptionTestCase):
     @classmethod
     def setUpClass(cls):
@@ -122,13 +118,13 @@ class TestDeleteCampaign(BaseCampaignTestCase):
         self.assertEqual(self.result['status'], 'Deleted')
 
 
-class TestSubscribeToSearchCampaign(BaseSearchCampaignSubscriptionTestCase):
+class TestSubscribeToSearchCampaign(BaseSubscriptionTestCase):
     def test_subscription_is_returned(self):
         self.assertTrue(self.campaign['subscription']['active'])
 
 
 class TestSubscribeToSearchCampaignNoCampaignSpecified(
-        BaseSearchCampaignSubscriptionTestCase):
+        BaseSubscriptionTestCase):
     campaign_id = -1
 
     def test_subscription_is_returned(self):
@@ -140,15 +136,14 @@ class TestSubscribeToDisplayCampaign(TestSubscribeToSearchCampaign):
 
 
 class TestSubscribeToDisplayCampaignNoCampaignSpecified(
-        BaseSearchCampaignSubscriptionTestCase):
+        BaseSubscriptionTestCase):
     campaign_id = -1
 
     def test_subscription_is_returned(self):
         self.assertTrue(self.campaign['subscription']['active'])
 
 
-class TestSubscribeToSearchCampaignNotFound(
-        BaseSearchCampaignSubscriptionTestCase):
+class TestSubscribeToSearchCampaignNotFound(BaseSubscriptionTestCase):
     def test_error_404_is_raised(self):
         self.assertHTTPErrorIsRaised(
             self.subscribe_method, (
@@ -161,8 +156,7 @@ class TestSubscribeToDisplayCampaignNotFound(
     campaign_type = CampaignTypes.DISPLAY
 
 
-class TestSubscribeToSearchCampaignValidationError(
-        BaseSearchCampaignSubscriptionTestCase):
+class TestSubscribeToSearchCampaignValidationError(BaseSubscriptionTestCase):
     def test_error_400_is_raised(self):
         self.assertHTTPErrorIsRaised(
             self.subscribe_method, (
@@ -230,8 +224,7 @@ class TestListCampaignSubscriptionsBadAccountToken(BaseCampaignTestCase):
             401, {u'Message': u'Invalid SubPartner Identifier'})
 
 
-class TestCancelSearchCampaignSubscription(
-        BaseSearchCampaignSubscriptionTestCase):
+class TestCancelSearchCampaignSubscription(BaseSubscriptionTestCase):
     def setUp(self):
         self.result = self.unsubscribe_method(
             self.account_token, self.campaign_id)
@@ -246,7 +239,7 @@ class TestCancelDisplayCampaignSubscription(
 
 
 class TestCancelSearchCampaignSubscriptionBadAccountToken(
-        BaseSearchCampaignSubscriptionTestCase):
+        BaseSubscriptionTestCase):
     def test_error_401_is_raised(self):
         self.assertHTTPErrorIsRaised(
             self.unsubscribe_method, (
@@ -259,8 +252,7 @@ class TestCancelDisplayCampaignSubscriptionBadAccountToken(
     campaign_type = CampaignTypes.DISPLAY
 
 
-class TestCancelSearchCampaignSubscriptionNotFound(
-        BaseSearchCampaignSubscriptionTestCase):
+class TestCancelSearchCampaignSubscriptionNotFound(BaseSubscriptionTestCase):
     def test_error_404_is_raised(self):
         self.assertHTTPErrorIsRaised(
             self.unsubscribe_method, (
@@ -305,8 +297,7 @@ class TestCancelDisplayCampaignSubscriptionNotFound(
     campaign_type = CampaignTypes.DISPLAY
 
 
-class TestSubscribeToSearchCampaignCurrencyMismatch(
-        BaseSearchCampaignSubscriptionTestCase):
+class TestSubscribeToSearchCampaignCurrencyMismatch(BaseSubscriptionTestCase):
     def test_error_400_is_raised(self):
         self.assertHTTPErrorIsRaised(
             self.subscribe_method, (
@@ -319,8 +310,7 @@ class TestSubscribeToDisplayCampaignCurrencyMismatch(
     campaign_type = CampaignTypes.DISPLAY
 
 
-class SubscribeToSearchCampaignActiveSub(
-        BaseSearchCampaignSubscriptionTestCase):
+class SubscribeToSearchCampaignActiveSub(BaseSubscriptionTestCase):
     def setUp(self):
         self.result = self.subscribe_method(
             self.account_token, self.campaign_id, 500, 'USD')
@@ -334,8 +324,7 @@ class SubscribeToDisplayCampaignActiveSub(
     campaign_type = CampaignTypes.DISPLAY
 
 
-class SubscribeToSeachCampaignActiveSubDowngrade(
-        BaseSearchCampaignSubscriptionTestCase):
+class SubscribeToSeachCampaignActiveSubDowngrade(BaseSubscriptionTestCase):
     def setUp(self):
         self.result = self.subscribe_method(
             self.account_token, self.campaign_id, 100, 'USD')
@@ -349,8 +338,7 @@ class SubscribeToDisplayCampaignActiveSubDowngrade(
     campaign_type = CampaignTypes.DISPLAY
 
 
-class SubscribeToSearchCampaignActiveSubUpgrade(
-        BaseSearchCampaignSubscriptionTestCase):
+class SubscribeToSearchCampaignActiveSubUpgrade(BaseSubscriptionTestCase):
     def setUp(self):
         self.result = self.subscribe_method(
             self.account_token, self.campaign_id, 600, 'USD')
