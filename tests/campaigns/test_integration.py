@@ -164,7 +164,7 @@ class TestSubscribeToSearchCampaignWithCustomBillingTime(BaseCampaignTestCase):
     def setUp(self):
         self.response = self.service.subscribe_to_search_campaign(
             self.account_token, self.campaign_id, 500, 'USD',
-            next_billing_time=datetime.utcnow() + timedelta(days=31))
+            next_billing_time=datetime.utcnow() + timedelta(31))
 
     def test_succesfully_creates_subsription(self):
         self.assertEqual(self.response['id'], self.campaign_id)
@@ -177,7 +177,7 @@ class TestSubscribeToDisplayCampaignWithCustomBillingTime(
     def setUp(self):
         self.response = self.service.subscribe_to_display_campaign(
             self.account_token, self.campaign_id, 500, 'USD',
-            next_billing_time=datetime.utcnow() + timedelta(days=31))
+            next_billing_time=datetime.utcnow() + timedelta(31))
 
     def test_succesfully_creates_subsription(self):
         self.assertEqual(self.response['id'], self.campaign_id)
@@ -484,3 +484,33 @@ class TestRequestDIFMCampaignService(BaseCampaignTestCase):
 
     def test_returns_id(self):
         self.assertIn('id', self.response)
+
+
+class TestRefillSearchCampaignSubscription(BaseSubscriptionTestCase):
+    """
+    SiteWitService.refill_search_campaign_subscription()
+    """
+
+    def setUp(self):
+        self.response = self.service.refill_search_campaign_subscription(
+            self.account_token, self.campaign_id, 510, 500, 'USD',
+            datetime.utcnow() + timedelta(32))
+
+    def test_refills_subscription_for_given_amount(self):
+        self.assertEqual(self.response['charge']['items'][1]['price'], 510)
+
+
+class TestRefillDisplayCampaignSubscription(BaseSubscriptionTestCase):
+    """
+    SiteWitService.refill_display_campaign_subscription()
+    """
+
+    campaign_type = CampaignTypes.DISPLAY
+
+    def setUp(self):
+        self.response = self.service.refill_display_campaign_subscription(
+            self.account_token, self.campaign_id, 510, 500, 'USD',
+            datetime.utcnow() + timedelta(32))
+
+    def test_refills_subscription_for_given_amount(self):
+        self.assertEqual(self.response['charge']['items'][1]['price'], 510)
