@@ -1,6 +1,7 @@
+from datetime import datetime, timedelta
 from uuid import uuid4
 
-from sitewit.constants import CampaignServiceTypes, CampaignTypes
+from sitewit.constants import BillingTypes, CampaignServiceTypes, CampaignTypes
 from sitewit.models import Subscription
 from tests.base import SitewitTestCase
 
@@ -56,6 +57,8 @@ class BaseSubscriptionTestCase(BaseCampaignTestCase):
         self.assertEqual(response['id'], campaign_id)
         self.assertEqual(response['subscription']['active'], is_active)
         self.assertEqual(response['subscription']['budget'], budget)
+        self.assertEqual(
+            response['subscription']['billingType'], BillingTypes.TRIGGERED)
 
 
 class BaseCancelledSubscriptionTestCase(BaseSubscriptionTestCase):
@@ -129,6 +132,55 @@ class TestSubscribeToSearchCampaignNoCampaignSpecified(
 
     def test_subscription_is_returned(self):
         self.assertTrue(self.campaign['subscription']['active'])
+
+
+class TestSubscribeToEverGreenSearchCampaign(BaseCampaignTestCase):
+    def setUp(self):
+        self.response = self.service.subscribe_to_search_campaign(
+            self.account_token, self.campaign_id, 500, 'USD',
+            billing_type=BillingTypes.AUTOMATIC)
+
+    def test_creates_subsription_with_automatic_billing_type(self):
+        self.assertEqual(
+            self.response['subscription']['billingType'],
+            BillingTypes.AUTOMATIC)
+
+
+class TestSubscribeToEverGreenDisplayCampaign(BaseCampaignTestCase):
+    campaign_type = CampaignTypes.DISPLAY
+
+    def setUp(self):
+        self.response = self.service.subscribe_to_display_campaign(
+            self.account_token, self.campaign_id, 500, 'USD',
+            billing_type=BillingTypes.AUTOMATIC)
+
+    def test_creates_subsription_with_automatic_billing_type(self):
+        self.assertEqual(
+            self.response['subscription']['billingType'],
+            BillingTypes.AUTOMATIC)
+
+
+class TestSubscribeToSearchCampaignWithCustomBillingTime(BaseCampaignTestCase):
+    def setUp(self):
+        self.response = self.service.subscribe_to_search_campaign(
+            self.account_token, self.campaign_id, 500, 'USD',
+            next_billing_time=datetime.utcnow() + timedelta(days=31))
+
+    def test_succesfully_creates_subsription(self):
+        self.assertEqual(self.response['id'], self.campaign_id)
+
+
+class TestSubscribeToDisplayCampaignWithCustomBillingTime(
+        BaseCampaignTestCase):
+    campaign_type = CampaignTypes.DISPLAY
+
+    def setUp(self):
+        self.response = self.service.subscribe_to_display_campaign(
+            self.account_token, self.campaign_id, 500, 'USD',
+            next_billing_time=datetime.utcnow() + timedelta(days=31))
+
+    def test_succesfully_creates_subsription(self):
+        self.assertEqual(self.response['id'], self.campaign_id)
 
 
 class TestSubscribeToDisplayCampaign(TestSubscribeToSearchCampaign):
