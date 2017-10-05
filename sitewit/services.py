@@ -1,5 +1,6 @@
 import base64
 from copy import deepcopy
+from datetime import datetime, time
 
 from demands import HTTPServiceClient, HTTPServiceError  # NOQA
 from yoconfig import get_config
@@ -8,7 +9,7 @@ import sitewit
 from sitewit.constants import BillingTypes, CAMPAIGN_SERVICES, CampaignTypes
 
 
-_DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
+_NEXT_CHARGE_FORMAT = '%Y-%m-%d 23:59:59'
 
 
 def _remove_nones(data):
@@ -281,7 +282,7 @@ class SitewitService(HTTPServiceClient):
     def subscribe_to_search_campaign(
             self, account_token, campaign_id, budget,
             currency, billing_type=BillingTypes.TRIGGERED,
-            next_billing_time=None):
+            spend_budget_till=None):
         """Subscribe to Search campaign.
 
         Create subscription to a given Search Campaign for given Account.
@@ -294,8 +295,8 @@ class SitewitService(HTTPServiceClient):
                             ?modelName=BudgetCurrency
             billing_type (str, optional): type of billing, either 'Triggered'
                 (default) or 'Automatic'
-            next_billing_time (datetime, optional): time when the campaign
-                is expected to be charged/refilled.
+            spend_budget_till (date, optional): date when a campaign's
+                budget is expected to be entirely spent.
 
         Returns:
             Please see response format here:
@@ -304,11 +305,11 @@ class SitewitService(HTTPServiceClient):
         """
         return self._subscribe_to_campaign(
             CampaignTypes.SEARCH, account_token, campaign_id, budget,
-            currency, billing_type, next_billing_time)
+            currency, billing_type, spend_budget_till)
 
     def subscribe_to_display_campaign(
             self, account_token, campaign_id, budget, currency,
-            billing_type=BillingTypes.TRIGGERED, next_billing_time=None):
+            billing_type=BillingTypes.TRIGGERED, spend_budget_till=None):
         """Subscribe to Display campaign.
 
         Create subscription to a given Display Campaign for given Account.
@@ -321,8 +322,8 @@ class SitewitService(HTTPServiceClient):
                             ?modelName=BudgetCurrency
             billing_type (str, optional): type of billing, either 'Triggered'
                 (default) or 'Automatic'
-            next_billing_time (datetime, optional): time when the campaign
-                is expected to be charged/refilled.
+            spend_budget_till (date, optional): date when a campaign's
+                budget is expected to be entirely spent.
 
         Returns:
             Please see response format here:
@@ -331,11 +332,11 @@ class SitewitService(HTTPServiceClient):
         """
         return self._subscribe_to_campaign(
             CampaignTypes.DISPLAY, account_token, campaign_id, budget,
-            currency, billing_type, next_billing_time)
+            currency, billing_type, spend_budget_till)
 
     def _subscribe_to_campaign(
             self, campaign_type, account_token, campaign_id, budget, currency,
-            billing_type, next_billing_time):
+            billing_type, spend_budget_till):
         data = {
             'billingType': billing_type,
             'budget': budget,
@@ -343,8 +344,9 @@ class SitewitService(HTTPServiceClient):
             'currency': currency,
         }
 
-        if next_billing_time is not None:
-            data['nextCharge'] = next_billing_time.strftime(_DATETIME_FORMAT)
+        if spend_budget_till is not None:
+            data['nextCharge'] = spend_budget_till.strftime(
+                _NEXT_CHARGE_FORMAT)
 
         return self.post(
             '/api/subscription/campaign/{}'.format(campaign_type), json=data,
@@ -352,21 +354,21 @@ class SitewitService(HTTPServiceClient):
 
     def refill_search_campaign_subscription(
             self, account_token, campaign_id, refill_amount, budget, currency,
-            next_billing_time=None):
+            spend_budget_till=None):
         return self._refill_campaign_subscription(
             CampaignTypes.SEARCH, account_token, campaign_id, refill_amount,
-            budget, currency, next_billing_time)
+            budget, currency, spend_budget_till)
 
     def refill_display_campaign_subscription(
             self, account_token, campaign_id, refill_amount, budget, currency,
-            next_billing_time=None):
+            spend_budget_till=None):
         return self._refill_campaign_subscription(
             CampaignTypes.DISPLAY, account_token, campaign_id, refill_amount,
-            budget, currency, next_billing_time)
+            budget, currency, spend_budget_till)
 
     def _refill_campaign_subscription(
             self, campaign_type, account_token, campaign_id, refill_amount,
-            budget, currency, next_billing_time):
+            budget, currency, spend_budget_till):
 
         data = {
             'budget': budget,
@@ -375,8 +377,9 @@ class SitewitService(HTTPServiceClient):
             'currency': currency,
         }
 
-        if next_billing_time is not None:
-            data['nextCharge'] = next_billing_time.strftime(_DATETIME_FORMAT)
+        if spend_budget_till is not None:
+            data['nextCharge'] = spend_budget_till.strftime(
+                _NEXT_CHARGE_FORMAT)
 
         return self.put(
             'api/subscription/refill/campaign/{}'.format(campaign_type),

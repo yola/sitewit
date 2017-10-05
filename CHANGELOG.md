@@ -1,7 +1,7 @@
 # [Changelog](https://github.com/yola/sitewit/releases)
 
 ## DEV
-* Add optional `billing_type` and `next_billing_time` to 
+* Add optional `billing_type` and `spend_budget_till` to 
     `subscribe_to_display_campaign` and `subscribe_to_search_campaign` 
     `SitewitService` methods.
 * Add `SitewitService.refill_search_campaign_subscription()` and 
