@@ -350,6 +350,39 @@ class SitewitService(HTTPServiceClient):
             '/api/subscription/campaign/{}'.format(campaign_type), json=data,
             headers=self._get_account_auth_header(account_token)).json()
 
+    def refill_search_campaign_subscription(
+            self, account_token, campaign_id, refill_amount, currency,
+            next_billing_time=None):
+        return self._refill_campaign_subscription(
+            CampaignTypes.SEARCH, account_token, campaign_id, refill_amount,
+            currency, next_billing_time)
+
+    def refill_display_campaign_subscription(
+            self, account_token, campaign_id, refill_amount, currency,
+            next_billing_time=None):
+        return self._refill_campaign_subscription(
+            CampaignTypes.DISPLAY, account_token, campaign_id, refill_amount,
+            currency, next_billing_time)
+
+    def _refill_campaign_subscription(
+            self, campaign_type, account_token, campaign_id, refill_amount,
+            currency, next_billing_time):
+
+        data = {
+            'budget': refill_amount,
+            'campaignId': campaign_id,
+            'chargedSpend': refill_amount,
+            'currency': currency,
+        }
+
+        if next_billing_time is not None:
+            data['nextCharge'] = next_billing_time.strftime(_DATETIME_FORMAT)
+
+        return self.put(
+            'api/subscription/refill/campaign/{}'.format(campaign_type),
+            json=data,
+            headers=self._get_account_auth_header(account_token)).json()
+
     def get_campaign_subscription(self, account_token, campaign_id):
         """Get campaign subscription info.
 

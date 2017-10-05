@@ -3,7 +3,9 @@
 ## DEV
 * Add optional `billing_type` and `next_billing_time` to 
     `subscribe_to_display_campaign` and `subscribe_to_search_campaign` 
-    `SitewitService` methods. 
+    `SitewitService` methods.
+* Add `SitewitService.refill_search_campaign_subscription()` and 
+    `SitewitService.refill_display_campaign_subscription()` methods.
 
 
 ## 0.8.3
