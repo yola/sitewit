@@ -241,8 +241,6 @@ class TestGetCampaignSubscriptionNotFound(BaseCampaignTestCase):
 
 
 class TestGetCampaignSubscriptionBadAccountToken(BaseCampaignTestCase):
-    campaign_type = CampaignTypes.SEARCH
-
     def test_error_401_is_raised(self):
         self.assertHTTPErrorIsRaised(
             self.service.get_campaign_subscription, (
@@ -251,8 +249,6 @@ class TestGetCampaignSubscriptionBadAccountToken(BaseCampaignTestCase):
 
 
 class TestListCampaignSubscriptions(BaseCampaignTestCase):
-    campaign_type = CampaignTypes.SEARCH
-
     def setUp(self):
         campaign_id = self.service.create_campaign(self.account_token)['id']
         self.subscribe_method(self.account_token, campaign_id, 100, 'USD')
@@ -268,8 +264,6 @@ class TestListCampaignSubscriptions(BaseCampaignTestCase):
 
 
 class TestListCampaignSubscriptionsBadAccountToken(BaseCampaignTestCase):
-    campaign_type = CampaignTypes.SEARCH
-
     def test_error_401_is_raised(self):
         self.assertHTTPErrorIsRaised(
             self.service.list_campaign_subscriptions, (self.random_token,),
@@ -421,8 +415,6 @@ class SubscribeToDisplayCampaignCancelledSub(
 
 class SubscribeToSearchCampaignCancelledSubUpgrade(
         BaseCancelledSubscriptionTestCase):
-    campaign_type = CampaignTypes.SEARCH
-
     def setUp(self):
         self.result = self.subscribe_method(
             self.account_token, self.campaign_id, 1000, 'USD')
@@ -438,8 +430,6 @@ class SubscribeToDisplayCampaignCancelledSubUpgrade(
 
 class SubscribeToSearchCampaignCancelledSubDowngrade(
         BaseCancelledSubscriptionTestCase):
-    campaign_type = CampaignTypes.SEARCH
-
     def setUp(self):
         self.result = self.subscribe_method(
             self.account_token, self.campaign_id, 100, 'USD')
@@ -454,8 +444,6 @@ class SubscribeToDisplayCampaignCancelledSubDowngrade(
 
 
 class TestIterSubscriptions(BaseSubscriptionTestCase):
-    campaign_type = CampaignTypes.SEARCH
-
     def setUp(self):
         self.subscription = Subscription.iter_subscriptions().next()
 
@@ -464,8 +452,6 @@ class TestIterSubscriptions(BaseSubscriptionTestCase):
 
 
 class TestListSubscriptions(BaseCampaignTestCase):
-    campaign_type = CampaignTypes.SEARCH
-
     def setUp(self):
         self.subscriptions = self.service.list_subscriptions(0, 1)
 
