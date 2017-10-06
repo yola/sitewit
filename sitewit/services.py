@@ -8,7 +8,7 @@ import sitewit
 from sitewit.constants import BillingTypes, CAMPAIGN_SERVICES, CampaignTypes
 
 
-_NEXT_CHARGE_FORMAT = '%Y-%m-%d 23:59:59'
+_NEXT_CHARGE_PARAMETER_FORMAT = '%Y-%m-%d 23:59:59'
 
 
 def _remove_nones(data):
@@ -344,7 +344,7 @@ class SitewitService(HTTPServiceClient):
 
         if expiry_date is not None:
             data['nextCharge'] = expiry_date.strftime(
-                _NEXT_CHARGE_FORMAT)
+                _NEXT_CHARGE_PARAMETER_FORMAT)
 
         return self.post(
             '/api/subscription/campaign/{}'.format(campaign_type), json=data,
@@ -413,7 +413,7 @@ class SitewitService(HTTPServiceClient):
 
         if expiry_date is not None:
             data['nextCharge'] = expiry_date.strftime(
-                _NEXT_CHARGE_FORMAT)
+                _NEXT_CHARGE_PARAMETER_FORMAT)
 
         return self.put(
             'api/subscription/refill/campaign/{}'.format(campaign_type),
