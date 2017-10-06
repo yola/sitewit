@@ -9,7 +9,7 @@ from sitewit.models import Subscription
 subscription_data = {
     'fee': 19.0,
     'campaignId': 23916,
-    'nextBillDate': '2015-05-08T11:32:03',
+    'nextCharge': '2015-05-08T11:32:03',
     'budget': 200.0,
     'currency': 'EUR',
     'active': True,
@@ -32,7 +32,7 @@ class SubscriptionTestCase(TestCase):
         self.assertEqual(self.subscription.currency, 'EUR')
         self.assertEqual(self.subscription.price, Decimal('19'))
         self.assertEqual(self.subscription.ad_spend, Decimal('200'))
-        self.assertEqual(self.subscription.billing_date, date(2015, 5, 8))
+        self.assertEqual(self.subscription.expiry_date, date(2015, 5, 8))
 
 
 class SubscriptionWithEmptySiteIdTestCase(SubscriptionTestCase):
