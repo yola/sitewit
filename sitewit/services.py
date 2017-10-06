@@ -1,6 +1,5 @@
 import base64
 from copy import deepcopy
-from datetime import datetime, time
 
 from demands import HTTPServiceClient, HTTPServiceError  # NOQA
 from yoconfig import get_config

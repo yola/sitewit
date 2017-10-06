@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta
 from uuid import uuid4
 
+from dateutil.parser import parse
+
 from sitewit.constants import BillingTypes, CampaignServiceTypes, CampaignTypes
 from sitewit.models import Subscription
 from tests.base import SitewitTestCase
@@ -160,27 +162,22 @@ class TestSubscribeToEverGreenDisplayCampaign(BaseCampaignTestCase):
             BillingTypes.AUTOMATIC)
 
 
-class TestSubscribeToSearchCampaignWithCustomBillingTime(BaseCampaignTestCase):
+class TestSubscribeToSearchCampaignWithCustomExpiryDate(BaseCampaignTestCase):
     def setUp(self):
-        self.response = self.service.subscribe_to_search_campaign(
+        self.expiry_date = datetime.utcnow().date() + timedelta(31)
+        self.response = self.subscribe_method(
             self.account_token, self.campaign_id, 500, 'USD',
-            expiry_date=datetime.utcnow().date() + timedelta(31))
+            expiry_date=self.expiry_date)
 
-    def test_succesfully_creates_subsription(self):
-        self.assertEqual(self.response['id'], self.campaign_id)
+    def test_creates_subscription_with_given_expiry_date(self):
+        self.assertEqual(
+            parse(self.response['subscription']['nextCharge']).date(),
+            self.expiry_date)
 
 
-class TestSubscribeToDisplayCampaignWithCustomBillingTime(
-        BaseCampaignTestCase):
+class TestSubscribeToDisplayCampaignWithExpiryDate(
+        TestSubscribeToSearchCampaignWithCustomExpiryDate):
     campaign_type = CampaignTypes.DISPLAY
-
-    def setUp(self):
-        self.response = self.service.subscribe_to_display_campaign(
-            self.account_token, self.campaign_id, 500, 'USD',
-            expiry_date=datetime.utcnow().date() + timedelta(31))
-
-    def test_succesfully_creates_subsription(self):
-        self.assertEqual(self.response['id'], self.campaign_id)
 
 
 class TestSubscribeToDisplayCampaign(TestSubscribeToSearchCampaign):
