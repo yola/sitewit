@@ -281,8 +281,7 @@ class SitewitService(HTTPServiceClient):
 
     def subscribe_to_search_campaign(
             self, account_token, campaign_id, budget,
-            currency, billing_type=BillingTypes.TRIGGERED,
-            spend_budget_till=None):
+            currency, billing_type=BillingTypes.TRIGGERED, expiry_date=None):
         """Subscribe to Search campaign.
 
         Create subscription to a given Search Campaign for given Account.
@@ -295,7 +294,7 @@ class SitewitService(HTTPServiceClient):
                             ?modelName=BudgetCurrency
             billing_type (str, optional): type of billing, either 'Triggered'
                 (default) or 'Automatic'
-            spend_budget_till (date, optional): date when a campaign's
+            expiry_date (date, optional): date when a campaign's
                 budget is expected to be entirely spent.
 
         Returns:
@@ -305,11 +304,11 @@ class SitewitService(HTTPServiceClient):
         """
         return self._subscribe_to_campaign(
             CampaignTypes.SEARCH, account_token, campaign_id, budget,
-            currency, billing_type, spend_budget_till)
+            currency, billing_type, expiry_date)
 
     def subscribe_to_display_campaign(
             self, account_token, campaign_id, budget, currency,
-            billing_type=BillingTypes.TRIGGERED, spend_budget_till=None):
+            billing_type=BillingTypes.TRIGGERED, expiry_date=None):
         """Subscribe to Display campaign.
 
         Create subscription to a given Display Campaign for given Account.
@@ -322,7 +321,7 @@ class SitewitService(HTTPServiceClient):
                             ?modelName=BudgetCurrency
             billing_type (str, optional): type of billing, either 'Triggered'
                 (default) or 'Automatic'
-            spend_budget_till (date, optional): date when a campaign's
+            expiry_date (date, optional): date when a campaign's
                 budget is expected to be entirely spent.
 
         Returns:
@@ -332,11 +331,11 @@ class SitewitService(HTTPServiceClient):
         """
         return self._subscribe_to_campaign(
             CampaignTypes.DISPLAY, account_token, campaign_id, budget,
-            currency, billing_type, spend_budget_till)
+            currency, billing_type, expiry_date)
 
     def _subscribe_to_campaign(
             self, campaign_type, account_token, campaign_id, budget, currency,
-            billing_type, spend_budget_till):
+            billing_type, expiry_date):
         data = {
             'billingType': billing_type,
             'budget': budget,
@@ -344,8 +343,8 @@ class SitewitService(HTTPServiceClient):
             'currency': currency,
         }
 
-        if spend_budget_till is not None:
-            data['nextCharge'] = spend_budget_till.strftime(
+        if expiry_date is not None:
+            data['nextCharge'] = expiry_date.strftime(
                 _NEXT_CHARGE_FORMAT)
 
         return self.post(
@@ -354,21 +353,21 @@ class SitewitService(HTTPServiceClient):
 
     def refill_search_campaign_subscription(
             self, account_token, campaign_id, refill_amount, budget, currency,
-            spend_budget_till=None):
+            expiry_date=None):
         return self._refill_campaign_subscription(
             CampaignTypes.SEARCH, account_token, campaign_id, refill_amount,
-            budget, currency, spend_budget_till)
+            budget, currency, expiry_date)
 
     def refill_display_campaign_subscription(
             self, account_token, campaign_id, refill_amount, budget, currency,
-            spend_budget_till=None):
+            expiry_date=None):
         return self._refill_campaign_subscription(
             CampaignTypes.DISPLAY, account_token, campaign_id, refill_amount,
-            budget, currency, spend_budget_till)
+            budget, currency, expiry_date)
 
     def _refill_campaign_subscription(
             self, campaign_type, account_token, campaign_id, refill_amount,
-            budget, currency, spend_budget_till):
+            budget, currency, expiry_date):
 
         data = {
             'budget': budget,
@@ -377,8 +376,8 @@ class SitewitService(HTTPServiceClient):
             'currency': currency,
         }
 
-        if spend_budget_till is not None:
-            data['nextCharge'] = spend_budget_till.strftime(
+        if expiry_date is not None:
+            data['nextCharge'] = expiry_date.strftime(
                 _NEXT_CHARGE_FORMAT)
 
         return self.put(

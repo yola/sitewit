@@ -164,7 +164,7 @@ class TestSubscribeToSearchCampaignWithCustomBillingTime(BaseCampaignTestCase):
     def setUp(self):
         self.response = self.service.subscribe_to_search_campaign(
             self.account_token, self.campaign_id, 500, 'USD',
-            spend_budget_till=datetime.utcnow().date() + timedelta(31))
+            expiry_date=datetime.utcnow().date() + timedelta(31))
 
     def test_succesfully_creates_subsription(self):
         self.assertEqual(self.response['id'], self.campaign_id)
@@ -177,7 +177,7 @@ class TestSubscribeToDisplayCampaignWithCustomBillingTime(
     def setUp(self):
         self.response = self.service.subscribe_to_display_campaign(
             self.account_token, self.campaign_id, 500, 'USD',
-            spend_budget_till=datetime.utcnow().date() + timedelta(31))
+            expiry_date=datetime.utcnow().date() + timedelta(31))
 
     def test_succesfully_creates_subsription(self):
         self.assertEqual(self.response['id'], self.campaign_id)
