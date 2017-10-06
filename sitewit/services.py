@@ -353,6 +353,24 @@ class SitewitService(HTTPServiceClient):
     def refill_search_campaign_subscription(
             self, account_token, campaign_id, refill_amount, budget, currency,
             expiry_date=None):
+        """Refill Search campaign subscription with a given amount.
+
+        Args:
+            account_token (str): account token.
+            campaign_id (str): campaign to subscribe.
+            refill_amount (int): amount we want to refill with.
+            budget (int): desired budget (should be exactly the same as
+                specified during subscription creation).
+            currency (str): currency (should match the value specified
+                during subscription creation).
+            expiry_date (date, optional): date when a campaign's
+                budget is expected to be entirely spent.
+
+        Returns:
+            Please see response format here:
+            https://sandboxpapi.sitewit.com/Help/Api/
+            PUT-api-subscription-refill-campaign-search
+        """
         return self._refill_campaign_subscription(
             CampaignTypes.SEARCH, account_token, campaign_id, refill_amount,
             budget, currency, expiry_date)
@@ -360,6 +378,24 @@ class SitewitService(HTTPServiceClient):
     def refill_display_campaign_subscription(
             self, account_token, campaign_id, refill_amount, budget, currency,
             expiry_date=None):
+        """Refill Display campaign subscription with a given amount.
+
+        Args:
+            account_token (str): account token.
+            campaign_id (str): campaign to subscribe.
+            refill_amount (int): amount we want to refill with.
+            budget (int): desired budget (should be exactly the same as
+                specified during subscription creation).
+            currency (str): currency (should match the value specified
+                during subscription creation).
+            expiry_date (date, optional): date when a campaign's
+                budget is expected to be entirely spent.
+
+        Returns:
+            Please see response format here:
+            https://sandboxpapi.sitewit.com/Help/Api/
+            PUT-api-subscription-refill-campaign-display
+        """
         return self._refill_campaign_subscription(
             CampaignTypes.DISPLAY, account_token, campaign_id, refill_amount,
             budget, currency, expiry_date)
