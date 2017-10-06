@@ -357,7 +357,7 @@ class SitewitService(HTTPServiceClient):
 
         Args:
             account_token (str): account token.
-            campaign_id (str): campaign to subscribe.
+            campaign_id (str): campaign to refill.
             refill_amount (int): amount we want to refill with.
             budget (int): desired budget (should be exactly the same as
                 specified during subscription creation).
@@ -382,7 +382,7 @@ class SitewitService(HTTPServiceClient):
 
         Args:
             account_token (str): account token.
-            campaign_id (str): campaign to subscribe.
+            campaign_id (str): campaign to refill.
             refill_amount (int): amount we want to refill with.
             budget (int): desired budget (should be exactly the same as
                 specified during subscription creation).

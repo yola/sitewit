@@ -24,6 +24,9 @@ class BaseCampaignTestCase(SitewitTestCase):
 
         cls.subscribe_method = cls.subscribe_method()
         cls.unsubscribe_method = cls.unsubscribe_method()
+        cls.refill_method = getattr(
+            cls.service, 'refill_{}_campaign_subscription'.format(
+                cls.campaign_type))
         cls.campaign_id = cls.create_campaign()
 
     @classmethod
@@ -136,9 +139,10 @@ class TestSubscribeToSearchCampaignNoCampaignSpecified(
         self.assertTrue(self.campaign['subscription']['active'])
 
 
-class TestSubscribeToEverGreenSearchCampaign(BaseCampaignTestCase):
+class TestSubscribeToSearchCampaignWithAutomaticBillingType(
+        BaseCampaignTestCase):
     def setUp(self):
-        self.response = self.service.subscribe_to_search_campaign(
+        self.response = self.subscribe_method(
             self.account_token, self.campaign_id, 500, 'USD',
             billing_type=BillingTypes.AUTOMATIC)
 
@@ -148,18 +152,9 @@ class TestSubscribeToEverGreenSearchCampaign(BaseCampaignTestCase):
             BillingTypes.AUTOMATIC)
 
 
-class TestSubscribeToEverGreenDisplayCampaign(BaseCampaignTestCase):
+class TestSubscribeTDisplayCampaignWithAutomaticBillingType(
+        TestSubscribeToSearchCampaignWithAutomaticBillingType):
     campaign_type = CampaignTypes.DISPLAY
-
-    def setUp(self):
-        self.response = self.service.subscribe_to_display_campaign(
-            self.account_token, self.campaign_id, 500, 'USD',
-            billing_type=BillingTypes.AUTOMATIC)
-
-    def test_creates_subsription_with_automatic_billing_type(self):
-        self.assertEqual(
-            self.response['subscription']['billingType'],
-            BillingTypes.AUTOMATIC)
 
 
 class TestSubscribeToSearchCampaignWithCustomExpiryDate(BaseCampaignTestCase):
@@ -475,7 +470,7 @@ class TestRefillSearchCampaignSubscription(BaseSubscriptionTestCase):
     """
 
     def setUp(self):
-        self.response = self.service.refill_search_campaign_subscription(
+        self.response = self.refill_method(
             self.account_token, self.campaign_id, 510, 500, 'USD',
             datetime.utcnow().date() + timedelta(32))
 
@@ -483,17 +478,9 @@ class TestRefillSearchCampaignSubscription(BaseSubscriptionTestCase):
         self.assertEqual(self.response['charge']['items'][1]['price'], 510)
 
 
-class TestRefillDisplayCampaignSubscription(BaseSubscriptionTestCase):
+class TestRefillDisplayCampaignSubscription(
+        TestRefillSearchCampaignSubscription):
     """
     SiteWitService.refill_display_campaign_subscription()
     """
-
     campaign_type = CampaignTypes.DISPLAY
-
-    def setUp(self):
-        self.response = self.service.refill_display_campaign_subscription(
-            self.account_token, self.campaign_id, 510, 500, 'USD',
-            datetime.utcnow().date() + timedelta(32))
-
-    def test_refills_subscription_for_given_amount(self):
-        self.assertEqual(self.response['charge']['items'][1]['price'], 510)
