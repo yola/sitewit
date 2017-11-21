@@ -1,6 +1,6 @@
 # [Changelog](https://github.com/yola/sitewit/releases)
 
-## DEV
+## 0.9.0
 
 * Rename `SitewitService.request_difm_campaign_service()` to 
     `SitewitService.request_quickstart_campaign_service()`.
