@@ -460,9 +460,9 @@ class SitewitService(HTTPServiceClient):
             'api/subscription/refund/campaign/display/{}'.format(campaign_id),
             headers=self._get_account_auth_header(account_token)).json()
 
-    def request_difm_campaign_service(
+    def request_quickstart_campaign_service(
             self, account_token, service_type, reference_id):
-        """Create a request for DIFY service.
+        """Create a request for QuickStart campaign service.
 
         Args:
             account_token (str): account token.
@@ -472,14 +472,14 @@ class SitewitService(HTTPServiceClient):
         Returns:
             Please see response format here:
             https://sandboxpapi.sitewit.com/Help/Api/
-            POST-api-service-create-campaign-difm
+            POST-api-service-create-campaign-quickstart
         """
         data = {
             'type': CAMPAIGN_SERVICES[service_type],
             'referenceId': reference_id
         }
         return self.post(
-            'api/service/create/campaign/difm', json=data,
+            'api/service/create/campaign/quickstart', json=data,
             headers=self._get_account_auth_header(account_token)).json()
 
     def create_partner(self, name, address, settings, remote_id=None):

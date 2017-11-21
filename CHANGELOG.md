@@ -1,10 +1,16 @@
 # [Changelog](https://github.com/yola/sitewit/releases)
 
+## DEV
+
+* Rename `SitewitService.request_difm_campaign_service()` to 
+    `SitewitService.request_quickstart_campaign_service()`.
+* Rename `CampaignServiceTypes.DIFM` to `CampaignServiceTypes.QUICKSTART`.
+* Change `CAMPAIGN_SERVICES` to use new SW name `QuickStart Campaign`. 
+
 ## 0.8.3
 
 * Add `SitewitService.request_difm_campaign_service()`.
 * Add `CampaignServiceTypes` and `CAMPAIGN_SERVICES` constants.
-
 
 ## 0.8.2
 
