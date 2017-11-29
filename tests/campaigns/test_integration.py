@@ -457,8 +457,8 @@ class TestRequestDIFMCampaignService(BaseCampaignTestCase):
     """
 
     def setUp(self):
-        self.response = self.service.request_difm_campaign_service(
-            self.account_token, CampaignServiceTypes.DIFM, uuid4().hex)
+        self.response = self.service.request_quickstart_campaign_service(
+            self.account_token, CampaignServiceTypes.QUICKSTART, uuid4().hex)
 
     def test_returns_id(self):
         self.assertIn('id', self.response)

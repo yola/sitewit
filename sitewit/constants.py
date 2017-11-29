@@ -1,5 +1,5 @@
 class CampaignServiceTypes(object):
-    DIFM = 'difm'
+    QUICKSTART = 'quickstart'
 
 
 class BillingTypes(object):
@@ -13,5 +13,5 @@ class CampaignTypes(object):
 
 
 CAMPAIGN_SERVICES = {
-    CampaignServiceTypes.DIFM: 'DIFM Campaign'
+    CampaignServiceTypes.QUICKSTART: 'QuickStart Campaign'
 }

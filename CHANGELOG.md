@@ -1,6 +1,7 @@
 # [Changelog](https://github.com/yola/sitewit/releases)
 
 ## DEV
+
 * Add optional `billing_type` and `expiry_date` parameters to 
     `subscribe_to_display_campaign` and `subscribe_to_search_campaign` 
     `SitewitService` methods.
@@ -9,11 +10,17 @@
 * Rename `Subscription.billing_date` to `Subscription.expiry_date`.
 
 
+## 0.9.0
+
+* Rename `SitewitService.request_difm_campaign_service()` to 
+    `SitewitService.request_quickstart_campaign_service()`.
+* Rename `CampaignServiceTypes.DIFM` to `CampaignServiceTypes.QUICKSTART`.
+* Change `CAMPAIGN_SERVICES` to use new SW name `QuickStart Campaign`. 
+
 ## 0.8.3
 
 * Add `SitewitService.request_difm_campaign_service()`.
 * Add `CampaignServiceTypes` and `CAMPAIGN_SERVICES` constants.
-
 
 ## 0.8.2
 
