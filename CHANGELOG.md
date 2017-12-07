@@ -1,6 +1,6 @@
 # [Changelog](https://github.com/yola/sitewit/releases)
 
-## DEV
+## 0.10.0
 
 * Add optional `billing_type` and `expiry_date` parameters to 
     `subscribe_to_display_campaign` and `subscribe_to_search_campaign` 
