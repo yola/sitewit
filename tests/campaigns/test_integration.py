@@ -464,18 +464,23 @@ class TestRequestDIFMCampaignService(BaseCampaignTestCase):
         self.assertIn('id', self.response)
 
 
-class TestRefillSearchCampaignSubscription(BaseSubscriptionTestCase):
+class TestRefillSearchCampaignSubscription(BaseCampaignTestCase):
     """
     SiteWitService.refill_search_campaign_subscription()
     """
 
     def setUp(self):
+        self.subscribe_method(self.account_token, self.campaign_id, 500, 'EUR')
         self.response = self.refill_method(
-            self.account_token, self.campaign_id, 510, 500, 'USD',
+            self.account_token, self.campaign_id, 510, 500, 'EUR',
             datetime.utcnow().date() + timedelta(32))
+        spend_item = self.response['charge']['items'][1]
+        exchange_rate = spend_item['exchangeRate']
+        self.price = spend_item['price']
+        self.expected_price = 510 * exchange_rate
 
     def test_refills_subscription_for_given_amount(self):
-        self.assertEqual(self.response['charge']['items'][1]['price'], 510)
+        self.assertEqual(self.price, self.expected_price)
 
 
 class TestRefillDisplayCampaignSubscription(
