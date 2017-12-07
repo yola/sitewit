@@ -302,7 +302,7 @@ class AccountAssociationWithNewUser(AccountTestCase):
     @classmethod
     def setUpClass(cls):
         super(AccountAssociationWithNewUser, cls).setUpClass()
-        user = FakeUser(cls.user_id, cls.user_name, cls.partner_id)
+        user = FakeUser(uuid.uuid4().hex, cls.user_name, cls.partner_id)
         cls.old_account = Account.create(user, cls.url, site_id=cls.site_id)
 
         cls.new_user = FakeUser(uuid.uuid4().hex, 'new name', cls.partner_id)
@@ -328,7 +328,7 @@ class AccountAssociationWithExistentUser(AccountTestCase):
     @classmethod
     def setUpClass(cls):
         super(AccountAssociationWithExistentUser, cls).setUpClass()
-        user1 = FakeUser(cls.user_id, cls.user_name, 'Yola')
+        user1 = FakeUser(uuid.uuid4().hex, cls.user_name, 'Yola')
         cls.account1 = Account.create(user1, cls.url)
 
         user2 = FakeUser(uuid.uuid4().hex, 'new name', 'Yola')
@@ -341,7 +341,7 @@ class AccountAssociationWithExistentUser(AccountTestCase):
         self.assertEqual(
             self.account3.user.token, self.account2.user.token)
 
-    def _test_account_remains_unchanged(self):
+    def test_account_remains_unchanged(self):
         self.assertEqual(self.account3.token, self.account1.token)
 
 

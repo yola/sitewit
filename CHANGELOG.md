@@ -1,5 +1,16 @@
 # [Changelog](https://github.com/yola/sitewit/releases)
 
+## DEV
+
+* Add optional `billing_type` and `expiry_date` parameters to 
+    `subscribe_to_display_campaign` and `subscribe_to_search_campaign` 
+    `SitewitService` methods.
+* Add `SitewitService.refill_search_campaign_subscription()` and 
+    `SitewitService.refill_display_campaign_subscription()` methods.
+* Rename `Subscription.billing_date` to `Subscription.expiry_date`.
+* Add `SPEND_CHARGE_ITEM_TYPES` constant.
+
+
 ## 0.9.0
 
 * Rename `SitewitService.request_difm_campaign_service()` to 

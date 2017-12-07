@@ -211,7 +211,7 @@ class Subscription(SiteWitServiceModel):
         self.price = Decimal(data['fee'])
         self.campaign_id = str(data['campaignId'])
         self.currency = data['currency']
-        self.billing_date = parse(data['nextBillDate']).date()
+        self.expiry_date = parse(data['nextCharge']).date()
 
     @classmethod
     def iter_subscriptions(cls):

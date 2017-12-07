@@ -5,7 +5,10 @@ from demands import HTTPServiceClient, HTTPServiceError  # NOQA
 from yoconfig import get_config
 
 import sitewit
-from sitewit.constants import CAMPAIGN_SERVICES
+from sitewit.constants import BillingTypes, CAMPAIGN_SERVICES, CampaignTypes
+
+
+_NEXT_CHARGE_PARAMETER_FORMAT = '%Y-%m-%d 23:59:59'
 
 
 def _remove_nones(data):
@@ -217,7 +220,8 @@ class SitewitService(HTTPServiceClient):
 
         return result['token']
 
-    def create_campaign(self, account_token, campaign_type='search'):
+    def create_campaign(self, account_token,
+                        campaign_type=CampaignTypes.SEARCH):
         """Create new Campaign (for testing purpose)
 
         Args:
@@ -274,8 +278,9 @@ class SitewitService(HTTPServiceClient):
             '/api/campaign/%s' % (campaign_id,),
             headers=self._get_account_auth_header(account_token)).json()
 
-    def subscribe_to_search_campaign(self, account_token, campaign_id, budget,
-                                     currency):
+    def subscribe_to_search_campaign(
+            self, account_token, campaign_id, budget,
+            currency, billing_type=BillingTypes.TRIGGERED, expiry_date=None):
         """Subscribe to Search campaign.
 
         Create subscription to a given Search Campaign for given Account.
@@ -286,22 +291,23 @@ class SitewitService(HTTPServiceClient):
             budget (decimal): Desired monthly spend budget (50>=budget<=5000).
             currency (str): https://sandboxpapi.sitewit.com/Help/ResourceModel
                             ?modelName=BudgetCurrency
+            billing_type (str, optional): type of billing, either 'Triggered'
+                (default) or 'Automatic'
+            expiry_date (date, optional): date when a campaign's
+                budget is expected to be entirely spent.
 
         Returns:
             Please see response format here:
             https://sandboxpapi.sitewit.com/Help/Api/
             POST-api-subscription-campaign-search
         """
-        data = {'campaignId': campaign_id,
-                'budget': budget,
-                'currency': currency}
-
-        return self.post(
-            '/api/subscription/campaign/search', json=data,
-            headers=self._get_account_auth_header(account_token)).json()
+        return self._subscribe_to_campaign(
+            CampaignTypes.SEARCH, account_token, campaign_id, budget,
+            currency, billing_type, expiry_date)
 
     def subscribe_to_display_campaign(
-            self, account_token, campaign_id, budget, currency):
+            self, account_token, campaign_id, budget, currency,
+            billing_type=BillingTypes.TRIGGERED, expiry_date=None):
         """Subscribe to Display campaign.
 
         Create subscription to a given Display Campaign for given Account.
@@ -312,18 +318,106 @@ class SitewitService(HTTPServiceClient):
             budget (decimal): Desired monthly spend budget (50>=budget<=5000).
             currency (str): https://sandboxpapi.sitewit.com/Help/ResourceModel
                             ?modelName=BudgetCurrency
+            billing_type (str, optional): type of billing, either 'Triggered'
+                (default) or 'Automatic'
+            expiry_date (date, optional): date when a campaign's
+                budget is expected to be entirely spent.
 
         Returns:
             Please see response format here:
             https://sandboxpapi.sitewit.com/Help/Api/
             POST-api-subscription-campaign-display
         """
-        data = {'campaignId': campaign_id,
-                'budget': budget,
-                'currency': currency}
+        return self._subscribe_to_campaign(
+            CampaignTypes.DISPLAY, account_token, campaign_id, budget,
+            currency, billing_type, expiry_date)
+
+    def _subscribe_to_campaign(
+            self, campaign_type, account_token, campaign_id, budget, currency,
+            billing_type, expiry_date):
+        data = {
+            'billingType': billing_type,
+            'budget': budget,
+            'campaignId': campaign_id,
+            'currency': currency,
+        }
+
+        if expiry_date is not None:
+            data['nextCharge'] = expiry_date.strftime(
+                _NEXT_CHARGE_PARAMETER_FORMAT)
 
         return self.post(
-            '/api/subscription/campaign/display', json=data,
+            '/api/subscription/campaign/{}'.format(campaign_type), json=data,
+            headers=self._get_account_auth_header(account_token)).json()
+
+    def refill_search_campaign_subscription(
+            self, account_token, campaign_id, refill_amount, budget, currency,
+            expiry_date=None):
+        """Refill Search campaign subscription with a given amount.
+
+        Args:
+            account_token (str): account token.
+            campaign_id (str): campaign to refill.
+            refill_amount (int): amount we want to refill with.
+            budget (int): desired budget (should be exactly the same as
+                specified during subscription creation).
+            currency (str): currency (should match the value specified
+                during subscription creation).
+            expiry_date (date, optional): date when a campaign's
+                budget is expected to be entirely spent.
+
+        Returns:
+            Please see response format here:
+            https://sandboxpapi.sitewit.com/Help/Api/
+            PUT-api-subscription-refill-campaign-search
+        """
+        return self._refill_campaign_subscription(
+            CampaignTypes.SEARCH, account_token, campaign_id, refill_amount,
+            budget, currency, expiry_date)
+
+    def refill_display_campaign_subscription(
+            self, account_token, campaign_id, refill_amount, budget, currency,
+            expiry_date=None):
+        """Refill Display campaign subscription with a given amount.
+
+        Args:
+            account_token (str): account token.
+            campaign_id (str): campaign to refill.
+            refill_amount (int): amount we want to refill with.
+            budget (int): desired budget (should be exactly the same as
+                specified during subscription creation).
+            currency (str): currency (should match the value specified
+                during subscription creation).
+            expiry_date (date, optional): date when a campaign's
+                budget is expected to be entirely spent.
+
+        Returns:
+            Please see response format here:
+            https://sandboxpapi.sitewit.com/Help/Api/
+            PUT-api-subscription-refill-campaign-display
+        """
+        return self._refill_campaign_subscription(
+            CampaignTypes.DISPLAY, account_token, campaign_id, refill_amount,
+            budget, currency, expiry_date)
+
+    def _refill_campaign_subscription(
+            self, campaign_type, account_token, campaign_id, refill_amount,
+            budget, currency, expiry_date):
+
+        data = {
+            'budget': budget,
+            'campaignId': campaign_id,
+            'chargedSpend': refill_amount,
+            'currency': currency,
+        }
+
+        if expiry_date is not None:
+            data['nextCharge'] = expiry_date.strftime(
+                _NEXT_CHARGE_PARAMETER_FORMAT)
+
+        return self.put(
+            'api/subscription/refill/campaign/{}'.format(campaign_type),
+            json=data,
             headers=self._get_account_auth_header(account_token)).json()
 
     def get_campaign_subscription(self, account_token, campaign_id):
