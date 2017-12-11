@@ -15,4 +15,4 @@ class CampaignTypes(object):
 CAMPAIGN_SERVICES = {
     CampaignServiceTypes.QUICKSTART: 'QuickStart Campaign'
 }
-SPEND_CHARGE_ITEM_TYPES = ('DisplaySpend', 'SearchCampaignSpend')
+SPEND_CHARGE_ITEM_TYPES = ('DisplayCampaignSpend', 'SearchCampaignSpend')
