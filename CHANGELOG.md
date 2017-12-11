@@ -1,5 +1,10 @@
 # [Changelog](https://github.com/yola/sitewit/releases)
 
+## DEV
+
+* Rename 'DisplaySpend' to 'DisplayCampaignSpend' in 
+  `SPEND_CHARGE_ITEM_TYPES` constant
+
 ## 0.10.0
 
 * Add optional `billing_type` and `expiry_date` parameters to 

@@ -3,7 +3,8 @@ from uuid import uuid4
 
 from dateutil.parser import parse
 
-from sitewit.constants import BillingTypes, CampaignServiceTypes, CampaignTypes
+from sitewit.constants import (
+    BillingTypes, CampaignServiceTypes, CampaignTypes, SPEND_CHARGE_ITEM_TYPES)
 from sitewit.models import Subscription
 from tests.base import SitewitTestCase
 
@@ -481,6 +482,10 @@ class TestRefillSearchCampaignSubscription(BaseCampaignTestCase):
 
     def test_refills_subscription_for_given_amount(self):
         self.assertEqual(self.price, self.expected_price)
+
+    def test_response_contains_spend_charge_item(self):
+        item_types = set(i['type'] for i in self.response['charge']['items'])
+        self.assertTrue(item_types & set(SPEND_CHARGE_ITEM_TYPES))
 
 
 class TestRefillDisplayCampaignSubscription(
