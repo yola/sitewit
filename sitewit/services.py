@@ -69,7 +69,8 @@ class SitewitService(HTTPServiceClient):
         return {'PartnerAuth': base64.b64encode(':'.join(elements))}
 
     def create_account(self, url, user_name, user_email,
-                       currency, country_code, site_id=None, user_token=None,
+                       currency, country_code, site_id=None,
+                       mobile_phone=None, user_token=None,
                        remote_subpartner_id=None):
         """Create new SiteWit account.
 
@@ -80,6 +81,7 @@ class SitewitService(HTTPServiceClient):
             currency (str): user's currency.
             country_code (str): user's location.
             site_id (str, optional): site ID (uuid4).
+            mobile_phone (str, optional): account owner's phone.
             user_token (str, optional): user token in case this account is
                 owned by existing user.
             remote_subpartner_id (str, optional): user's partner_id on
@@ -103,6 +105,9 @@ class SitewitService(HTTPServiceClient):
 
         if site_id:
             data['clientId'] = site_id
+
+        if mobile_phone:
+            data['mobilePhone'] = mobile_phone
 
         return self.post(
             '/api/account/', json=data,

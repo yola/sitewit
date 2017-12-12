@@ -7,11 +7,14 @@ from tests.partners.base import PartnerTestCase
 
 
 class FakeUser(object):
-    def __init__(self, user_id, name, partner_id, is_whitelabel=False):
+    def __init__(self, user_id, name, partner_id, is_whitelabel=False,
+                 email=None, preferences=None):
         self.id = user_id
         self.name = name
         self.partner_id = partner_id
         self.is_whitelabel = is_whitelabel
+        self.preferences = preferences or {}
+        self.email = email or '{}@yola.yola'.format(user_id)
 
 
 class TestCreateAccount(AccountTestCase):
@@ -315,7 +318,7 @@ class AccountAssociationWithNewUser(AccountTestCase):
 
     def test_new_user_is_created_with_given_attributes(self):
         self.assertEqual(
-            self.new_account.user.email, Account._get_email(self.new_user.id))
+            self.new_account.user.email, Account._get_email(self.new_user))
         self.assertEqual(self.new_account.user.name, 'new name')
 
     def test_account_remains_unchanged(self):

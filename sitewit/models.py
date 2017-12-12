@@ -57,7 +57,7 @@ class Account(SiteWitServiceModel):
         Raises:
             demands.HTTPServiceError: if any error happened on HTTP level.
         """
-        email = cls._get_email(user.id)
+        email = cls._get_email(user)
         user_name = cls._get_valid_user_name(user.name)
         subpartner_id = user.partner_id if user.is_whitelabel else None
 
@@ -125,7 +125,7 @@ class Account(SiteWitServiceModel):
         Raises:
             demands.HTTPServiceError: if any error happened on HTTP level.
         """
-        email = cls._get_email(user.id)
+        email = cls._get_email(user)
         user_name = cls._get_valid_user_name(user.name)
         response = cls.get_service().change_account_owner(
             account_token, user_email=email, user_name=user_name)
@@ -199,8 +199,8 @@ class Account(SiteWitServiceModel):
         return 'User'
 
     @classmethod
-    def _get_email(cls, user_id):
-        return '{}@yola.yola'.format(user_id)
+    def _get_email(cls, user):
+        return user.preferences.get('wl_email', user.email)
 
 
 class Subscription(SiteWitServiceModel):
