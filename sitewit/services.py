@@ -91,7 +91,7 @@ class SitewitService(HTTPServiceClient):
             JSON of format:
             `https://sandboxpapi.sitewit.com/Help/Api/POST-api-Account`
         """
-        data = {
+        data = _remove_nones({
             'url': url,
             'businessType': 'SMB',
             'timeZone': self.DEFAULT_TIME_ZONE,
@@ -99,15 +99,10 @@ class SitewitService(HTTPServiceClient):
             'email': user_email,
             'currency': currency,
             'countryCode': country_code,
-        }
-        if user_token is not None:
-            data['userToken'] = user_token
-
-        if site_id:
-            data['clientId'] = site_id
-
-        if mobile_phone:
-            data['mobilePhone'] = mobile_phone
+            'userToken': user_token,
+            'clientId': site_id,
+            'mobilePhone': mobile_phone,
+        })
 
         return self.post(
             '/api/account/', json=data,
