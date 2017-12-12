@@ -31,7 +31,7 @@ class TestModelsCreateAccount(AccountTestCase):
                 'roles': [
                     'Owner',
                     'Admin'
-                ]
+                ],
             }
         }
 
@@ -40,7 +40,8 @@ class TestModelsCreateAccount(AccountTestCase):
         self.user = Mock(
             location=self.country_code, currency=self.currency,
             time_zone=self.time_zone, partner_id=self.partner_id,
-            is_whitelabel=True)
+            is_whitelabel=True,
+            preferences={'wl_email': 'wl@email.yola'})
         self.user.configure_mock(id=self.user_id, name=self.user_name)
 
         self.result = Account.create(
@@ -56,7 +57,7 @@ class TestModelsCreateAccount(AccountTestCase):
             'countryCode': self.country_code,
             'timeZone': self.time_zone,
             'name': self.user_name,
-            'email': self.user_email,
+            'email': 'wl@email.yola',
             'businessType': 'SMB',
             'userToken': self.user_token,
         }
