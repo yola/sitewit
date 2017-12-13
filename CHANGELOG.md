@@ -1,16 +1,23 @@
 # [Changelog](https://github.com/yola/sitewit/releases)
 
+## DEV
+
+* Add optional `mobile_phone` parameter to `Account.Create()` and
+  `SitewitService.create_account()`.
+* Set `email` param from `User` on Account creation instead of generating fake
+  email.
+
 ## 0.10.1
 
-* Rename 'DisplaySpend' to 'DisplayCampaignSpend' in 
+* Rename 'DisplaySpend' to 'DisplayCampaignSpend' in
   `SPEND_CHARGE_ITEM_TYPES` constant
 
 ## 0.10.0
 
-* Add optional `billing_type` and `expiry_date` parameters to 
-    `subscribe_to_display_campaign` and `subscribe_to_search_campaign` 
+* Add optional `billing_type` and `expiry_date` parameters to
+    `subscribe_to_display_campaign` and `subscribe_to_search_campaign`
     `SitewitService` methods.
-* Add `SitewitService.refill_search_campaign_subscription()` and 
+* Add `SitewitService.refill_search_campaign_subscription()` and
     `SitewitService.refill_display_campaign_subscription()` methods.
 * Rename `Subscription.billing_date` to `Subscription.expiry_date`.
 * Add `SPEND_CHARGE_ITEM_TYPES` constant.
@@ -18,10 +25,10 @@
 
 ## 0.9.0
 
-* Rename `SitewitService.request_difm_campaign_service()` to 
+* Rename `SitewitService.request_difm_campaign_service()` to
     `SitewitService.request_quickstart_campaign_service()`.
 * Rename `CampaignServiceTypes.DIFM` to `CampaignServiceTypes.QUICKSTART`.
-* Change `CAMPAIGN_SERVICES` to use new SW name `QuickStart Campaign`. 
+* Change `CAMPAIGN_SERVICES` to use new SW name `QuickStart Campaign`.
 
 ## 0.8.3
 

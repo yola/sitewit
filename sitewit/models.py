@@ -41,7 +41,8 @@ class Account(SiteWitServiceModel):
             self.user = None
 
     @classmethod
-    def create(cls, user, url, site_id=None, user_token=None):
+    def create(
+            cls, user, url, site_id=None, user_token=None, mobile_phone=None):
         """Create SiteWit account for given site_id.
 
         Args:
@@ -50,6 +51,7 @@ class Account(SiteWitServiceModel):
             site_id (str, optional): Site's ID, UUID
             user_token (str, optional): user token. Is specified if the user
                 has another accounts.
+            mobile_phone (str, optional): account owner's phone
 
         Returns:
             Instance of Account class.
@@ -57,13 +59,14 @@ class Account(SiteWitServiceModel):
         Raises:
             demands.HTTPServiceError: if any error happened on HTTP level.
         """
-        email = cls._get_email(user.id)
+        email = cls._get_email(user)
         user_name = cls._get_valid_user_name(user.name)
         subpartner_id = user.partner_id if user.is_whitelabel else None
 
         result = cls.get_service().create_account(
             url, user_name, email, 'USD', 'US', site_id=site_id,
-            user_token=user_token, remote_subpartner_id=subpartner_id)
+            mobile_phone=mobile_phone, user_token=user_token,
+            remote_subpartner_id=subpartner_id)
 
         return Account(result['accountInfo'], user_data=result['userInfo'])
 
@@ -125,7 +128,7 @@ class Account(SiteWitServiceModel):
         Raises:
             demands.HTTPServiceError: if any error happened on HTTP level.
         """
-        email = cls._get_email(user.id)
+        email = cls._get_email(user)
         user_name = cls._get_valid_user_name(user.name)
         response = cls.get_service().change_account_owner(
             account_token, user_email=email, user_name=user_name)
@@ -199,8 +202,8 @@ class Account(SiteWitServiceModel):
         return 'User'
 
     @classmethod
-    def _get_email(cls, user_id):
-        return '{}@yola.yola'.format(user_id)
+    def _get_email(cls, user):
+        return user.preferences.get('wl_email', user.email)
 
 
 class Subscription(SiteWitServiceModel):

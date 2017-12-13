@@ -69,7 +69,8 @@ class SitewitService(HTTPServiceClient):
         return {'PartnerAuth': base64.b64encode(':'.join(elements))}
 
     def create_account(self, url, user_name, user_email,
-                       currency, country_code, site_id=None, user_token=None,
+                       currency, country_code, site_id=None,
+                       mobile_phone=None, user_token=None,
                        remote_subpartner_id=None):
         """Create new SiteWit account.
 
@@ -80,6 +81,7 @@ class SitewitService(HTTPServiceClient):
             currency (str): user's currency.
             country_code (str): user's location.
             site_id (str, optional): site ID (uuid4).
+            mobile_phone (str, optional): account owner's phone.
             user_token (str, optional): user token in case this account is
                 owned by existing user.
             remote_subpartner_id (str, optional): user's partner_id on
@@ -89,7 +91,7 @@ class SitewitService(HTTPServiceClient):
             JSON of format:
             `https://sandboxpapi.sitewit.com/Help/Api/POST-api-Account`
         """
-        data = {
+        data = _remove_nones({
             'url': url,
             'businessType': 'SMB',
             'timeZone': self.DEFAULT_TIME_ZONE,
@@ -97,12 +99,10 @@ class SitewitService(HTTPServiceClient):
             'email': user_email,
             'currency': currency,
             'countryCode': country_code,
-        }
-        if user_token is not None:
-            data['userToken'] = user_token
-
-        if site_id:
-            data['clientId'] = site_id
+            'userToken': user_token,
+            'clientId': site_id,
+            'mobilePhone': mobile_phone,
+        })
 
         return self.post(
             '/api/account/', json=data,

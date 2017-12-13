@@ -40,11 +40,12 @@ class TestModelsCreateAccount(AccountTestCase):
         self.user = Mock(
             location=self.country_code, currency=self.currency,
             time_zone=self.time_zone, partner_id=self.partner_id,
-            is_whitelabel=True)
+            is_whitelabel=True, preferences={'wl_email': self.user_email})
         self.user.configure_mock(id=self.user_id, name=self.user_name)
 
         self.result = Account.create(
             self.user, self.url, site_id=self.site_id,
+            mobile_phone=self.mobile_phone,
             user_token=self.user_token
         )
 
@@ -57,6 +58,7 @@ class TestModelsCreateAccount(AccountTestCase):
             'timeZone': self.time_zone,
             'name': self.user_name,
             'email': self.user_email,
+            'mobilePhone': self.mobile_phone,
             'businessType': 'SMB',
             'userToken': self.user_token,
         }
