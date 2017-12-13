@@ -1,6 +1,6 @@
 # [Changelog](https://github.com/yola/sitewit/releases)
 
-## 0.11.0
+## 0.10.2
 
 * Add optional `mobile_phone` parameter to `Account.Create()` and
   `SitewitService.create_account()`.
