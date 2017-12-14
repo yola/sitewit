@@ -76,7 +76,7 @@ class SitewitService(HTTPServiceClient):
 
         Args:
             url: (str): site URL.
-            user_id (str): id of account owner.
+            user_id (str): id of account owner (must be in email format).
             user_name (str): name of account owner.
             user_email (str): email of account owner.
             currency (str): user's currency.
