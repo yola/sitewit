@@ -1,6 +1,6 @@
 # [Changelog](https://github.com/yola/sitewit/releases)
 
-## DEV
+## 0.11.0
 
 * Add `user_id` param to `SitewitService.create_account()` method.
 
