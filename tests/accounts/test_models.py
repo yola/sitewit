@@ -57,6 +57,7 @@ class TestModelsCreateAccount(AccountTestCase):
             'countryCode': self.country_code,
             'timeZone': self.time_zone,
             'name': self.user_name,
+            'username': '{}@yola.yola'.format(self.user_id),
             'email': self.user_email,
             'mobilePhone': self.mobile_phone,
             'businessType': 'SMB',

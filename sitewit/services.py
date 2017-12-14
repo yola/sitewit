@@ -68,7 +68,7 @@ class SitewitService(HTTPServiceClient):
     def _compose_auth_header(self, elements):
         return {'PartnerAuth': base64.b64encode(':'.join(elements))}
 
-    def create_account(self, url, user_name, user_email,
+    def create_account(self, url, user_id, user_name, user_email,
                        currency, country_code, site_id=None,
                        mobile_phone=None, user_token=None,
                        remote_subpartner_id=None):
@@ -76,6 +76,7 @@ class SitewitService(HTTPServiceClient):
 
         Args:
             url: (str): site URL.
+            user_id (str): id of account owner.
             user_name (str): name of account owner.
             user_email (str): email of account owner.
             currency (str): user's currency.
@@ -97,6 +98,7 @@ class SitewitService(HTTPServiceClient):
             'timeZone': self.DEFAULT_TIME_ZONE,
             'name': user_name,
             'email': user_email,
+            'username': user_id,
             'currency': currency,
             'countryCode': country_code,
             'userToken': user_token,

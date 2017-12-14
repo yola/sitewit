@@ -60,11 +60,12 @@ class Account(SiteWitServiceModel):
             demands.HTTPServiceError: if any error happened on HTTP level.
         """
         email = cls._get_email(user)
+        user_id = cls._generate_userid(user)
         user_name = cls._get_valid_user_name(user.name)
         subpartner_id = user.partner_id if user.is_whitelabel else None
 
         result = cls.get_service().create_account(
-            url, user_name, email, 'USD', 'US', site_id=site_id,
+            url, user_id, user_name, email, 'USD', 'US', site_id=site_id,
             mobile_phone=mobile_phone, user_token=user_token,
             remote_subpartner_id=subpartner_id)
 
@@ -204,6 +205,10 @@ class Account(SiteWitServiceModel):
     @classmethod
     def _get_email(cls, user):
         return user.preferences.get('wl_email', user.email)
+
+    @classmethod
+    def _generate_userid(cls, user):
+        return '{}@yola.yola'.format(user.id)
 
 
 class Subscription(SiteWitServiceModel):
