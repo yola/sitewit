@@ -54,6 +54,7 @@ class AccountTestCase(SitewitTestCase):
             'site_id': self.site_id,
             'url': self.url,
             'user_name': self.user_name,
+            'user_id': self.user_email,
             'user_email': self.user_email,
             'currency': self.currency,
             'country_code': self.country_code,

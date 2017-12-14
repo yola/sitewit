@@ -1,5 +1,9 @@
 # [Changelog](https://github.com/yola/sitewit/releases)
 
+## DEV
+
+* Add `user_id` param to `SitewitService.create_account()` method.
+
 ## 0.10.2
 
 * Add optional `mobile_phone` parameter to `Account.Create()` and

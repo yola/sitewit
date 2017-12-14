@@ -18,9 +18,9 @@ class BaseCampaignTestCase(SitewitTestCase):
     def setUpClass(cls):
         super(BaseCampaignTestCase, cls).setUpClass()
 
+        email = 'foo{0}@bar.com'.format(uuid4().hex)
         cls.account_token = cls.service.create_account(
-            'http://www.test.site.com', 'Foo',
-            'foo{0}@bar.com'.format(uuid4().hex), 'USD', 'US'
+            'http://www.test.site.com', email, 'Foo', email, 'USD', 'US'
         )['accountInfo']['token']
 
         cls.subscribe_method = cls.subscribe_method()
