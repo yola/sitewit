@@ -61,7 +61,7 @@ class Account(SiteWitServiceModel):
         """
         email = cls._get_email(user)
         user_id = cls._generate_sw_user_id(user)
-        user_name = cls._get_valid_user_name(user.name)
+        user_name = cls._get_valid_user_name(user)
         subpartner_id = user.partner_id if user.is_whitelabel else None
 
         result = cls.get_service().create_account(
@@ -130,7 +130,7 @@ class Account(SiteWitServiceModel):
             demands.HTTPServiceError: if any error happened on HTTP level.
         """
         email = cls._get_email(user)
-        user_name = cls._get_valid_user_name(user.name)
+        user_name = cls._get_valid_user_name(user)
         response = cls.get_service().change_account_owner(
             account_token, user_email=email, user_name=user_name)
 
@@ -192,13 +192,14 @@ class Account(SiteWitServiceModel):
         return Account(result)
 
     @classmethod
-    def _get_valid_user_name(cls, user_name):
+    def _get_valid_user_name(cls, user):
         """Return a user name suitable for passing to SiteWit API.
 
         Account creation will fail for names that are too short or too long.
         """
-        if 1 < len(user_name) < 256:
-            return user_name
+        full_name = user.get_full_name()
+        if 1 < len(full_name) < 256:
+            return full_name
 
         return 'User'
 
