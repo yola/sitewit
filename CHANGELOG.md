@@ -2,8 +2,8 @@
 
 ## DEV
 
-* Pass user's full name to `SitewitService.create_account()` and
-  `SitewitService.change_account_owner()` methods.
+* `Account.create()` and `Account.associate_with_new_user()` methods updated
+  to use user's full name.
 
 ## 0.11.0
 
