@@ -1,5 +1,10 @@
 # [Changelog](https://github.com/yola/sitewit/releases)
 
+## DEV
+
+* `Account.create()` and `Account.associate_with_new_user()` methods updated
+  to use user's full name.
+
 ## 0.11.0
 
 * Add `user_id` param to `SitewitService.create_account()` method.

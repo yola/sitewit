@@ -40,7 +40,8 @@ class TestModelsCreateAccount(AccountTestCase):
         self.user = Mock(
             location=self.country_code, currency=self.currency,
             time_zone=self.time_zone, partner_id=self.partner_id,
-            is_whitelabel=True, preferences={'wl_email': self.user_email})
+            is_whitelabel=True, preferences={'wl_email': self.user_email},
+            get_full_name=Mock(return_value=self.user_name))
         self.user.configure_mock(id=self.user_id, name=self.user_name)
 
         self.result = Account.create(
