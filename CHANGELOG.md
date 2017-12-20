@@ -1,5 +1,10 @@
 # [Changelog](https://github.com/yola/sitewit/releases)
 
+## DEV
+
+* Pass user's full name to `SitewitService.create_account()` and
+  `SitewitService.change_account_owner()` methods.
+
 ## 0.11.0
 
 * Add `user_id` param to `SitewitService.create_account()` method.
