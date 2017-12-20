@@ -16,6 +16,9 @@ class FakeUser(object):
         self.preferences = preferences or {}
         self.email = email or '{}@yola.yola'.format(user_id)
 
+    def get_full_name(self):
+        return self.name
+
 
 class TestCreateAccount(AccountTestCase):
 
