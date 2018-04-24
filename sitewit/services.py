@@ -469,7 +469,7 @@ class SitewitService(HTTPServiceClient):
         ).json()
 
     def cancel_search_campaign_subscription(self, account_token, campaign_id,
-                                            immediate=True):
+                                            immediate=False):
         """Cancel Search campaign subscription.
 
         Cancel Search campaign subscription.
@@ -493,7 +493,7 @@ class SitewitService(HTTPServiceClient):
             headers=self._get_account_auth_header(account_token)).json()
 
     def cancel_display_campaign_subscription(self, account_token, campaign_id,
-                                             immediate=True):
+                                             immediate=False):
         """Cancel Display campaign subscription.
 
         Cancel Display campaign subscription.
