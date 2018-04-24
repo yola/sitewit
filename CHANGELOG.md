@@ -1,5 +1,10 @@
 # [Changelog](https://github.com/yola/sitewit/releases)
 
+## 0.12.0
+
+* Changed default of `immediate` argument of
+  `cancel_search/display_subscription_campaign` to `False`.
+
 ## 0.11.1
 
 * `Account.create()` and `Account.associate_with_new_user()` methods updated
