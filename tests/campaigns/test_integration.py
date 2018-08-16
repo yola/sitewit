@@ -268,8 +268,8 @@ class TestCancelSearchCampaignSubscription(BaseSubscriptionTestCase):
         self.result = self.unsubscribe_method(
             self.account_token, self.campaign_id)
 
-    def test_campaign_is_cancelled(self):
-        self.assertEqual(self.result['status'], 'Cancelled')
+    def test_campaign_is_suspended(self):
+        self.assertEqual(self.result['status'], 'Suspended')
 
 
 class TestCancelDisplayCampaignSubscription(
@@ -298,8 +298,8 @@ class TestCancelSearchCampaignSubscriptionNotFound(BaseSubscriptionTestCase):
                 self.account_token, self.non_existent_campaign_id), 404)
 
 
-class TestRefundSubscriptionTestCase(
-        BaseCampaignTestCase):
+class TestRefundSubscriptionTestCase(BaseCampaignTestCase):
+
     @classmethod
     def setUpClass(cls):
         super(TestRefundSubscriptionTestCase, cls).setUpClass()
@@ -311,7 +311,8 @@ class TestRefundSubscriptionTestCase(
         return cls.subscribe_method(cls.account_token, -1, 500, 'USD')['id']
 
     def test_refund_request_is_accepted(self):
-        self.assertEqual(self.result['campaignInfo']['status'], 'Cancelled')
+        self.assertEqual(
+            self.result['campaignInfo']['status'], 'PrepurchaseCancelled')
         self.assertEqual(self.result['refundAmount'], -500.0)
 
 
@@ -470,15 +471,17 @@ class TestRefillSearchCampaignSubscription(BaseCampaignTestCase):
     SiteWitService.refill_search_campaign_subscription()
     """
 
-    def setUp(self):
-        self.subscribe_method(self.account_token, self.campaign_id, 500, 'EUR')
-        self.response = self.refill_method(
-            self.account_token, self.campaign_id, 510, 500, 'EUR',
-            datetime.utcnow().date() + timedelta(32))
-        spend_item = self.response['charge']['items'][1]
+    @classmethod
+    def setUpClass(cls):
+        super(TestRefillSearchCampaignSubscription, cls).setUpClass()
+        cls.subscribe_method(cls.account_token, cls.campaign_id, 500, 'EUR')
+        cls.response = cls.refill_method(
+            cls.account_token, cls.campaign_id, 510, 500, 'EUR',
+            datetime.utcnow().date() + timedelta(60))
+        spend_item = cls.response['charge']['items'][1]
         exchange_rate = spend_item['exchangeRate']
-        self.price = spend_item['price']
-        self.expected_price = 510 * exchange_rate
+        cls.price = spend_item['price']
+        cls.expected_price = 510 * exchange_rate
 
     def test_refills_subscription_for_given_amount(self):
         self.assertEqual(self.price, self.expected_price)
