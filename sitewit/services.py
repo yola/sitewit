@@ -7,6 +7,7 @@ from yoconfig import get_config
 import sitewit
 from sitewit.constants import BillingTypes, CAMPAIGN_SERVICES, CampaignTypes
 
+
 _NEXT_CHARGE_PARAMETER_FORMAT = '%Y-%m-%d 23:59:59'
 
 
