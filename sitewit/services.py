@@ -7,7 +7,6 @@ from yoconfig import get_config
 import sitewit
 from sitewit.constants import BillingTypes, CAMPAIGN_SERVICES, CampaignTypes
 
-
 _NEXT_CHARGE_PARAMETER_FORMAT = '%Y-%m-%d 23:59:59'
 
 
@@ -71,7 +70,7 @@ class SitewitService(HTTPServiceClient):
     def create_account(self, url, user_id, user_name, user_email,
                        currency, country_code, site_id=None,
                        mobile_phone=None, user_token=None,
-                       remote_subpartner_id=None):
+                       remote_subpartner_id=None, partner_package=None):
         """Create new SiteWit account.
 
         Args:
@@ -87,6 +86,8 @@ class SitewitService(HTTPServiceClient):
                 owned by existing user.
             remote_subpartner_id (str, optional): user's partner_id on
                                                   customer side)
+            partner_package (str, optional): subscription level of your
+                                                customer
 
         Returns:
             JSON of format:
@@ -104,6 +105,7 @@ class SitewitService(HTTPServiceClient):
             'userToken': user_token,
             'clientId': site_id,
             'mobilePhone': mobile_phone,
+            'partnerPackage': partner_package,
         })
 
         return self.post(
