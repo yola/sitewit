@@ -1,6 +1,7 @@
 # [Changelog](https://github.com/yola/sitewit/releases)
 
 ## 0.12.0
+
 * Extended `SitewitService.create_account()` signature with `user_package` 
 parameter.
 
