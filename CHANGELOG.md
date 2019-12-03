@@ -2,12 +2,12 @@
 
 ## 0.12.0
 
-* Extended `SitewitService.create_account()` signature with `user_package` 
+* Extend `SitewitService.create_account()` signature with `user_package` 
 parameter.
 
 ## 0.11.1
 
-* `Account.create()` and `Account.associate_with_new_user()` methods updated
+* Update `Account.create()` and `Account.associate_with_new_user()` methods
   to use user's full name.
 
 ## 0.11.0
