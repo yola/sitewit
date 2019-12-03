@@ -313,7 +313,7 @@ class TestRefundSubscriptionTestCase(BaseCampaignTestCase):
     def test_refund_request_is_accepted(self):
         self.assertEqual(
             self.result['campaignInfo']['status'], 'PrepurchaseCancelled')
-        self.assertEqual(len(self.result['charge']['items'][0]), 1)
+        self.assertEqual(len(self.result['charge']['items']), 1)
         self.assertEqual(self.result['charge']['items'][0]['price'], -500.0)
 
 
