@@ -19,7 +19,7 @@ class AccountTestCase(SitewitTestCase):
     password = 'password'
     user_token = 'user_token'
     url = 'http://www.test.site.com'
-    partner_package = 'Free'
+    user_package = 'Free'
 
     response_brief = {
         'accountNumber': account_id,
@@ -59,7 +59,7 @@ class AccountTestCase(SitewitTestCase):
             'user_email': self.user_email,
             'currency': self.currency,
             'country_code': self.country_code,
-            'partner_package': self.partner_package,
+            'user_package': self.user_package,
         }
         default_data.update(overrides)
         return SitewitService().create_account(**default_data)
