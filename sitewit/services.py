@@ -7,7 +7,6 @@ from yoconfig import get_config
 import sitewit
 from sitewit.constants import BillingTypes, CAMPAIGN_SERVICES, CampaignTypes
 
-
 _NEXT_CHARGE_PARAMETER_FORMAT = '%Y-%m-%d 23:59:59'
 
 
@@ -129,7 +128,8 @@ class SitewitService(HTTPServiceClient):
             headers=self._get_account_auth_header(account_token)).json()
 
     def update_account(
-            self, account_token, url=None, country_code=None, currency=None):
+            self, account_token, url=None, country_code=None, currency=None,
+            user_package=None):
         """Update SiteWit account.
 
         Args:
@@ -143,6 +143,7 @@ class SitewitService(HTTPServiceClient):
             'url': url,
             'countryCode': country_code,
             'currency': currency,
+            'partnerPackage': user_package,
         })
 
         return self.put(

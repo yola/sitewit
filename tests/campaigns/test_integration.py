@@ -485,7 +485,7 @@ class TestRefillSearchCampaignSubscription(BaseCampaignTestCase):
         cls.expected_price = 510 * exchange_rate
 
     def test_refills_subscription_for_given_amount(self):
-        self.assertEqual(self.price, self.expected_price)
+        self.assertAlmostEqual(self.price, self.expected_price, places=5)
 
     def test_response_contains_spend_charge_item(self):
         item_types = set(i['type'] for i in self.response['charge']['items'])
