@@ -71,7 +71,7 @@ class SitewitService(HTTPServiceClient):
     def create_account(self, url, user_id, user_name, user_email,
                        currency, country_code, site_id=None,
                        mobile_phone=None, user_token=None,
-                       remote_subpartner_id=None):
+                       remote_subpartner_id=None, user_package=None):
         """Create new SiteWit account.
 
         Args:
@@ -87,6 +87,8 @@ class SitewitService(HTTPServiceClient):
                 owned by existing user.
             remote_subpartner_id (str, optional): user's partner_id on
                                                   customer side)
+            user_package (str, optional): package subscription of account's
+                                            owner
 
         Returns:
             JSON of format:
@@ -104,6 +106,7 @@ class SitewitService(HTTPServiceClient):
             'userToken': user_token,
             'clientId': site_id,
             'mobilePhone': mobile_phone,
+            'partnerPackage': user_package,
         })
 
         return self.post(
