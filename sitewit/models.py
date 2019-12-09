@@ -42,7 +42,14 @@ class Account(SiteWitServiceModel):
 
     @classmethod
     def create(
-            cls, user, url, site_id=None, user_token=None, mobile_phone=None):
+        cls,
+        user,
+        url,
+        site_id=None,
+        user_token=None,
+        mobile_phone=None,
+        user_package=None,
+    ):
         """Create SiteWit account for given site_id.
 
         Args:
@@ -52,6 +59,8 @@ class Account(SiteWitServiceModel):
             user_token (str, optional): user token. Is specified if the user
                 has another accounts.
             mobile_phone (str, optional): account owner's phone
+            user_package (str, optional): package subscription of account's
+                owner
 
         Returns:
             Instance of Account class.
@@ -67,7 +76,7 @@ class Account(SiteWitServiceModel):
         result = cls.get_service().create_account(
             url, user_id, user_name, email, 'USD', 'US', site_id=site_id,
             mobile_phone=mobile_phone, user_token=user_token,
-            remote_subpartner_id=subpartner_id)
+            remote_subpartner_id=subpartner_id, user_package=user_package)
 
         return Account(result['accountInfo'], user_data=result['userInfo'])
 
