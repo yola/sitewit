@@ -60,7 +60,7 @@ class Account(SiteWitServiceModel):
                 has another accounts.
             mobile_phone (str, optional): account owner's phone
             user_package (str, optional): package subscription of account's
-                                            owner
+                owner
 
         Returns:
             Instance of Account class.
