@@ -42,13 +42,13 @@ class Account(SiteWitServiceModel):
 
     @classmethod
     def create(
-        cls,
-        user,
-        url,
-        site_id=None,
-        user_token=None,
-        mobile_phone=None,
-        user_package=None,
+            cls,
+            user,
+            url,
+            site_id=None,
+            user_token=None,
+            mobile_phone=None,
+            user_package=None,
     ):
         """Create SiteWit account for given site_id.
 
@@ -99,7 +99,8 @@ class Account(SiteWitServiceModel):
 
     @classmethod
     def update(
-            cls, account_token, url=None, country_code=None, currency=None):
+            cls, account_token, url=None, country_code=None, currency=None,
+            user_package=None,):
         """Update SiteWit account with given data.
 
         Args:
@@ -111,6 +112,7 @@ class Account(SiteWitServiceModel):
             currency (str): new currency
                 (https://sandboxpapi.sitewit.com/Help/ResourceModel?
                  modelName=BudgetCurrency
+            user_package (str): package subscription of account owner
 
         Returns:
             Instance of account class.
@@ -120,7 +122,7 @@ class Account(SiteWitServiceModel):
         """
         result = cls.get_service().update_account(
             account_token, url=url, country_code=country_code,
-            currency=currency)
+            currency=currency, user_package=user_package)
 
         return Account(result)
 
