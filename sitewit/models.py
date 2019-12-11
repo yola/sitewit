@@ -42,13 +42,13 @@ class Account(SiteWitServiceModel):
 
     @classmethod
     def create(
-            cls,
-            user,
-            url,
-            site_id=None,
-            user_token=None,
-            mobile_phone=None,
-            user_package=None,
+        cls,
+        user,
+        url,
+        site_id=None,
+        user_token=None,
+        mobile_phone=None,
+        user_package=None,
     ):
         """Create SiteWit account for given site_id.
 
