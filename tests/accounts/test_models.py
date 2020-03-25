@@ -4,7 +4,8 @@ from mock import Mock, patch
 
 import sitewit.models
 from sitewit.models import Account
-from base import AccountTestCase
+
+from .base import AccountTestCase
 
 
 class TestModelsCreateAccount(AccountTestCase):

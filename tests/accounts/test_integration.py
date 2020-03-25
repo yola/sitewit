@@ -1,9 +1,10 @@
 import uuid
 
-from base import AccountTestCase
 from sitewit.models import Account
 from sitewit.services import HTTPServiceError, SitewitService
 from tests.partners.base import PartnerTestCase
+
+from .base import AccountTestCase
 
 
 class FakeUser(object):

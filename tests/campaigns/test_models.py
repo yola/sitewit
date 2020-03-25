@@ -5,7 +5,6 @@ from uuid import uuid4
 
 from sitewit.models import Subscription
 
-
 subscription_data = {
     'fee': 19.0,
     'campaignId': 23916,

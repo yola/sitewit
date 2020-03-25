@@ -19,10 +19,8 @@ Generate configuration file:
 
 Run the tests with:
 
-    nosetests
+    pytest
 
 Integration tests are available, but are not run automatically. To run:
 
-    nosetests --include accounts.test_integration \
-      --include campaigns.test_integration --include partners.test_integration
-
+    INTEGRATION_TESTS=1 pytest

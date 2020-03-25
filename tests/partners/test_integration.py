@@ -1,8 +1,9 @@
 import copy
 import uuid
 
-from base import PartnerTestCase
 from sitewit.services import SitewitService
+
+from .base import PartnerTestCase
 
 
 def deep_sort(d):
@@ -11,7 +12,8 @@ def deep_sort(d):
 
     for key, value in d.items():
         if isinstance(value, list):
-            dict_copy[key] = sorted(value)
+            dict_copy[key] = sorted(value, key=lambda item: (
+                tuple(item.items()) if isinstance(item, dict) else item))
         elif isinstance(value, dict):
             dict_copy[key] = deep_sort(value)
 

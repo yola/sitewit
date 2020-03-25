@@ -59,13 +59,14 @@ class SitewitService(HTTPServiceClient):
 
         if remote_subpartner_id is not None:
             headers['RemoteSubPartnerId'] = base64.b64encode(
-                remote_subpartner_id)
+                remote_subpartner_id.encode('utf8'))
 
         headers.update(self._compose_auth_header(auth_list))
         return headers
 
     def _compose_auth_header(self, elements):
-        return {'PartnerAuth': base64.b64encode(':'.join(elements))}
+        return {'PartnerAuth': base64.b64encode(
+            ':'.join(elements).encode('utf8'))}
 
     def create_account(self, url, user_id, user_name, user_email,
                        currency, country_code, site_id=None,

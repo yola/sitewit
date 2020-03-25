@@ -4,7 +4,11 @@ from uuid import uuid4
 from dateutil.parser import parse
 
 from sitewit.constants import (
-    BillingTypes, CampaignServiceTypes, CampaignTypes, SPEND_CHARGE_ITEM_TYPES)
+    BillingTypes,
+    CampaignServiceTypes,
+    CampaignTypes,
+    SPEND_CHARGE_ITEM_TYPES,
+)
 from sitewit.models import Subscription
 from tests.base import SitewitTestCase
 
@@ -23,8 +27,8 @@ class BaseCampaignTestCase(SitewitTestCase):
             'http://www.test.site.com', email, 'Foo', email, 'USD', 'US'
         )['accountInfo']['token']
 
-        cls.subscribe_method = cls.subscribe_method()
-        cls.unsubscribe_method = cls.unsubscribe_method()
+        cls.subscribe_method = cls.get_subscribe_method()
+        cls.unsubscribe_method = cls.get_unsubscribe_method()
         cls.refill_method = getattr(
             cls.service, 'refill_{}_campaign_subscription'.format(
                 cls.campaign_type))
@@ -36,14 +40,14 @@ class BaseCampaignTestCase(SitewitTestCase):
             cls.account_token, campaign_type=cls.campaign_type)['id']
 
     @classmethod
-    def subscribe_method(cls):
+    def get_subscribe_method(cls):
         if cls.campaign_type == CampaignTypes.SEARCH:
             return cls.service.subscribe_to_search_campaign
 
         return cls.service.subscribe_to_display_campaign
 
     @classmethod
-    def unsubscribe_method(cls):
+    def get_unsubscribe_method(cls):
         if cls.campaign_type == CampaignTypes.SEARCH:
             return cls.service.cancel_search_campaign_subscription
 
@@ -440,7 +444,7 @@ class SubscribeToDisplayCampaignCancelledSubDowngrade(
 
 class TestIterSubscriptions(BaseSubscriptionTestCase):
     def setUp(self):
-        self.subscription = Subscription.iter_subscriptions().next()
+        self.subscription = next(Subscription.iter_subscriptions())
 
     def test_returns_iterator_over_subscription_objects(self):
         self.assertIsInstance(self.subscription, Subscription)
