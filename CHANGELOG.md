@@ -1,5 +1,9 @@
 # [Changelog](https://github.com/yola/sitewit/releases)
 
+## 0.12.0
+
+* Adds Python 3 as supported.
+
 ## 0.11.5
 
 * Extend `Account.update()` method with `user_package` parameter.

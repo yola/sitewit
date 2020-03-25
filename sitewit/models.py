@@ -1,5 +1,5 @@
-from decimal import Decimal
 import itertools
+from decimal import Decimal
 from uuid import UUID
 
 from dateutil.parser import parse

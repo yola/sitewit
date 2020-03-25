@@ -1,10 +1,10 @@
 import base64
 import os
 import uuid
+from unittest import TestCase
 
 from demands import HTTPServiceError
 from mock import Mock
-from unittest import TestCase
 from yoconfig import configure
 from yoconfigurator.base import read_config
 
@@ -42,11 +42,11 @@ class SitewitTestCase(TestCase):
         if account_token is not None:
             auth_info = '%s:%s' % (auth_info, account_token)
 
-        auth_header = base64.b64encode(auth_info)
+        auth_header = base64.b64encode(auth_info.encode('utf8'))
         headers = {'PartnerAuth': auth_header}
         if remote_subpartner_id is not None:
             headers['RemoteSubPartnerId'] = base64.b64encode(
-                remote_subpartner_id)
+                remote_subpartner_id.encode('utf8'))
 
         if data is not None:
             demands_mock.assert_called_once_with(
